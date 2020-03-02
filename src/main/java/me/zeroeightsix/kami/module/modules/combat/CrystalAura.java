@@ -1,5 +1,5 @@
 package me.zeroeightsix.kami.module.modules.combat;
-
+import me.zeroeightsix.kami.command.Command;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.event.events.PacketEvent;
@@ -38,10 +38,9 @@ import java.util.stream.Collectors;
 import static me.zeroeightsix.kami.util.EntityUtil.calculateLookAt;
 
 /**
- * Created by 086 on 28/12/2017.
- * Updated 3 December 2019 by hub
+ * Strong fucking CA
  */
-@Module.Info(name = "CrystalAura", category = Module.Category.COMBAT)
+@Module.Info(name = "NutGod Place", category = Module.Category.COMBAT)
 public class CrystalAura extends Module {
 
     private Setting<Boolean> autoSwitch = register(Settings.b("Auto Switch"));
@@ -50,18 +49,24 @@ public class CrystalAura extends Module {
     private Setting<Boolean> animals = register(Settings.b("Animals", false));
     private Setting<Boolean> place = register(Settings.b("Place", false));
     private Setting<Boolean> explode = register(Settings.b("Explode", false));
+    private Setting<Boolean> alert = register(Settings.b("Chat Alert", false));
     private Setting<Double>  range = register(Settings.d("Range", 4));
     private Setting<Boolean> antiWeakness = register(Settings.b("Anti Weakness", false));
+    private Setting<Boolean> slow = register(Settings.b("Single Place", false));
+    private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
+    private Setting<Boolean> raytrace = register(Settings.b("RayTrace", true));
+
 
     private BlockPos render;
     private Entity renderEnt;
     private long systemTime = -1;
     private static boolean togglePitch = false;
-	// we need this cooldown to not place from old hotbar slot, before we have switched to crystals
+    // we need this cooldown to not place from old hotbar slot, before we have switched to crystals
     private boolean switchCooldown = false;
     private boolean isAttacking = false;
-    private int oldSlot = -1;
+    private int oldSlot = -1;//the gays are taking over
     private int newSlot;
+    private int breaks;
 
     @Override
     public void onUpdate() {
@@ -71,8 +76,7 @@ public class CrystalAura extends Module {
                 .min(Comparator.comparing(c -> mc.player.getDistance(c)))
                 .orElse(null);
         if (explode.getValue() && crystal != null && mc.player.getDistance(crystal) <= range.getValue()) {
-            //Added delay to stop ncp from flagging "hitting too fast"
-            if (((System.nanoTime() / 1000000) - systemTime) >= 250) {
+            if (true) {//fuck you dont laugh i havnt eatan protien in 3 days
                 if (antiWeakness.getValue() && mc.player.isPotionActive(MobEffects.WEAKNESS)) {
                     if (!isAttacking) {
                         // save initial player hand
@@ -104,15 +108,29 @@ public class CrystalAura extends Module {
                 lookAtPacket(crystal.posX, crystal.posY, crystal.posZ, mc.player);
                 mc.playerController.attackEntity(mc.player, crystal);
                 mc.player.swingArm(EnumHand.MAIN_HAND);
-                systemTime = System.nanoTime() / 1000000;
+                breaks++;
             }
-            return;
+            if(breaks == 2 && !slow.getValue()) {
+                if(rotate.getValue()) {
+                    resetRotation();
+                }
+                breaks = 0;
+                return;
+            } else if(slow.getValue() &&  breaks == 1) {
+                if(rotate.getValue()) {
+                    resetRotation();
+                }
+                breaks = 0;
+                return;
+            }
         } else {
-            resetRotation();
-			if (oldSlot != -1) {
+            if(rotate.getValue()) {
+                resetRotation();
+            }
+            if (oldSlot != -1) {
                 Wrapper.getPlayer().inventory.currentItem = oldSlot;
                 oldSlot = -1;
-			}
+            }
             isAttacking = false;
         }
 
@@ -125,7 +143,7 @@ public class CrystalAura extends Module {
                 }
             }
         }
-		
+
         boolean offhand = false;
         if (mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL) {
             offhand = true;
@@ -168,7 +186,9 @@ public class CrystalAura extends Module {
         if (damage == .5) {
             render = null;
             renderEnt = null;
-            resetRotation();
+            if(rotate.getValue()) {
+                resetRotation();
+            }
             return;
         }
         render = q;
@@ -177,23 +197,29 @@ public class CrystalAura extends Module {
             if (!offhand && mc.player.inventory.currentItem != crystalSlot) {
                 if (autoSwitch.getValue()) {
                     mc.player.inventory.currentItem = crystalSlot;
-                    resetRotation();
+                    if(rotate.getValue()) {
+                        resetRotation();
+                    }
                     switchCooldown = true;
                 }
                 return;
             }
-            lookAtPacket(q.x + .5, q.y - .5, q.z + .5, mc.player);
-            RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(q.x + .5, q.y - .5d, q.z + .5));
             EnumFacing f;
-            if (result == null || result.sideHit == null) {
-                f = EnumFacing.UP;
+            lookAtPacket(q.x + .5, q.y - .5, q.z + .5, mc.player);
+            if(raytrace.getValue()) {
+                RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(q.x + .5, q.y - .5d, q.z + .5));
+                if (result == null || result.sideHit == null) {
+                    f = EnumFacing.UP;
+                } else {
+                    f = result.sideHit;
+                }
+                // return after we did an autoswitch
+                if (switchCooldown) {
+                    switchCooldown = false;
+                    return;
+                }
             } else {
-                f = result.sideHit;
-            }
-            // return after we did an autoswitch
-            if (switchCooldown) {
-                switchCooldown = false;
-                return;
+                f =  EnumFacing.UP;
             }
             //mc.playerController.processRightClickBlock(mc.player, mc.world, q, f, new Vec3d(0, 0, 0), EnumHand.MAIN_HAND);
             mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(q, f, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
@@ -215,11 +241,10 @@ public class CrystalAura extends Module {
     public void onWorldRender(RenderEvent event) {
         if (render != null) {
             KamiTessellator.prepare(GL11.GL_QUADS);
-            KamiTessellator.drawBox(render, 0x44ffffff, GeometryMasks.Quad.ALL);
+            KamiTessellator.drawBox(render, 0x65BF06E6, GeometryMasks.Quad.ALL);
             KamiTessellator.release();
             if (renderEnt != null) {
                 Vec3d p = EntityUtil.getInterpolatedRenderPos(renderEnt, mc.getRenderPartialTicks());
-                Tracers.drawLineFromPosToPos(render.x - mc.getRenderManager().renderPosX + .5d, render.y - mc.getRenderManager().renderPosY + 1, render.z - mc.getRenderManager().renderPosZ + .5d, p.x, p.y, p.z, renderEnt.getEyeHeight(), 1, 1, 1, 1);
             }
         }
     }
@@ -232,12 +257,14 @@ public class CrystalAura extends Module {
     private boolean canPlaceCrystal(BlockPos blockPos) {
         BlockPos boost = blockPos.add(0, 1, 0);
         BlockPos boost2 = blockPos.add(0, 2, 0);
-        return (mc.world.getBlockState(blockPos).getBlock() == Blocks.BEDROCK
-                || mc.world.getBlockState(blockPos).getBlock() == Blocks.OBSIDIAN)
-                && mc.world.getBlockState(boost).getBlock() == Blocks.AIR
-                && mc.world.getBlockState(boost2).getBlock() == Blocks.AIR
-                && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(boost)).isEmpty()
-                && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(boost2)).isEmpty();
+        if ((mc.world.getBlockState(blockPos).getBlock() != Blocks.BEDROCK
+                && mc.world.getBlockState(blockPos).getBlock() != Blocks.OBSIDIAN)
+                || mc.world.getBlockState(boost).getBlock() != Blocks.AIR
+                || mc.world.getBlockState(boost2).getBlock() != Blocks.AIR
+                || !mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(boost)).isEmpty()) {
+            return false;
+        }
+        return true;
     }
 
     public static BlockPos getPlayerPos() {
@@ -275,7 +302,7 @@ public class CrystalAura extends Module {
         Vec3d vec3d = new Vec3d(posX, posY, posZ);
         double blockDensity = (double) entity.world.getBlockDensity(vec3d, entity.getEntityBoundingBox());
         double v = (1.0D - distancedsize) * blockDensity;
-        float damage = (float) ((int) ((v * v + v) / 2.0D * 7.0D * (double) doubleExplosionSize + 1.0D));
+        float damage = (float) ((int) ((v * v + v) / 2.0D * 9.0D * (double) doubleExplosionSize + 1.0D));
         double finald = 1;
         /*if (entity instanceof EntityLivingBase)
             finald = getBlastReduction((EntityLivingBase) entity,getDamageMultiplied(damage));*/
@@ -349,7 +376,16 @@ public class CrystalAura extends Module {
     });
 
     @Override
+    protected void onEnable() {
+        if(alert.getValue()) {
+            Command.sendChatMessage(" \u00A75AutoCrystal \u00A78ON");
+        }
+    }
+
     public void onDisable() {
+        if(alert.getValue()) {
+            Command.sendChatMessage(" \u00A75AutoCrystal \u00A78OFF");
+        }
         render = null;
         renderEnt = null;
         resetRotation();
