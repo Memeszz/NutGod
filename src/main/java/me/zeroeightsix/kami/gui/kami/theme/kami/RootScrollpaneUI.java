@@ -79,20 +79,20 @@ public class RootScrollpaneUI extends AbstractComponentUI<Scrollpane> {
 
             @Override
             public void onPostRender() {
-                float red = 139f / 255f;
-                float green = 2f / 255f;
-                float blue = 237f / 255f;
+                float red = 255f / 255f;
+                float green = 0f / 255f;
+                float blue = 255f / 255f;
                 if (dragBar)
                     lastScroll = System.currentTimeMillis();
                 if (System.currentTimeMillis() - lastScroll < barLife && scrollComponent.liesIn(component) && component.canScrollY()){
-                    float alpha = Math.min(1,(barLife-(System.currentTimeMillis() - lastScroll))/100f)/3f;
-                    if (dragBar) alpha = 0.6f;
+                    float alpha = Math.min(1,(barLife-(System.currentTimeMillis() - lastScroll))/130)/3f;
+                    if (dragBar) alpha = 1.0f;
                     GL11.glColor4f(red,green,blue,alpha);
                     GL11.glDisable(GL11.GL_TEXTURE_2D);
                     int barHeight = 30;
                     double progress = (double) component.getScrolledY() / (double) component.getMaxScrollY();
                     int y = (int) ((component.getHeight() - barHeight)*progress);
-                    RenderHelper.drawRoundedRectangle(100-6, y, 4, barHeight, 1f);
+                    RenderHelper.drawRoundedRectangle(120-6, y, 4, barHeight, 1f);
                 }
             }
         });

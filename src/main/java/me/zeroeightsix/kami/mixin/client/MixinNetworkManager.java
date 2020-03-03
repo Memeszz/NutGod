@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.mixin.client;
 import io.netty.channel.ChannelHandlerContext;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.PacketEvent;
-import me.zeroeightsix.kami.module.modules.misc.NoPacketKick;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,7 +40,6 @@ public class MixinNetworkManager {
 
     @Inject(method = "exceptionCaught", at = @At("HEAD"), cancellable = true)
     private void exceptionCaught(ChannelHandlerContext p_exceptionCaught_1_, Throwable p_exceptionCaught_2_, CallbackInfo info) {
-        if (p_exceptionCaught_2_ instanceof IOException && NoPacketKick.isEnabled()) info.cancel();
     }
 
 }

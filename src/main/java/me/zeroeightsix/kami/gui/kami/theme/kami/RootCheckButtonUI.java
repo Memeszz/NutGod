@@ -18,7 +18,7 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
     protected Color backgroundColour = new Color(200, 56, 56);
     protected Color backgroundColourHover = new Color(255,66,66);
 
-    protected Color idleColourNormal = new Color(200, 200, 200);
+    protected Color idleColourNormal = new Color(250, 250, 250);
     protected Color downColourNormal = new Color(190, 190, 190);
 
     protected Color idleColourToggle = new Color(250, 120, 120);
@@ -36,7 +36,7 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
         }
 
         String text = component.getName();
-        int c = component.isPressed() ? 0xaaaaaa : component.isToggled() ? 0x8b02ed : 0xdddddd;
+        int c = component.isPressed() ? 0x3300ff : component.isToggled() ? 0x34eb92 : 0xffffff;
 
         glColor3f(1,1,1);
         glEnable(GL_TEXTURE_2D);

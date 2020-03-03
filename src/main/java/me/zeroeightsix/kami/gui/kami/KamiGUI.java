@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.gui.kami;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.gui.font.CFontRenderer;
 import me.zeroeightsix.kami.gui.kami.component.ActiveModules;
 import me.zeroeightsix.kami.gui.kami.component.Radar;
 import me.zeroeightsix.kami.gui.kami.component.SettingsPanel;
@@ -31,20 +32,24 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityEgg;
 import net.minecraft.entity.projectile.EntitySnowball;
 import net.minecraft.entity.projectile.EntityWitherSkull;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nonnull;
+import java.awt.*;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by 086 on 25/06/2017.
- */
+ * Created by 086 on 25/06/2017*/
 public class KamiGUI extends GUI {
 
-    public static final RootFontRenderer fontRenderer = new RootFontRenderer(1);
+    public static RootFontRenderer fontRenderer = new RootFontRenderer(1);
+    public static CFontRenderer cFontRenderer;
     public Theme theme;
 
     public static ColourHolder primaryColour = new ColourHolder(29, 29, 29);
@@ -205,18 +210,70 @@ public class KamiGUI extends GUI {
         information.setShadow(true);
         information.addTickListener(() -> {
             information.setText("");
-            information.addLine("\u00A7b" + KamiMod.KAMI_KANJI + "\u00A73 " + KamiMod.MODVER);
-            information.addLine("\u00A7b" + Math.round(LagCompensator.INSTANCE.getTickRate()) + Command.SECTIONSIGN() + "3 tps");
-            information.addLine("\u00A7b" + Wrapper.getMinecraft().debugFPS + Command.SECTIONSIGN() + "3 fps");
+            information.addLine("\u00A7d" + KamiMod.KAMI_KANJI + "\u00A73 " + KamiMod.MODVER);
+            information.addLine("\u00A7d" + Math.round(LagCompensator.INSTANCE.getTickRate()) + Command.SECTIONSIGN() + "3 tps");
+            information.addLine("\u00A7d" + Wrapper.getMinecraft().debugFPS + Command.SECTIONSIGN() + "3 fps");
 
 //            information.addLine("[&3" + Sprint.getSpeed() + "km/h&r]");
 
         });
-        frame.addChild(information);
-        information.setFontRenderer(fontRenderer);
+        // frame.addChild(information);
+        // frames.add(frame);
+        frame = new Frame(getTheme(), new Stretcherlayout(1), "\u00A7dPvP Info");
+        frame.setCloseable(false);
+        frame.setPinneable(true);
+        Label te = new Label("");
+        te.setShadow(true);
+        te.addTickListener(() -> {
+            te.setText("");
+            int totemCount=0;
+            int XPCount=0;
+            int gapCount=0;
+            int crystalCount=0;
+            for (int i=0; i < 45; i++) {
+                ItemStack itemStack = Wrapper.getMinecraft().player.inventory.getStackInSlot(i);
+                if (itemStack.getItem() == Items.TOTEM_OF_UNDYING) {
+                    totemCount += itemStack.stackSize;
+                }
+            }
+            for (int i=0; i < 45; i++) {
+                ItemStack itemStack = Wrapper.getMinecraft().player.inventory.getStackInSlot(i);
+                if (itemStack.getItem() == Items.END_CRYSTAL) {
+                    crystalCount += itemStack.stackSize;
+                }
+            }
+            for (int i=0; i < 45; i++) {
+                ItemStack itemStack = Wrapper.getMinecraft().player.inventory.getStackInSlot(i);
+                if (itemStack.getItem() == Items.EXPERIENCE_BOTTLE) {
+                    XPCount += itemStack.stackSize;
+                }
+            }
+            for (int i=0; i < 45; i++) {
+                ItemStack itemStack = Wrapper.getMinecraft().player.inventory.getStackInSlot(i);
+                if (itemStack.getItem() == Items.GOLDEN_APPLE) {
+                    XPCount += itemStack.stackSize;
+                }
+            }
+            te.addLine("\u00A7dTot:\u00A7a " + String.valueOf(totemCount));
+            te.addLine("\u00A7dExp:\u00A7a " + String.valueOf(XPCount));
+            te.addLine("\u00A7dCry:\u00A7a " + String.valueOf(crystalCount));
+            te.addLine("\u00A7dGap:\u00A7a " + String.valueOf(gapCount));
+        });
+        frame.addChild(te);
+        te.setFontRenderer(fontRenderer);
         frames.add(frame);
-
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Text Radar");
+        frame = new Frame(getTheme(), new Stretcherlayout(1), "\u00A7dWatermark");
+        frame.setCloseable(false);
+        frame.setPinneable(true);
+        Label watermark = new Label("");
+        watermark.setShadow(true);
+        watermark.addTickListener(() -> {
+            watermark.setText("NutGod B4 " + Wrapper.getMinecraft().player.getName());
+        });
+        frame.addChild(watermark);
+        watermark.setFontRenderer(fontRenderer);
+        frames.add(frame);
+        frame = new Frame(getTheme(), new Stretcherlayout(1), "\u00A7dText Radar");
         Label list = new Label("");
         DecimalFormat dfHealth = new DecimalFormat("#.#");
         dfHealth.setRoundingMode(RoundingMode.HALF_UP);
@@ -262,15 +319,15 @@ public class KamiGUI extends GUI {
                 list.addLine(Command.SECTIONSIGN() + "7" + player.getKey() + " " + Command.SECTIONSIGN() + "8" + player.getValue());
             }
         });
-        frame.setCloseable(false);
-        frame.setPinneable(true);
-        frame.setMinimumWidth(75);
-        list.setShadow(true);
-        frame.addChild(list);
-        list.setFontRenderer(fontRenderer);
-        frames.add(frame);
+        //      frame.setCloseable(false);
+        //   frame.setPinneable(true);
+        //   frame.setMinimumWidth(75);
+        //   list.setShadow(true);
+        //    frame.addChild(list);
+        //   list.setFontRenderer(fontRenderer);
+        //   frames.add(frame);
 
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Entities");
+        //  frame = new Frame(getTheme(), new Stretcherlayout(1), "Entities");
         Label entityLabel = new Label("");
         frame.setCloseable(false);
         entityLabel.addTickListener(new TickListener() {
@@ -305,11 +362,11 @@ public class KamiGUI extends GUI {
                 //entityLabel.getParent().setHeight(entityLabel.getLines().length * (entityLabel.getTheme().getFontRenderer().getFontHeight()+1) + 3);
             }
         });
-        frame.addChild(entityLabel);
-        frame.setPinneable(true);
-        entityLabel.setShadow(true);
-        entityLabel.setFontRenderer(fontRenderer);
-        frames.add(frame);
+        //  frame.addChild(entityLabel);
+        //  frame.setPinneable(true);
+        //  entityLabel.setShadow(true);
+        //  entityLabel.setFontRenderer(fontRenderer);
+        //  frames.add(frame);
 
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Coordinates");
         frame.setCloseable(false);
@@ -352,20 +409,20 @@ public class KamiGUI extends GUI {
                 ));
             }
         });
-        frame.addChild(coordsLabel);
-        coordsLabel.setFontRenderer(fontRenderer);
-        coordsLabel.setShadow(true);
-        frame.setHeight(20);
-        frames.add(frame);
+        //   frame.addChild(coordsLabel);
+        //   coordsLabel.setFontRenderer(fontRenderer);
+        //   coordsLabel.setShadow(true);
+        //  frame.setHeight(20);
+        // frames.add(frame);
 
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Radar");
         frame.setCloseable(false);
         frame.setMinimizeable(true);
         frame.setPinneable(true);
-        frame.addChild(new Radar());
-        frame.setWidth(100);
-        frame.setHeight(100);
-        frames.add(frame);
+        //    frame.addChild(new Radar());
+        //   frame.setWidth(100);
+        //   frame.setHeight(100);
+        //   frames.add(frame);
 
         for (Frame frame1 : frames) {
             frame1.setX(x);
@@ -447,4 +504,11 @@ public class KamiGUI extends GUI {
             component.setY(Wrapper.getMinecraft().displayHeight / (DisplayGuiScreen.getScale() * 2) - component.getHeight() / 2);
 
     }
+    static {
+        fontRenderer = new RootFontRenderer(1.0f);
+        KamiGUI.cFontRenderer = new CFontRenderer(new Font("Verdana", 0, 18), true, false);
+        KamiGUI.primaryColour = new ColourHolder(29, 29, 29);
+
+    }
+
 }

@@ -28,7 +28,7 @@ public abstract class Command {
 	}
 
 	public static void sendChatMessage(String message){
-		sendRawChatMessage("\u00A7d [NutGod]" + message);	}
+		sendRawChatMessage("\u00A7d[NutGod] " + message);	}
 
 	public static void sendStringChatMessage(String[] messages) {
 		sendChatMessage("");

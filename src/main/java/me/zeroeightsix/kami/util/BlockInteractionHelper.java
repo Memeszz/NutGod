@@ -5,6 +5,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -12,12 +14,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by hub on 15 June 2019
- * Last Updated 12 January 2019 by hub
+ * Updated 28 November 2019 by hub
  */
 public class BlockInteractionHelper {
 
@@ -55,6 +58,14 @@ public class BlockInteractionHelper {
     );
 
     private static final Minecraft mc = Minecraft.getMinecraft();
+
+    public static boolean hotbarSlotCheckEmpty(ItemStack stack) {
+        return stack != ItemStack.EMPTY;
+    }
+
+    public static boolean blockCheckNonBlock(ItemStack stack) {
+        return stack.getItem() instanceof ItemBlock;
+    }
 
     public static void placeBlockScaffold(BlockPos pos) {
         Vec3d eyesPos = new Vec3d(Wrapper.getPlayer().posX,
@@ -158,7 +169,7 @@ public class BlockInteractionHelper {
         return true;
     }
 
-    public static boolean hasNeighbour(BlockPos blockPos) {
+    private static boolean hasNeighbour(BlockPos blockPos) {
         for (EnumFacing side : EnumFacing.values()) {
             BlockPos neighbour = blockPos.offset(side);
             if (!Wrapper.getWorld().getBlockState(neighbour).getMaterial().isReplaceable()) {
@@ -168,4 +179,70 @@ public class BlockInteractionHelper {
         return false;
     }
 
+    public static float[] calcAngle(Vec3d from, Vec3d to) {
+
+        double difX = to.x - from.x;
+        double difY = (to.y - from.y) * -1.0D;
+        double difZ = to.z - from.z;
+        double dist = MathHelper.sqrt(difX * difX + difZ * difZ);
+
+        return new float[]{(float) MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(difZ, difX)) - 90.0D), (float) MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(difY, dist)))};
+
+    }
+
+    public static List<BlockPos> getSphere(BlockPos loc, float r, int h, boolean hollow, boolean sphere, int plus_y) {
+        List<BlockPos> circleblocks = new ArrayList<>();
+        int cx = loc.getX();
+        int cy = loc.getY();
+        int cz = loc.getZ();
+        for (int x = cx - (int) r; x <= cx + r; x++) {
+            for (int z = cz - (int) r; z <= cz + r; z++) {
+                for (int y = (sphere ? cy - (int) r : cy); y < (sphere ? cy + r : cy + h); y++) {
+                    double dist = (cx - x) * (cx - x) + (cz - z) * (cz - z) + (sphere ? (cy - y) * (cy - y) : 0);
+                    if (dist < r * r && !(hollow && dist < (r - 1) * (r - 1))) {
+                        BlockPos l = new BlockPos(x, y + plus_y, z);
+                        circleblocks.add(l);
+                    }
+                }
+            }
+        }
+        return circleblocks;
+    }
+
+    public static List<BlockPos> getCircle(BlockPos loc, int y, float r, boolean hollow) {
+        List<BlockPos> circleblocks = new ArrayList<>();
+        int cx = loc.getX();
+        int cz = loc.getZ();
+        for (int x = cx - (int) r; x <= cx + r; x++) {
+            for (int z = cz - (int) r; z <= cz + r; z++) {
+                double dist = (cx - x) * (cx - x) + (cz - z) * (cz - z);
+                if (dist < r * r && !(hollow && dist < (r - 1) * (r - 1))) {
+                    BlockPos l = new BlockPos(x, y, z);
+                    circleblocks.add(l);
+                }
+            }
+        }
+        return circleblocks;
+    }
+
+    public static EnumFacing getPlaceableSide(BlockPos pos) {
+
+        for (EnumFacing side : EnumFacing.values()) {
+
+            BlockPos neighbour = pos.offset(side);
+
+            if (!mc.world.getBlockState(neighbour).getBlock().canCollideCheck(mc.world.getBlockState(neighbour), false)) {
+                continue;
+            }
+
+            IBlockState blockState = mc.world.getBlockState(neighbour);
+            if (!blockState.getMaterial().isReplaceable()) {
+                return side;
+            }
+
+        }
+
+        return null;
+
+    }
 }

@@ -84,7 +84,7 @@ public class FriendCommand extends Command {
         }
     }
 
-    private Friends.Friend getFriendByName(String input) {
+    public static Friends.Friend getFriendByName(String input) {
         ArrayList<NetworkPlayerInfo> infoMap = new ArrayList<NetworkPlayerInfo>(Minecraft.getMinecraft().getConnection().getPlayerInfoMap());
         NetworkPlayerInfo profile = infoMap.stream().filter(networkPlayerInfo -> networkPlayerInfo.getGameProfile().getName().equalsIgnoreCase(input)).findFirst().orElse(null);
         if (profile == null) {
@@ -114,7 +114,7 @@ public class FriendCommand extends Command {
         return f;
     }
 
-    private static String requestIDs(String data) {
+    public static String requestIDs(String data) {
         try{
             String query = "https://api.mojang.com/profiles/minecraft";
             String json = data;
@@ -143,7 +143,7 @@ public class FriendCommand extends Command {
         }
     }
 
-    private static String convertStreamToString(java.io.InputStream is) {
+    private static String convertStreamToString(InputStream is) {
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
         String r = s.hasNext() ? s.next() : "/";
         return r;

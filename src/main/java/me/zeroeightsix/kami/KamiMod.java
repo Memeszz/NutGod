@@ -49,11 +49,11 @@ public class KamiMod {
 
     public static final String MODID = "kami";
     public static final String MODNAME = "KAMI";
-    public static final String MODVER = "b9";
+    public static final String MODVER = "B4";
 
     public static final String KAMI_HIRAGANA = "\u304B\u307F";
     public static final String KAMI_KATAKANA = "\u30AB\u30DF";
-    public static final String KAMI_KANJI = "\u795E";
+    public static final String KAMI_KANJI = "NutGod";
 
     private static final String KAMI_CONFIG_NAME_DEFAULT = "KAMIConfig.json";
 

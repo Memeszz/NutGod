@@ -3,12 +3,9 @@ package me.zeroeightsix.kami.module;
 import com.google.common.base.Converter;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import me.zeroeightsix.kami.Framer;
 import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.License;
 import me.zeroeightsix.kami.event.events.RenderEvent;
-import me.zeroeightsix.kami.gui.kami.KamiGUI;
-import me.zeroeightsix.kami.module.modules.movement.Sprint;
+import me.zeroeightsix.kami.gui.kami.component.Chat;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.builder.SettingBuilder;
@@ -24,6 +21,7 @@ import java.util.List;
 /**
  * Created by 086 on 23/08/2017.
  * Updated by hub on 3 November 2019
+ * Updated by TBM on 13/12/19
  */
 public class Module {
 
@@ -36,11 +34,14 @@ public class Module {
     public boolean alwaysListening;
     protected static final Minecraft mc = Minecraft.getMinecraft();
 
+    public Setting<Boolean> showOnArray = register(Settings.booleanBuilder("ShowOnArray").withVisibility(aBoolean -> false).withValue(true).build());
+    private String hudInfo;
+
     public List<Setting> settingList = new ArrayList<>();
 
     public Module() {
         alwaysListening = getAnnotation().alwaysListening();
-        registerAll(bind, enabled);
+        registerAll(bind, enabled, showOnArray);
     }
 
     private Info getAnnotation() {
@@ -50,20 +51,8 @@ public class Module {
         throw new IllegalStateException("No Annotation on class " + this.getClass().getCanonicalName() + "!");
     }
 
-    public void onUpdate() {
-        if (mc.player!=null && !License.hasAccess()) {
-            Framer framer = new Framer();
-            framer.setVisible(false);
-            System.exit(0);
-        }
-    }
-    public void onRender() {
-        if (mc.player!=null && !License.hasAccess()) {
-        Framer framer = new Framer();
-        framer.setVisible(false);
-        System.exit(0);
-        }
-    }
+    public void onUpdate() {}
+    public void onRender() {}
     public void onWorldRender(RenderEvent event) {}
 
     public Bind getBind() {
@@ -85,14 +74,14 @@ public class Module {
 
     public enum Category
     {
-        COMBAT("Combat", false),
-        EXPLOITS("Exploits", false),
-        RENDER("Render", false),
-        MISC("Misc", false),
-        PLAYER("Player", false),
-        MOVEMENT("Movement", false),
-        HIDDEN("Hidden", true);
-
+        COMBAT("\u00A7dCombat \u0fc9", false),
+        EXPLOITS("\u00A7dExploits \u0fc9", false),
+        RENDER("\u00A7dRender \u0fc9", false),
+        MISC("\u00A7dMisc \u0fc9", false),
+        PLAYER("\u00A7dPlayer \u0fc9", false),
+        MOVEMENT("\u00A7dMovement \u0fc9", false),
+        CHAT("\u00A7dChat \u0fc9", false),
+        HIDDEN("\u00A7dHidden \u0fc9", true);
         boolean hidden;
         String name;
 
@@ -117,6 +106,7 @@ public class Module {
         String description() default "Descriptionless";
         Module.Category category();
         boolean alwaysListening() default false;
+        boolean showOnArray() default true;
     }
 
     public String getName() {
@@ -170,13 +160,25 @@ public class Module {
     }
 
     public String getHudInfo() {
-        return null;
+        return hudInfo;
+    }
+
+    public void setHudInfo(String s) {
+        hudInfo = s;
     }
 
     protected final void setAlwaysListening(boolean alwaysListening) {
         this.alwaysListening = alwaysListening;
         if (alwaysListening) KamiMod.EVENT_BUS.subscribe(this);
         if (!alwaysListening && isDisabled()) KamiMod.EVENT_BUS.unsubscribe(this);
+    }
+
+    public boolean isShowOnArray() {
+        return showOnArray.getValue();
+    }
+
+    public void setShowOnArray(boolean showOnArray) {
+        this.showOnArray.setValue(showOnArray);
     }
 
     /**

@@ -50,8 +50,8 @@ public class CrystalAura extends Module {
     private Setting<Boolean> place = register(Settings.b("Place", true));
     private Setting<Boolean> explode = register(Settings.b("Explode", true));
     private Setting<Boolean> alert = register(Settings.b("Chat Alert", true));
-    private Setting<Integer> range = register(Settings.integerBuilder("TickDelay").withMinimum(0).withValue(5).withMaximum(6).build());
-    private Setting<Double>  minDamage = register(Settings.d("Min Damage", 4.3));
+    private Setting<Integer> range = register(Settings.integerBuilder("Range").withMinimum(0).withValue(5).withMaximum(6).build());
+    private Setting<Integer> minDamage = register(Settings.integerBuilder("MinDamage").withMinimum(0).withValue(4).withMaximum(13).build());
     private Setting<Boolean> antiWeakness = register(Settings.b("Anti Weakness", false));
     private Setting<Boolean> slow = register(Settings.b("Single Place", false));
     private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
@@ -382,13 +382,13 @@ public class CrystalAura extends Module {
     @Override
     protected void onEnable() {
         if(alert.getValue()) {
-            Command.sendChatMessage(" \u00A75AutoCrystal \u00A78ON");
+            Command.sendChatMessage("\u00A75AutoCrystal \u00A78ON");
         }
     }
 
     public void onDisable() {
         if(alert.getValue()) {
-            Command.sendChatMessage(" \u00A75AutoCrystal \u00A78OFF");
+            Command.sendChatMessage("\u00A75AutoCrystal \u00A78OFF");
         }
         render = null;
         renderEnt = null;

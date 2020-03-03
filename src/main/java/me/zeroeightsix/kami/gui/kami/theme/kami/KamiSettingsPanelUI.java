@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.gui.kami.RenderHelper;
 import me.zeroeightsix.kami.gui.kami.component.SettingsPanel;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
+import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -23,13 +24,13 @@ public class KamiSettingsPanelUI extends AbstractComponentUI<SettingsPanel> {
 //            glVertex2d(component.getWidth(),component.getHeight());
 //        }
 //        glEnd();
-        float red = 139f / 255f;
-        float green = 2f / 255f;
-        float blue = 237f / 255f;
+        float red = 238f / 255f;
+        float green = 130f / 255f;
+        float blue = 238f / 255f;
         glLineWidth(2f);
-        glColor4f(red,green,blue,.50f);
+        glColor4f(red,green,blue,.60f);
         RenderHelper.drawFilledRectangle(0,0,component.getWidth(),component.getHeight());
-        glColor3f(red,green,blue);
+        GL11.glColor3f(1,1,1);
         glLineWidth(1.5f);
         RenderHelper.drawRectangle(0,0,component.getWidth(),component.getHeight());
     }
