@@ -47,18 +47,11 @@ public class CrystalAura extends Module {
     private Setting<Boolean> players = register(Settings.b("Players"));
     private Setting<Boolean> mobs = register(Settings.b("Mobs", false));
     private Setting<Boolean> animals = register(Settings.b("Animals", false));
-<<<<<<< HEAD
     private Setting<Boolean> place = register(Settings.b("Place", true));
     private Setting<Boolean> explode = register(Settings.b("Explode", true));
     private Setting<Boolean> alert = register(Settings.b("Chat Alert", true));
     private Setting<Integer> range = register(Settings.integerBuilder("TickDelay").withMinimum(0).withValue(5).withMaximum(6).build());
-=======
-    private Setting<Boolean> place = register(Settings.b("Place", false));
-    private Setting<Boolean> explode = register(Settings.b("Explode", false));
-    private Setting<Boolean> alert = register(Settings.b("Chat Alert", false));
-    private Setting<Double>  range = register(Settings.d("Range", 4));
     private Setting<Double>  minDamage = register(Settings.d("Min Damage", 4.3));
->>>>>>> 4eac9929020e09a62fa78ddce0728c31f9279b6b
     private Setting<Boolean> antiWeakness = register(Settings.b("Anti Weakness", false));
     private Setting<Boolean> slow = register(Settings.b("Single Place", false));
     private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
