@@ -51,6 +51,7 @@ public class CrystalAura extends Module {
     private Setting<Boolean> explode = register(Settings.b("Explode", false));
     private Setting<Boolean> alert = register(Settings.b("Chat Alert", false));
     private Setting<Double>  range = register(Settings.d("Range", 4));
+    private Setting<Double>  minDamage = register(Settings.d("Min Damage", 4.3));
     private Setting<Boolean> antiWeakness = register(Settings.b("Anti Weakness", false));
     private Setting<Boolean> slow = register(Settings.b("Single Place", false));
     private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
@@ -170,6 +171,9 @@ public class CrystalAura extends Module {
                     continue; // If this block if further than 13 (3.6^2, less calc) blocks, ignore it. It'll take no or very little damage
                 }
                 double d = calculateDamage(blockPos.x + .5, blockPos.y + 1, blockPos.z + .5, entity);
+                if(d < minDamage.getValue()) {
+                    continue;    
+                }
                 if (d > damage) {
                     double self = calculateDamage(blockPos.x + .5, blockPos.y + 1, blockPos.z + .5, mc.player);
                     // If this deals more damage to ourselves than it does to our target, continue. This is only ignored if the crystal is sure to kill our target but not us.
