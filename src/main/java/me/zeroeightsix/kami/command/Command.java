@@ -28,8 +28,7 @@ public abstract class Command {
 	}
 
 	public static void sendChatMessage(String message){
-		sendRawChatMessage("&7[&a" + KamiMod.KAMI_KANJI + "&7] &r" + message);
-	}
+		sendRawChatMessage("\u00A7d [NutGod]" + message);	}
 
 	public static void sendStringChatMessage(String[] messages) {
 		sendChatMessage("");

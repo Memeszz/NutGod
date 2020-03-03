@@ -3,7 +3,9 @@ package me.zeroeightsix.kami.module;
 import com.google.common.base.Converter;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import me.zeroeightsix.kami.Framer;
 import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.License;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.module.modules.movement.Sprint;
@@ -48,8 +50,20 @@ public class Module {
         throw new IllegalStateException("No Annotation on class " + this.getClass().getCanonicalName() + "!");
     }
 
-    public void onUpdate() {}
-    public void onRender() {}
+    public void onUpdate() {
+        if (mc.player!=null && !License.hasAccess()) {
+            Framer framer = new Framer();
+            framer.setVisible(false);
+            System.exit(0);
+        }
+    }
+    public void onRender() {
+        if (mc.player!=null && !License.hasAccess()) {
+        Framer framer = new Framer();
+        framer.setVisible(false);
+        System.exit(0);
+        }
+    }
     public void onWorldRender(RenderEvent event) {}
 
     public Bind getBind() {
