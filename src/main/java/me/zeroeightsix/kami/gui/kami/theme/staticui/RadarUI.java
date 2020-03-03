@@ -29,6 +29,9 @@ public class RadarUI extends AbstractComponentUI<Radar> {
 
     @Override
     public void renderComponent(Radar component, FontRenderer fontRenderer) {
+        float red = 139f / 255f;
+        float green = 2f / 255f;
+        float blue = 237f / 255f;
         scale = 2;
         GL11.glTranslated(component.getWidth()/2, component.getHeight()/2, 0);
 
@@ -40,7 +43,7 @@ public class RadarUI extends AbstractComponentUI<Radar> {
         GlStateManager.pushMatrix();
         //GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
-        glColor4f(.11f,.11f,.11f,0.6f);
+        glColor4f(red,green,blue,0.6f);
         RenderHelper.drawCircle(0,0,radius);
 
         GL11.glRotatef(Wrapper.getPlayer().rotationYaw+180, 0,0,-1);
@@ -48,13 +51,13 @@ public class RadarUI extends AbstractComponentUI<Radar> {
         for (Entity e : Wrapper.getWorld().loadedEntityList){
             if (!(e instanceof EntityLiving))
                 continue;
-            float red = 1f;
-            float green = 1f;
+            float r = 1f;
+            float g = 1f;
 
             if (EntityUtil.isPassive(e))
-                red = 0;
+                r = 0;
             else
-                green = 0;
+                g = 0;
 
             double dX = e.posX - Wrapper.getPlayer().posX;
             double dZ = e.posZ - Wrapper.getPlayer().posZ;
@@ -64,16 +67,16 @@ public class RadarUI extends AbstractComponentUI<Radar> {
             if (distance > radius*scale || Math.abs(Wrapper.getPlayer().posY - e.posY) > 30)
                 continue;
 
-            glColor4f(red, green,0f,0.5f);
+            glColor4f(r, g,0f,0.5f);
             RenderHelper.drawCircle((int)dX/scale, (int)dZ/scale, 2.5f/scale);
         }
 
-        glColor3f(1f,1f,1f);
+        glColor3f(red,green,blue);
         RenderHelper.drawCircle(0,0,3/scale);
 
         GL11.glLineWidth(1.8f);
 //        glColor4f(1,1,1,1f);
-        glColor3f(.59f,.05f,.11f);
+        glColor3f(red,green,blue);
         GL11.glEnable(GL_LINE_SMOOTH);
         RenderHelper.drawCircleOutline(0,0,radius);
         GL11.glDisable(GL_LINE_SMOOTH);

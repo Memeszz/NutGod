@@ -8,6 +8,10 @@ import me.zeroeightsix.kami.module.Module;
 @Module.Info(name = "Sprint", description = "Automatically makes the player sprint", category = Module.Category.MOVEMENT)
 public class Sprint extends Module {
 
+    public static String getSpeed() {
+        return null;
+    }
+
     @Override
     public void onUpdate() {
         try {

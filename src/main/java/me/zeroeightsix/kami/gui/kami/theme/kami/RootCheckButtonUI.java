@@ -36,13 +36,11 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
         }
 
         String text = component.getName();
-        int c = component.isPressed() ? 0xaaaaaa : component.isToggled() ? 0xff3333 : 0xdddddd;
-        if (component.isHovered())
-            c = (c & 0x7f7f7f) << 1;
+        int c = component.isPressed() ? 0xaaaaaa : component.isToggled() ? 0x8b02ed : 0xdddddd;
 
         glColor3f(1,1,1);
         glEnable(GL_TEXTURE_2D);
-        KamiGUI.fontRenderer.drawString(component.getWidth() / 2 - KamiGUI.fontRenderer.getStringWidth(text) / 2, KamiGUI.fontRenderer.getFontHeight()/2-2, c, text);
+        KamiGUI.fontRenderer.drawString(1, KamiGUI.fontRenderer.getFontHeight()/2-2, c, text);
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_BLEND);
     }
