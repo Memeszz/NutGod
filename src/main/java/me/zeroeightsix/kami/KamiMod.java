@@ -12,7 +12,6 @@ import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
-import me.zeroeightsix.kami.gui.rgui.component.container.Container;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
@@ -32,7 +31,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -80,7 +82,7 @@ public class KamiMod {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-
+        DiscordPresence.start();
     }
 
     @Mod.EventHandler
