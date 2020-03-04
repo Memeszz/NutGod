@@ -67,6 +67,7 @@ public class Module {
             System.exit(0);
         }
     }
+    
     public void onWorldRender(RenderEvent event) {}
 
     public Bind getBind() {
