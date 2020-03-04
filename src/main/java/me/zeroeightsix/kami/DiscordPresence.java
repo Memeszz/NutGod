@@ -33,7 +33,7 @@ public class DiscordPresence {
         DiscordPresence.presence.startTimestamp = System.currentTimeMillis() / 1000L;
         DiscordPresence.presence.details = DEFAULT_DETAILS;
         DiscordPresence.presence.state = DEFAULT_STATE;
-        DiscordPresence.presence.largeImageKey = "snow";
+        DiscordPresence.presence.largeImageKey = "nutgod";
         DiscordPresence.rpc.Discord_UpdatePresence(DiscordPresence.presence);
         new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
