@@ -9,9 +9,10 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.ItemStack;
 
-@Module.Info(name = "AutoGapple", category = Module.Category.COMBAT)
+@Module.Info(name = "OffHandGap", category = Module.Category.COMBAT)
 public class AutoGapple extends Module {
     private Setting<Boolean> totem_disable = register(Settings.b("AutoTotem Disable", true));
+    private Setting<Double> Hearts = this.register(Settings.d("Health", 11.0));
 
     int gapples;
     boolean get_gapple = false;
@@ -49,7 +50,9 @@ public class AutoGapple extends Module {
             mc.playerController.windowClick(0, t < 9 ? t + 36 : t, 0, ClickType.PICKUP, mc.player);
             get_gapple = false;
         }
-
+        if ((double)(AutoGapple.mc.player.getHealth() + AutoGapple.mc.player.getAbsorptionAmount()) <= this.Hearts.getValue()) {
+            return;
+        }
         gapples = mc.player.inventory.mainInventory.stream().filter(itemStack -> itemStack.getItem() == Items.GOLDEN_APPLE).mapToInt(ItemStack::getCount).sum();
 
         if (mc.player.getHeldItemOffhand().getItem() == Items.GOLDEN_APPLE){

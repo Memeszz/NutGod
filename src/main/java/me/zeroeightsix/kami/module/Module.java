@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.Framer;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.License;
 import me.zeroeightsix.kami.event.events.RenderEvent;
-import me.zeroeightsix.kami.gui.kami.component.Chat;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.builder.SettingBuilder;
@@ -67,6 +66,7 @@ public class Module {
             System.exit(0);
         }
     }
+    
     public void onWorldRender(RenderEvent event) {}
 
     public Bind getBind() {

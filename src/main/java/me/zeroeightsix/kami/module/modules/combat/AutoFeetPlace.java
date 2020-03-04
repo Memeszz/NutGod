@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.combat;
 
-import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
@@ -12,8 +11,11 @@ import net.minecraft.block.BlockObsidian;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.*;
+import net.minecraft.network.play.client.CPacketAnimation;
+import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.client.CPacketEntityAction.Action;
+import net.minecraft.network.play.client.CPacketHeldItemChange;
+import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketPlayer.Rotation;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -28,7 +30,7 @@ public class AutoFeetPlace extends Module {
 
     private Setting<Boolean> autoDisable = register(Settings.b("Disable on place", true));
     private Setting<Boolean> spoofRotations = register(Settings.b("Spoof Rotations", true));
-    private Setting<Boolean> spoofHotbar = register(Settings.b("Spoof Hotbar", true));
+    private Setting<Boolean> spoofHotbar = register(Settings.b("Spoof Hotbar", false));
     private Setting<Double> blockPerTick = register(Settings.doubleBuilder("Blocks per Tick").withMinimum(1.0).withValue(4.0).withMaximum(10.0).build());
     private Setting<DebugMsgs> debugMsgs = register(Settings.e("Debug Messages", DebugMsgs.IMPORTANT));
     private Setting<AutoCenter> autoCenter = register(Settings.e("Auto Center", AutoCenter.TP));

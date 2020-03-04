@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.module.modules.combat;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.module.Module;
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.BlockInteractionHelper;
@@ -20,13 +19,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketEntityAction;
-import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,9 +43,7 @@ public class AutoTrap extends Module {
     private Setting<Integer> blocksPerTick = register(Settings.integerBuilder("BlocksPerTick").withMinimum(1).withValue(2).withMaximum(23).build());
     private Setting<Integer> tickDelay = register(Settings.integerBuilder("TickDelay").withMinimum(0).withValue(2).withMaximum(10).build());
     private Setting<Cage> cage = register(Settings.e("Cage", Cage.TRAP));
-    private Setting<Boolean> rotate = register(Settings.b("Rotate", false));
-    private Setting<Boolean> noGlitchBlocks = register(Settings.b("NoGlitchBlocks", true));
-    private Setting<Boolean> activeInFreecam = register(Settings.b("ActiveInFreecam", true));
+    private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
     private Setting<Boolean> announceUsage = register(Settings.b("AnnounceUsage", true));
     private EntityPlayer closestTarget;
     private String lastTickTargetName;
@@ -107,8 +102,7 @@ public class AutoTrap extends Module {
             return;
         }
 
-        if (!activeInFreecam.getValue() && ModuleManager.isModuleEnabled("Freecam")) {
-            return;
+        {
         }
 
         if (!firstRun) {

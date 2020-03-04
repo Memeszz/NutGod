@@ -52,13 +52,13 @@ public class KamiMod {
 
     public static final String MODID = "kami";
     public static final String MODNAME = "KAMI";
-    public static final String MODVER = "B4";
+    public static final String MODVER = "b4";
 
     public static final String KAMI_HIRAGANA = "\u304B\u307F";
     public static final String KAMI_KATAKANA = "\u30AB\u30DF";
     public static final String KAMI_KANJI = "NutGod";
 
-    private static final String KAMI_CONFIG_NAME_DEFAULT = "KAMIConfig.json";
+    private static final String KAMI_CONFIG_NAME_DEFAULT = "NutGodConfig.json";
 
     public static final Logger log = LogManager.getLogger("KAMI");
 
@@ -117,7 +117,7 @@ public class KamiMod {
     }
 
     public static String getConfigName() {
-        Path config = Paths.get("KAMILastConfig.txt");
+        Path config = Paths.get("NutGodLastConfig.txt");
         String kamiConfigName = KAMI_CONFIG_NAME_DEFAULT;
         try(BufferedReader reader = Files.newBufferedReader(config)) {
             kamiConfigName = reader.readLine();
