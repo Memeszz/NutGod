@@ -5,7 +5,6 @@ import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.gui.font.CFontRenderer;
 import me.zeroeightsix.kami.gui.kami.component.ActiveModules;
-import me.zeroeightsix.kami.gui.kami.component.Radar;
 import me.zeroeightsix.kami.gui.kami.component.SettingsPanel;
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiTheme;
 import me.zeroeightsix.kami.gui.rgui.GUI;
@@ -40,8 +39,8 @@ import javax.annotation.Nonnull;
 import java.awt.*;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -251,7 +250,7 @@ public class KamiGUI extends GUI {
             for (int i=0; i < 45; i++) {
                 ItemStack itemStack = Wrapper.getMinecraft().player.inventory.getStackInSlot(i);
                 if (itemStack.getItem() == Items.GOLDEN_APPLE) {
-                    XPCount += itemStack.stackSize;
+                    gapCount += itemStack.stackSize;
                 }
             }
             te.addLine("\u00A7dTot:\u00A7a " + String.valueOf(totemCount));
@@ -268,7 +267,7 @@ public class KamiGUI extends GUI {
         Label watermark = new Label("");
         watermark.setShadow(true);
         watermark.addTickListener(() -> {
-            watermark.setText("NutGod B4 " + Wrapper.getMinecraft().player.getName());
+            watermark.setText("NutGod B4 ");
         });
         frame.addChild(watermark);
         watermark.setFontRenderer(fontRenderer);
