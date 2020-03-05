@@ -67,7 +67,8 @@ public class HoleFiller extends Module {
             return;
         }
         for (BlockPos blockPos : blocks) {
-            q = blockPos;
+            if (blockPos.getX() != mc.player.posX && blockPos.getY() != mc.player.posY && blockPos.getZ() != mc.player.posZ)
+                q = blockPos;
         }
         render = q;
         if (q != null && mc.player.onGround) {
