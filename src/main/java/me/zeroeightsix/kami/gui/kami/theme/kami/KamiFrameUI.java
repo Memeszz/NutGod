@@ -40,16 +40,17 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
     private static final RootFontRenderer ff = new RootLargeFontRenderer();
     @Override
     public void renderComponent(Frame component, FontRenderer fontRenderer) {
-        float red = 128f / 255f;
+        float red = 69f / 255f;
         float green = 2f / 255f;
-        float blue = 128f / 255f;
+        float blue = 148f / 255f;
         if (component.getOpacity() == 0)
             return;
         glDisable(GL_TEXTURE_2D);
 
-        glColor4f(red,green,blue,.4f);
+        glColor4f(red,green,blue,.3f);
+
         RenderHelper.drawFilledRectangle(0,0,130,component.getHeight());
-        glColor4f(0.0f,0.0f,0.0f,1.0f);
+        glColor4f(0.0f,0.0f,0.3f,0.6f);
         RenderHelper.drawFilledRectangle(0,0,130,12);
         GL11.glColor3f(1,1,1);
         glLineWidth(2f);
@@ -97,17 +98,17 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
             if (component.isMinimized()){
                 glBegin(GL_LINE_LOOP);
                 {
-                    glVertex2d(130 - 15, top_y+2);
-                    glVertex2d(130 - 15, bottom_y+3);
-                    glVertex2d(130 - 10, bottom_y+3);
-                    glVertex2d(130 - 10, top_y+2);
+                    glVertex2d(component.getWidth() - 15, top_y+2);
+                    glVertex2d(component.getWidth() - 15, bottom_y+3);
+                    glVertex2d(component.getWidth() - 10, bottom_y+3);
+                    glVertex2d(component.getWidth() - 10, top_y+2);
                 }
                 glEnd();
             } else {
                 glBegin(GL_LINES);
                 {
-                    glVertex2d(130 - 15, bottom_y+4);
-                    glVertex2d(130 - 10, bottom_y+4);
+                    glVertex2d(component.getWidth() - 15, bottom_y+4);
+                    glVertex2d(component.getWidth() - 10, bottom_y+4);
                 }
                 glEnd();
             }

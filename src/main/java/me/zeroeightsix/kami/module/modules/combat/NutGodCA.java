@@ -54,7 +54,7 @@ public class NutGodCA extends Module {
     private Setting<Boolean> antiWeakness = register(Settings.b("Anti Weakness", false));
     private Setting<Boolean> slow = register(Settings.b("Single Place", false));
     private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
-    private Setting<Boolean> raytrace = register(Settings.b("RayTrace", true));
+    private Setting<Boolean> raytrace = register(Settings.b("RayTrace", false));
     private Setting<Double> HitDelay = register(Settings.d("Hit Delay", 1.0));
 
     private BlockPos render;

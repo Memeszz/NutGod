@@ -52,7 +52,7 @@ public class BlockHighlight extends Module {
             final IBlockState blockState = mc.world.getBlockState(pos);
 
             KamiTessellator.prepare(GL11.GL_QUADS);
-            KamiTessellator.drawBox(pos, rSetting.getValue(), gSetting.getValue(), bSetting.getValue(), aSetting.getValue(), GeometryMasks.Line.ALL);
+            KamiTessellator.drawBoundingBoxBlockPos(pos, rSetting.getValue(), gSetting.getValue(), bSetting.getValue(), aSetting.getValue(), GeometryMasks.Line.ALL);
             KamiTessellator.release();
 
         }
