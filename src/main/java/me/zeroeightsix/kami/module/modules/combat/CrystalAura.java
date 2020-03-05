@@ -55,7 +55,7 @@ public class CrystalAura extends Module {
     private Setting<Boolean> slow = register(Settings.b("Single Place", false));
     private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
     private Setting<Boolean> raytrace = register(Settings.b("RayTrace", true));
-
+    private Setting<Double> HitDelay = register(Settings.d("Hit Delay", 1.0));
 
     private BlockPos render;
     private Entity renderEnt;
@@ -70,33 +70,27 @@ public class CrystalAura extends Module {
 
     @Override
     public void onUpdate() {
-        EntityEnderCrystal crystal = mc.world.loadedEntityList.stream()
-                .filter(entity -> entity instanceof EntityEnderCrystal)
-                .map(entity -> (EntityEnderCrystal) entity)
-                .min(Comparator.comparing(c -> mc.player.getDistance(c)))
-                .orElse(null);
+        EntityEnderCrystal crystal = (EntityEnderCrystal) mc.world.loadedEntityList.stream().filter(entity -> entity instanceof EntityEnderCrystal).map(entity -> entity).min(Comparator.comparing(d -> mc.player.getDistance(d))).orElse(null);
         if (explode.getValue() && crystal != null && mc.player.getDistance(crystal) <= range.getValue()) {
-            if (true) {//fuck you dont laugh i havnt eatan protien in 3 days
+            if (System.nanoTime() / 1000000L - systemTime >= HitDelay.getValue()) {
                 if (antiWeakness.getValue() && mc.player.isPotionActive(MobEffects.WEAKNESS)) {
                     if (!isAttacking) {
-                        // save initial player hand
-                        oldSlot = Wrapper.getPlayer().inventory.currentItem;
+                        oldSlot  = Wrapper.getPlayer().inventory.currentItem;
                         isAttacking = true;
                     }
-                    // search for sword and tools in hotbar
+
                     newSlot = -1;
-                    for (int i = 0; i < 9; i++) {
+                    for (int i = 0; i < 9; ++i) {
                         ItemStack stack = Wrapper.getPlayer().inventory.getStackInSlot(i);
-                        if (stack == ItemStack.EMPTY) {
-                            continue;
-                        }
-                        if ((stack.getItem() instanceof ItemSword)) {
-                            newSlot = i;
-                            break;
-                        }
-                        if ((stack.getItem() instanceof ItemTool)) {
-                            newSlot = i;
-                            break;
+                        if (stack != ItemStack.EMPTY) {
+                            if (stack.getItem() instanceof ItemSword) {
+                                newSlot = i;
+                                break;
+                            }
+                            if (stack.getItem() instanceof ItemTool) {
+                                newSlot = i;
+                                break;
+                            }
                         }
                     }
                     // check if any swords or tools were found
