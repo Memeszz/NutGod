@@ -379,13 +379,13 @@ public class CrystalAura extends Module {
 
     @Override
     protected void onEnable() {
-        if(alert.getValue()) {
+        if(alert.getValue() && mc.world != null) {
             Command.sendChatMessage("\u00A75AutoCrystal \u00A78ON");
         }
     }
 
     public void onDisable() {
-        if(alert.getValue()) {
+        if(alert.getValue() && mc.world != null) {
             Command.sendChatMessage("\u00A75AutoCrystal \u00A78OFF");
         }
         render = null;
