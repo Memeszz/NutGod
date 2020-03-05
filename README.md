@@ -1,13 +1,13 @@
-# KAMI
+# NutGod
 [![Build Status](https://travis-ci.com/zeroeightysix/KAMI.svg?branch=master)](https://travis-ci.com/zeroeightysix/KAMI)
 [![Issues](https://img.shields.io/github/issues/zeroeightysix/kami.svg)](https://github.com/zeroeightysix/kami/issues)
 [![Discord](https://img.shields.io/badge/chat-on%20discord-brightgreen.svg)](http://discord.gg/9hvwgeg)
 
-## A minecraft utility mod for anarchy servers.
+## A minecraft utility mod for FUCKING NIGGAS WITH THIS FAST ASS CA
 
 Development has slowed down considerably.
 
-See [forgehax](https://github.com/fr1kin/forgehax) for a more polished equivalent. Some features in KAMI may be based on those of forgehax, as I sometimes used it as reference.
+See [forgehax](https://github.com/fr1kin/forgehax) for a more polished equivalent. Some features in NutGod may be based on those of forgehax, as I sometimes used it as reference.
 
 Please note Baritone is no longer included. Download the standalone jar [from here](https://github.com/cabaletta/baritone/releases).
 
@@ -26,13 +26,13 @@ Please note Baritone is no longer included. Download the standalone jar [from he
 
 ## Installing
 
-KAMI is a forge mod. Start by downloading the latest version of [1.12.2 forge](https://files.minecraftforge.net/).
+NutGod is a forge mod. Start by downloading the latest version of [1.12.2 forge](https://files.minecraftforge.net/).
 1. Install forge
 2. Navigate to your `.minecraft` directory.
    * **Linux**: `~/.minecraft`
    * **Windows**: `%appdata%/.minecraft`
 3. Navigate to the `mods` directory. If it doesn't exist, create it.
-4. Obtain the KAMI `.jar` file.
+4. Obtain the NutGod `.jar` file.
    * By **downloading** it: see [releases](../../releases)
    * By **building** it: see [building](#building).
 5. Place the `.jar` file in your mods directory.
@@ -51,7 +51,7 @@ Run `.bind <module> <key>`.
 You can also use `.bind modifiers on` to allow modules to be bound to keybinds with modifiers, e.g `ctrl + shift + w` or `ctrl + c`.
 
 ##### Change command prefix
-By using the command `prefix <prefix>` or after having ran KAMI (make sure it's closed), editing your configuration file (find it using `config path` in-game) and changing the value of `commandPrefix` to change the prefix.
+By using the command `prefix <prefix>` or after having ran NutGod (make sure it's closed), editing your configuration file (find it using `config path` in-game) and changing the value of `commandPrefix` to change the prefix.
 
 ## Troubleshooting
 Please reference the main [troubleshooting page](docs/TROUBLESHOOTING.md)
@@ -60,11 +60,11 @@ If you experience an issue and it's not listed there, please [open a new issue](
 
 ## Contributing
 
-You are free to clone, modify KAMI and make pull requests as you wish. To set up your development environment, make use of the following commands:
+You are free to clone, modify NutGod and make pull requests as you wish. To set up your development environment, make use of the following commands:
 
 ```
-git clone https://github.com/zeroeightysix/KAMI/
-cd KAMI
+git clone https://github.com/zeroeightysix/NutGod/
+cd NutGod
 ```
 
 On GNU/Linux, run `chmod +x gradlew` and for the following commands use `./gradlew` instead of `gradlew.bat`
@@ -74,20 +74,20 @@ Of-course you can also use a Gradle installation if you for some reason want ano
 ```
 gradlew.bat setupDecompWorkspace
 ```
-Import KAMI into your IDE of choice. 
+Import NutGod into your IDE of choice. 
 
 If you use IntelliJ, import from the `build.gradle` file and run `gradlew.bat genIntellijRuns`
 
 If you use Eclipse run `gradlew.bat eclipse`
 
-If you do not wish to run from an IDE, use `gradlew.bat runClient` to run KAMI.
+If you do not wish to run from an IDE, use `gradlew.bat runClient` to run NutGod.
 
 ### Building
 #### Linux
 You can build by running these commands (without the <>) in a terminal.
 ```
-git clone https://github.com/zeroeightysix/KAMI/
-cd KAMI
+git clone https://github.com/zeroeightysix/NutGod/
+cd NutGod
 
 chmod +x gradlew
 ./gradlew <args>
@@ -101,23 +101,23 @@ copy
 ```
 If you use more than one then it must be in that order. 
 
-Build is required, `mkdir` makes the `mods/1.12.2` directory, `rmOld` removes old versions of KAMI\* in that directory, and `copy` copies the build release to the `mods/1.12.2` directory. 
+Build is required, `mkdir` makes the `mods/1.12.2` directory, `rmOld` removes old versions of NutGod\* in that directory, and `copy` copies the build release to the `mods/1.12.2` directory. 
 
-\*`rmOld` removes any jars ending in `-release.jar`, which is the format KAMI uses. If you use any other mod that uses that naming scheme please remove old versions manually.
+\*`rmOld` removes any jars ending in `-release.jar`, which is the format NutGod uses. If you use any other mod that uses that naming scheme please remove old versions manually.
 
-If you prefer copying it manually, find a file in `build/libs` called `KAMI-<minecraftVersion>-<kamiVersion>-**release**.jar` which you can copy to the `mods/1.12.2` folder of a minecraft instance that has forge installed.
+If you prefer copying it manually, find a file in `build/libs` called `NutGod-<minecraftVersion>-<NutGodVersion>-**release**.jar` which you can copy to the `mods/1.12.2` folder of a minecraft instance that has forge installed.
 
 Note: This assumes your minecraft folder is in the default location under your home folder.
 
 #### Windows
-You can build by running these commands in a terminal with the current directory being KAMI. (EG. `cd C:\Users\Username\Downloads\KAMI`)
+You can build by running these commands in a terminal with the current directory being NutGod. (EG. `cd C:\Users\Username\Downloads\NutGod`)
 ```
 gradlew.bat build
 ```
 
 To copy on windows run `autocopy.bat`
 
-If you prefer copying it manually, find a file in `build/libs` called `KAMI-<minecraftVersion>-<kamiVersion>-**release**.jar` which you can copy to the `mods\1.12.2` folder of a minecraft instance that has forge installed.
+If you prefer copying it manually, find a file in `build/libs` called `NutGod-<minecraftVersion>-<NutGod>-**release**.jar` which you can copy to the `mods\1.12.2` folder of a minecraft instance that has forge installed.
 
 Note: This assumes your minecraft folder is in the default location under your %appdata% folder.
 

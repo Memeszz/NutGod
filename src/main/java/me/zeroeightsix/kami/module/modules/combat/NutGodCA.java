@@ -39,8 +39,8 @@ import static me.zeroeightsix.kami.util.EntityUtil.calculateLookAt;
 /**
  * Strong fucking CA
  */
-@Module.Info(name = "NutGod Place", category = Module.Category.COMBAT)
-public class CrystalAura extends Module {
+@Module.Info(name = "NutGodCA", category = Module.Category.COMBAT)
+public class NutGodCA extends Module {
 
     private Setting<Boolean> autoSwitch = register(Settings.b("Auto Switch"));
     private Setting<Boolean> players = register(Settings.b("Players"));

@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.List;
 
-import static me.zeroeightsix.kami.module.modules.combat.CrystalAura.getPlayerPos;
+import static me.zeroeightsix.kami.module.modules.combat.NutGodCA.getPlayerPos;
 
 /**
  * Created 28 November 2019 by hub
