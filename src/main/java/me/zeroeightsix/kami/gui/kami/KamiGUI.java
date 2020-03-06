@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 /**
  * Created by 086 on 25/06/2017*/
 public class KamiGUI extends GUI {
-
     public static RootFontRenderer fontRenderer = new RootFontRenderer(1);
     public static CFontRenderer cFontRenderer;
     public Theme theme;
