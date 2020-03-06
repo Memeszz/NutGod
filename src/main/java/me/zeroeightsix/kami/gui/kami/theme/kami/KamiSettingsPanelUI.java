@@ -27,7 +27,7 @@ public class KamiSettingsPanelUI extends AbstractComponentUI<SettingsPanel> {
         float green = 2f / 255f;
         float blue = 237f / 255f;
         glLineWidth(2f);
-        glColor4f(red,green,blue,.8f);
+        glColor4f(red,green,blue,.80f);
         RenderHelper.drawFilledRectangle(0,0,component.getWidth(),component.getHeight());
         glColor3f(255,255,255);
         glLineWidth(1.5f);

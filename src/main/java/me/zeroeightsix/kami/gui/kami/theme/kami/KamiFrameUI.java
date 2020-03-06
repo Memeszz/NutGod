@@ -49,7 +49,7 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
 
         glColor4f(red,green,blue,.5f);
         RenderHelper.drawFilledRectangle(0,0,100,component.getHeight());
-        glColor4f(0.1f,0.1f,0.1f,.45f);
+        glColor4f(0.1f,0.1f,0.1f,.85f);
         RenderHelper.drawFilledRectangle(0,0,100,12);
         GL11.glColor3f(1,1,1);
         glLineWidth(2f);

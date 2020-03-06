@@ -237,9 +237,13 @@ public class NutGodCA extends Module {
     @Override
     public void onWorldRender(RenderEvent event) {
         if (render != null) {
-            KamiTessellator.prepare(GL11.GL_QUADS);
-            KamiTessellator.drawBox(render, 0x65BF06E6, GeometryMasks.Quad.ALL);
+            KamiTessellator.prepare(7);
+            KamiTessellator.drawBox(this.render, 255, 0, 255, 83, 63);
             KamiTessellator.release();
+            KamiTessellator.prepare(7);
+            KamiTessellator.drawBoundingBoxBlockPos(this.render, 1.05F, 255, 255, 255, 244);
+            KamiTessellator.release();
+
             if (renderEnt != null) {
                 Vec3d p = EntityUtil.getInterpolatedRenderPos(renderEnt, mc.getRenderPartialTicks());
             }

@@ -4,6 +4,7 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.gui.kami.component.*;
+import me.zeroeightsix.kami.gui.kami.component.ActiveModules.*;
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiTheme;
 import me.zeroeightsix.kami.gui.rgui.GUI;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
@@ -18,10 +19,12 @@ import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
+import me.zeroeightsix.kami.module.ModuleManager.*;
 import me.zeroeightsix.kami.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import me.zeroeightsix.kami.util.Wrapper.*;
 import net.minecraft.entity.item.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityEgg;
@@ -344,7 +347,8 @@ public class KamiGUI extends GUI {
         Slider gArrayListColour = new Slider(arrayColour[1], 0, 255, 1, "Green ArrayList", true);
         Slider bArrayListColour = new Slider(arrayColour[2], 0, 255, 1, "Blue ArrayList", true);
         ColorizedCheckButton RB = new ColorizedCheckButton("Rainbow ArrayList");
-        {
+{
+
 
         }
         RB.addTickListener(() -> {
@@ -361,6 +365,7 @@ public class KamiGUI extends GUI {
         frame.addChild(RB);
         information.setFontRenderer(fontRenderer);
         frames.add(frame);
+
 
 
 
