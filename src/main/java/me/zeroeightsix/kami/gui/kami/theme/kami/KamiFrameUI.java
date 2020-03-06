@@ -26,8 +26,11 @@ import static org.lwjgl.opengl.GL11.*;
  */
 
 // Modify by Rina in 05/03/20.
-public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
+// Modfify again by Rina in 06/03/20.
 
+import me.zeroeightsix.kami.util.TurokGL;
+
+public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
     ColourHolder frameColour = KamiGUI.primaryColour.setA(100);
     ColourHolder outlineColour = frameColour.darker();
 
@@ -40,32 +43,22 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
     int xLineOffset = 0;
 
     private static final RootFontRenderer ff = new RootLargeFontRenderer();
+
     @Override
     public void renderComponent(Frame component, FontRenderer fontRenderer) {
-        float red = 128f / 255f;
-        float green = 2f / 255f;
-        float blue = 128f / 255f;
+        // Ok.
+        // Dont use opengl, use the RenderHelper for widgets.
+
         if (component.getOpacity() == 0)
             return;
-        glDisable(GL_TEXTURE_2D);
 
-        glColor4f(red,green,blue,.4f);
-        RenderHelper.drawFilledRectangle(0,0,130,component.getHeight());
-        glColor4f(0.0f,0.0f,0.0f,1.0f);
-        RenderHelper.drawFilledRectangle(0,0,130,12);
-        GL11.glColor3f(1,1,1);
-        glLineWidth(2f);
-        glBegin(GL_LINE_LOOP);
-        {
-            glVertex2d(0, 12);
-            glVertex2d(130, 12);
-        }
-        glEnd();
-        RenderHelper.drawRectangle(0,0,130,component.getHeight());
-        glColor4f(1f,1f,1f,1f);
-//penis
-        GL11.glColor3f(1,1,1);
-        ff.drawString(4, 1, component.getTitle());
+        TurokGL.turok_Disable(GL_TEXTURE_2D);
+
+        TurokGL.turok_RGBA(128, 2, 128, 150);
+        RenderHelper.drawFilledRectangle(0, 0, component.getWidth(), component.getHeight());
+
+        TurokGL.turok_RGBA(0, 0, 0, 255);
+        RenderHelper.drawFilledRectangle(0, 0, component.getWidth(), ff.getStringHeight(component.getTitle()) + 2);
 
         int top_y = 5;
         int bottom_y = component.getTheme().getFontRenderer().getFontHeight() - 9;
@@ -75,108 +68,30 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
             bottom_y -= 4;
         }
 
-        if (component.isCloseable()){
-            glLineWidth(2f);
-            glColor3f(1,1,1);
-            glBegin(GL_LINES);
-            {
-                glVertex2d(130 - 20, top_y);
-                glVertex2d(130 - 10, bottom_y);
-                glVertex2d(130 - 10, top_y);
-                glVertex2d(130 - 20, bottom_y);
-            }
-            glEnd();
-        }
-
         if (component.isCloseable() && component.isMinimizeable()){
             top_y += 12;
             bottom_y += 12;
         }
 
-        if (component.isMinimizeable()){
-            glLineWidth(1.5f);
-            glColor3f(1,1,1);
-            if (component.isMinimized()){
-                glBegin(GL_LINE_LOOP);
-                {
-                    glVertex2d(130 - 15, top_y+2);
-                    glVertex2d(130 - 15, bottom_y+3);
-                    glVertex2d(130 - 10, bottom_y+3);
-                    glVertex2d(130 - 10, top_y+2);
-                }
-                glEnd();
-            } else {
-                glBegin(GL_LINES);
-                {
-                    glVertex2d(130 - 15, bottom_y+4);
-                    glVertex2d(130 - 10, bottom_y+4);
-                }
-                glEnd();
-            }
-        }
-
         if (component.isPinneable()){
-            if (component.isPinned())
-                glColor3f(1,.33f,.33f);
-            else
-                glColor3f(0.66f,0.66f,0.66f);
-            RenderHelper.drawCircle(7,4,2f);
-            glLineWidth(3f);
-            glBegin(GL_LINES);
-            {
-                glVertex2d(7,4);
-                glVertex2d(4,8);
+            if (component.isPinned()) {
+               TurokGL.turok_RGBA(128, 2, 128, 150);
+            } else {
+                TurokGL.turok_RGBA(0, 0, 0, 255);
             }
-            glEnd();
+
+            RenderHelper.drawFilledRectangle(0, 0, component.getWidth(), ff.getStringHeight(component.getTitle()) + 2);
+            
+            TurokGL.turok_RGBA(255, 255, 255, 255);
+            ff.drawString(1, 1, component.getTitle());
+        
+        } else {
+            TurokGL.turok_RGBA(255, 255, 255, 255);
+            ff.drawString(1, 1, component.getTitle());
         }
 
-        if (component.equals(xLineComponent)){
-            glColor3f(.44f,.44f,.44f);
-            glLineWidth(1f);
-            glBegin(GL_LINES);
-            {
-                glVertex2d(xLineOffset,-GUI.calculateRealPosition(component)[1]);
-                glVertex2d(xLineOffset, Wrapper.getMinecraft().displayHeight);
-            }
-            glEnd();
-        }
-
-        if (component == centerXComponent && centerX) {
-            glColor3f(0.86f, 0.03f, 1f);
-            glLineWidth(1f);
-            glBegin(GL_LINES);
-            {
-                double x = 130 / 2;
-                glVertex2d(x, -GUI.calculateRealPosition(component)[1]);
-                glVertex2d(x, Wrapper.getMinecraft().displayHeight);
-            }
-            glEnd();
-        }
-
-        if (component.equals(yLineComponent)){
-            glColor3f(.44f,.44f,.44f);
-            glLineWidth(1f);
-            glBegin(GL_LINES);
-            {
-                glVertex2d(-GUI.calculateRealPosition(component)[0],0);
-                glVertex2d(Wrapper.getMinecraft().displayWidth, 0);
-            }
-            glEnd();
-        }
-
-        if (component == centerYComponent && centerY) {
-            glColor3f(0.86f, 0.03f, 1f);
-            glLineWidth(1f);
-            glBegin(GL_LINES);
-            {
-                double y = component.getHeight() / 2;
-                glVertex2d(-GUI.calculateRealPosition(component)[0], y);
-                glVertex2d(Wrapper.getMinecraft().displayWidth, y);
-            }
-            glEnd();
-        }
-
-        glDisable(GL_BLEND);
+        // I removed somethings. Dont worry.
+        TurokGL.turok_FixGL("For fix OpenGL refresh Minecraft");
     }
 
     @Override
@@ -203,9 +118,10 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
             public void onMouseDown(MouseButtonEvent event) {
                 int y = event.getY();
                 int x = event.getX();
+
                 if (y < 0){
-                    if (x > 130 - 22){
-                        if (component.isMinimizeable() && component.isCloseable()){
+                    if (x > component.getWidth() - 22){
+                        if (component.isMinimizeable() && component.isCloseable()) {
                             if (y > -component.getOriginOffsetY()/2){
                                 if (component.isMinimized()){
                                     component.callPoof(FramePoof.class, new FramePoof.FramePoofInfo(FramePoof.Action.MAXIMIZE));
@@ -225,7 +141,7 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
                             }
                         }
                     }
-                    if (x < 10 && x > 0){
+                    if (x < component.getWidth() - 22 && x > component.getWidth() - ff.getStringWidth(component.getTitle()) - 22) {
                         if (component.isPinneable()){
                             component.setPinned(!component.isPinned());
                         }

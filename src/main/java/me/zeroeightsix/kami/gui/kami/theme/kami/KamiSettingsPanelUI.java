@@ -11,27 +11,21 @@ import static org.lwjgl.opengl.GL11.*;
 /**
  * Created by 086 on 16/12/2017.
  */
+
+// Modify by Rina in 06/03/20.
+
+import me.zeroeightsix.kami.util.TurokGL;
+
 public class KamiSettingsPanelUI extends AbstractComponentUI<SettingsPanel> {
 
     @Override
     public void renderComponent(SettingsPanel component, FontRenderer fontRenderer) {
         super.renderComponent(component, fontRenderer);
-//        glLineWidth(2);
-//        glColor3f(.59f,.05f,.11f);
-//        glBegin(GL_LINES);
-//        {
-//            glVertex2d(0,component.getHeight());
-//            glVertex2d(component.getWidth(),component.getHeight());
-//        }
-//        glEnd();
-        float red = 238f / 255f;
-        float green = 130f / 255f;
-        float blue = 238f / 255f;
-        glLineWidth(2f);
-        glColor4f(red,green,blue,.60f);
-        RenderHelper.drawFilledRectangle(0,0,component.getWidth(),component.getHeight());
-        GL11.glColor3f(1,1,1);
-        glLineWidth(1.5f);
-        RenderHelper.drawRectangle(0,0,component.getWidth(),component.getHeight());
+        
+        TurokGL.turok_RGBA(128, 2, 128, 150);
+        RenderHelper.drawFilledRectangle(0, 0, component.getWidth(), component.getHeight());
+
+        TurokGL.turok_RGBA(0, 0, 0, 255);
+        RenderHelper.drawRectangle(0, 0, component.getWidth(), component.getHeight());
     }
 }

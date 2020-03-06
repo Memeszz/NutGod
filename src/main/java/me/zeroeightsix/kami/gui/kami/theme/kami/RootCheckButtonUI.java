@@ -13,6 +13,11 @@ import static org.lwjgl.opengl.GL11.*;
 /**
  * Created by 086 on 4/08/2017.
  */
+
+// Modify by Rina in 06/03/20.
+
+import me.zeroeightsix.kami.util.TurokGL;
+
 public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentUI<CheckButton> {
 
     protected Color backgroundColour = new Color(200, 56, 56);
@@ -26,28 +31,27 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
 
     @Override
     public void renderComponent(CheckButton component, FontRenderer ff) {
-
-        glColor4f(backgroundColour.getRed()/255f, backgroundColour.getGreen()/255f, backgroundColour.getBlue()/255f, component.getOpacity());
+        TurokGL.turok_RGBA(backgroundColour.getRed(), backgroundColour.getGreen(), backgroundColour.getBlue(), component.getOpacity());
         if (component.isToggled()){
-            glColor3f(.9f, backgroundColour.getGreen()/255f, backgroundColour.getBlue()/255f);
+            TurokGL.turok_RGB(250, backgroundColour.getGreen(), backgroundColour.getBlue());
         }
+        
         if (component.isHovered() || component.isPressed()){
-            glColor4f(backgroundColourHover.getRed()/255f, backgroundColourHover.getGreen()/255f, backgroundColourHover.getBlue()/255f, component.getOpacity());
+            TurokGL.turok_RGBA(backgroundColourHover.getRed(), backgroundColourHover.getGreen(), backgroundColourHover.getBlue(), component.getOpacity());
         }
 
         String text = component.getName();
         int c = component.isPressed() ? 0x3300ff : component.isToggled() ? 0x34eb92 : 0xffffff;
 
-        glColor3f(1,1,1);
-        glEnable(GL_TEXTURE_2D);
+        TurokGL.turok_RGB(255, 255, 255);
         KamiGUI.fontRenderer.drawString(1, KamiGUI.fontRenderer.getFontHeight()/2-2, c, text);
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
+        
+        TurokGL.turok_FixGL("Fixing...");
     }
 
     @Override
     public void handleAddComponent(CheckButton component, Container container) {
         component.setWidth(KamiGUI.fontRenderer.getStringWidth(component.getName()) + 28);
-        component.setHeight(KamiGUI.fontRenderer.getFontHeight()+2);
+        component.setHeight(KamiGUI.fontRenderer.getFontHeight() + 2);
     }
 }

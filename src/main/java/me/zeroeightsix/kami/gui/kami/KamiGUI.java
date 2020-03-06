@@ -72,7 +72,7 @@ public class KamiGUI extends GUI {
                 Stretcherlayout stretcherlayout = new Stretcherlayout(1);
                 stretcherlayout.setComponentOffsetWidth(0);
                 Scrollpane scrollpane = new Scrollpane(getTheme(), stretcherlayout, 300, 260);
-                scrollpane.setMaximumHeight(180);
+                scrollpane.setMaximumHeight(300);
                 categoryScrollpaneHashMap.put(moduleCategory, new Pair<>(scrollpane, new SettingsPanel(getTheme(), null)));
             }
 
@@ -201,29 +201,13 @@ public class KamiGUI extends GUI {
         frame.setPinneable(true);
         frames.add(frame);
 
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Info");
-        frame.setCloseable(false);
-        frame.setPinneable(true);
-        Label information = new Label("");
-        information.setShadow(true);
-        information.addTickListener(() -> {
-            information.setText("");
-            information.addLine("\u00A7d" + KamiMod.KAMI_KANJI + "\u00A73 " + KamiMod.MODVER);
-            information.addLine("\u00A7d" + Math.round(LagCompensator.INSTANCE.getTickRate()) + Command.SECTIONSIGN() + "3 tps");
-            information.addLine("\u00A7d" + Wrapper.getMinecraft().debugFPS + Command.SECTIONSIGN() + "3 fps");
-
-//            information.addLine("[&3" + Sprint.getSpeed() + "km/h&r]");
-
-        });
-        // frame.addChild(information);
-        // frames.add(frame);
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "\u00A7dPvP Info");
+        frame = new Frame(getTheme(), new Stretcherlayout(1), "\u00A7dPvPInfo");
         frame.setCloseable(false);
         frame.setPinneable(true);
         Label te = new Label("");
         te.setShadow(true);
         te.addTickListener(() -> {
-            te.setText("");
+            te.setText("u00A7dPvP Counts");
             int totemCount=0;
             int XPCount=0;
             int gapCount=0;
@@ -260,17 +244,21 @@ public class KamiGUI extends GUI {
         frame.addChild(te);
         te.setFontRenderer(fontRenderer);
         frames.add(frame);
+
         frame = new Frame(getTheme(), new Stretcherlayout(1), "\u00A7dWatermark");
         frame.setCloseable(false);
         frame.setPinneable(true);
+
         Label watermark = new Label("");
         watermark.setShadow(true);
         watermark.addTickListener(() -> {
-            watermark.setText("NutGod B4 ");
+            watermark.setText("\u00A7dNutGod B4 ");
+            watermark.addLine(ChatFormatting.BLUE + "Turok Is Your Totem!");
         });
         frame.addChild(watermark);
         watermark.setFontRenderer(fontRenderer);
         frames.add(frame);
+
         frame = new Frame(getTheme(), new Stretcherlayout(1), "\u00A7dText Radar");
         Label list = new Label("");
         DecimalFormat dfHealth = new DecimalFormat("#.#");
