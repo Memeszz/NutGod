@@ -40,16 +40,16 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
     private static final RootFontRenderer ff = new RootLargeFontRenderer();
     @Override
     public void renderComponent(Frame component, FontRenderer fontRenderer) {
-        float red = 139f / 255f;
-        float green = 2f / 255f;
-        float blue = 237f / 255f;
+        float red = 30f / 255f;
+        float green = 30f / 255f;
+        float blue = 30f / 255f;
         if (component.getOpacity() == 0)
             return;
         glDisable(GL_TEXTURE_2D);
 
-        glColor4f(red,green,blue,.5f);
+        glColor4f(red,green,blue,.7f);
         RenderHelper.drawFilledRectangle(0,0,100,component.getHeight());
-        glColor4f(0.1f,0.1f,0.1f,.85f);
+        glColor4f(0.4f,0.2f,0.7f,.85f);
         RenderHelper.drawFilledRectangle(0,0,100,12);
         GL11.glColor3f(1,1,1);
         glLineWidth(2f);

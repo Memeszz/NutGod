@@ -89,7 +89,7 @@ public class HoleFiller extends Module {
             KamiTessellator.drawBox(render, 0x30FF0000, GeometryMasks.Quad.ALL);
             KamiTessellator.release();
             KamiTessellator.prepare(GL11.GL_QUADS);
-            KamiTessellator.drawBoundingBoxBlockPos(render, 1f, 255, 0, 0, 170);
+            KamiTessellator.drawBoundingBoxBlockPos(render, 1f, 0, 255, 0, 170);
             KamiTessellator.release();
         }
     }

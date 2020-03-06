@@ -14,6 +14,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
@@ -24,6 +25,7 @@ import java.util.Iterator;
 /**
  * Created by 086 on 12/12/2017.
  * Updated by hub on 31 October 2019
+ * Updated by Memeszz 6/3/2020
  */
 @Module.Info(name = "Aura", category = Module.Category.COMBAT, description = "Hits entities around you")
 public class Aura extends Module {
@@ -31,15 +33,22 @@ public class Aura extends Module {
     private Setting<Boolean> attackPlayers = register(Settings.b("Players", true));
     private Setting<Boolean> attackMobs = register(Settings.b("Mobs", false));
     private Setting<Boolean> attackAnimals = register(Settings.b("Animals", false));
+    private Setting<Boolean> swordOnly = register(Settings.b("SwordOnly", false));
+    private Setting<Boolean> Criticals = register(Settings.b("Criticals", false));
     private Setting<Double> hitRange = register(Settings.d("Hit Range", 5.5d));
     private Setting<Boolean> ignoreWalls = register(Settings.b("Ignore Walls", true));
     private Setting<WaitMode> waitMode = register(Settings.e("Mode", WaitMode.DYNAMIC));
     private Setting<Integer> waitTick = register(Settings.integerBuilder("Tick Delay").withMinimum(0).withValue(3).withVisibility(o -> waitMode.getValue().equals(WaitMode.STATIC)).build());
-    private Setting<Boolean> switchTo32k = register(Settings.b("32k Switch", true));
-    private Setting<Boolean> onlyUse32k = register(Settings.b("32k Only", false));
 
     private int waitCounter;
-
+    @Override
+    public void onEnable() {
+        if (Criticals.getValue()) {
+            ModuleManager.getModuleByName("Criticals").disable();
+        } else {
+            return;
+        }
+    }
     @Override
     public void onUpdate() {
 
@@ -47,10 +56,7 @@ public class Aura extends Module {
             return;
         }
 
-        boolean shield = mc.player.getHeldItemOffhand().getItem().equals(Items.SHIELD) && mc.player.getActiveHand() == EnumHand.OFF_HAND;
-        if (mc.player.isHandActive() && !shield) {
-            return;
-        }
+
 
         if (waitMode.getValue().equals(WaitMode.DYNAMIC)) {
             if (mc.player.getCooledAttackStrength(getLagComp()) < 1) {
@@ -81,6 +87,7 @@ public class Aura extends Module {
             if (mc.player.getDistance(target) > hitRange.getValue()) {
                 continue;
             }
+
             if (((EntityLivingBase) target).getHealth() <= 0) {
                 continue;
             }
@@ -98,12 +105,13 @@ public class Aura extends Module {
                     // We want to skip this if switchTo32k.getValue() is true,
                     // because it only accounts for tools and weapons.
                     // Maybe someone could refactor this later? :3
-                    if (!switchTo32k.getValue() && ModuleManager.isModuleEnabled("AutoTool")) {
+                    {
                         AutoTool.equipBestWeapon();
                     }
                     attack(target);
                     return;
                 }
+
             }
         }
 
@@ -147,8 +155,9 @@ public class Aura extends Module {
         if (checkSharpness(mc.player.getHeldItemMainhand())) {
             holding32k = true;
         }
-
-        if (switchTo32k.getValue() && !holding32k) {
+            if(swordOnly.getValue())
+                if(!(mc.player.getHeldItemMainhand().getItem() instanceof ItemSword)) return;
+ {
 
             int newSlot = -1;
 
@@ -170,9 +179,6 @@ public class Aura extends Module {
 
         }
 
-        if (onlyUse32k.getValue() && !holding32k) {
-            return;
-        }
 
         mc.playerController.attackEntity(mc.player, e);
         mc.player.swingArm(EnumHand.MAIN_HAND);
