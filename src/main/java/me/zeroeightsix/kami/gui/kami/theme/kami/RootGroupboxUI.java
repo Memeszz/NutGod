@@ -13,9 +13,9 @@ public class RootGroupboxUI extends AbstractComponentUI<Groupbox> {
 
     @Override
     public void renderComponent(Groupbox component, FontRenderer fontRenderer) {
-        float red = 69f / 255f;
+        float red = 139f / 255f;
         float green = 2f / 255f;
-        float blue = 148f / 255f;
+        float blue = 237f / 255f;
         GL11.glLineWidth(1f);
         fontRenderer.drawString(1,1,component.getName());
 

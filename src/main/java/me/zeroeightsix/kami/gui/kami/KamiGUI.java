@@ -44,7 +44,6 @@ import java.util.stream.Collectors;
 /**
  * Created by 086 on 25/06/2017.
  * Welcomer update by Hamburger on 14/01/2020
- * sorry for skid );
  */
 public class KamiGUI extends GUI {
 
@@ -324,25 +323,17 @@ public class KamiGUI extends GUI {
 
 
 
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Welcomer");
-        frame.setCloseable(false);
-        frame.setPinneable(true);
-        Label nameinfo = new Label("");
-        nameinfo.setShadow(true);
-        nameinfo.addTickListener(() -> {
-            nameinfo.setText("");
-            nameinfo.addLine("Welcome, " + Minecraft.getMinecraft().getSession().getUsername() + " :)");
-        });
-        frame.addChild(nameinfo);
-        frames.add(frame);
+
+
 
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Watermark");
         frame.setCloseable(false);
         frame.setPinneable(true);
-        Label watermark = new Label("NutGod");
+        frame.setMinimumWidth(75);
+        Label watermark = new Label("NutGod B4.1");
+        watermark.setX((frame.getWidth() / 2));
         watermark.setShadow(true);
         frame.addChild(watermark);
-        information.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         frame = new Frame(getTheme(), new Stretcherlayout(1), "GUI");
@@ -371,20 +362,8 @@ public class KamiGUI extends GUI {
         information.setFontRenderer(fontRenderer);
         frames.add(frame);
 
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Clock");
-        frame.setCloseable(false);
-        frame.setMinimizeable(false);
-        frame.setPinneable(true);
-        Label clock = new Label("");
-        clock.setShadow(true);
-        clock.addTickListener(() -> {
-            clock.setText(DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()));
-        });
-        frame.addChild(clock);
-        clock.setFontRenderer(fontRenderer);
-        frames.add(frame);
 
-     
+
 
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Text Radar");
         Label list = new Label("");
@@ -446,7 +425,7 @@ public class KamiGUI extends GUI {
         list.setFontRenderer(fontRenderer);
         frames.add(frame);
 
-      //  frame = new Frame(getTheme(), new Stretcherlayout(1), "Entities");
+        frame = new Frame(getTheme(), new Stretcherlayout(1), "Entities");
         Label entityLabel = new Label("");
         frame.setCloseable(false);
         entityLabel.addTickListener(new TickListener() {
@@ -481,11 +460,11 @@ public class KamiGUI extends GUI {
                 //entityLabel.getParent().setHeight(entityLabel.getLines().length * (entityLabel.getTheme().getFontRenderer().getFontHeight()+1) + 3);
             }
         });
-//   frame.addChild(entityLabel);
-//   frame.setPinneable(true);
-//   entityLabel.setShadow(true);
-//   entityLabel.setFontRenderer(fontRenderer);
-   //     frames.add(frame);
+        frame.addChild(entityLabel);
+        frame.setPinneable(true);
+        entityLabel.setShadow(true);
+        entityLabel.setFontRenderer(fontRenderer);
+        frames.add(frame);
 
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Coordinates");
         frame.setCloseable(false);
@@ -534,14 +513,14 @@ public class KamiGUI extends GUI {
         frame.setHeight(20);
         frames.add(frame);
 
-       // frame = new Frame(getTheme(), new Stretcherlayout(1), "Radar");
-        //frame.setCloseable(false);
-       // frame.setMinimizeable(true);
-       // frame.setPinneable(true);
-       // frame.addChild(new Radar());
-        //frame.setWidth(100);
-       // frame.setHeight(100);
-       // frames.add(frame);
+        frame = new Frame(getTheme(), new Stretcherlayout(1), "Radar");
+        frame.setCloseable(false);
+        frame.setMinimizeable(true);
+        frame.setPinneable(true);
+        frame.addChild(new Radar());
+        frame.setWidth(100);
+        frame.setHeight(100);
+        frames.add(frame);
 
         for (Frame frame1 : frames) {
             frame1.setX(x);

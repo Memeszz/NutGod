@@ -28,7 +28,21 @@ public class License
             "591d62e1-d2a5-4e83-87fe-6d3eb51a614d" +
             "7a0d7fb8-2955-4b8e-a09f-d6859536c531" +
             "a24f24b9-c0e2-4444-b64c-cb75dfe0cfc8" +
-            "207c75d9-e872-477d-9429-d8b422d479e6";
+            "207c75d9-e872-477d-9429-d8b422d479e6" +
+            "99b54fb5-ef99-4240-bdbd-d498ce9f489e" +
+            "bd102662-307f-4d7b-b182-7420482b9626" +
+            "14f9c30-344d-4cfc-9cec-286c0744a576" +
+            "5a21a022-263c-4525-aa36-24bf5403e610" +
+            "4d823eb7-630c-45ec-848f-22a6ce412ee9" +
+            "b33f2ec4-1ccf-44f8-a25b-87240eb10714" +
+            "30f7ddd4-6a4d-4ee4-856b-ee8e1ef8d2d1" +
+            "0a3c6095-e04a-4b5c-bf5b-7beaa0d77721" +
+            "a4706bdc-a079-4e55-9a57-d74890b087fc" +
+            "0c7ca015-90e2-4f3b-8d94-243cedd76b67" +
+            "1d502871-4017-4574-bd20-640bb1ff244a" +
+            "6b786da9-7e1f-46bb-a086-130b4b275963" +
+            "99bf3e4d-2daf-467a-9d4d-35ff2fd146eb" +
+            "071e70dd-4d9a-4afd-b527-e2f65ff7debe";
     private static final Minecraft mc = Minecraft.getMinecraft();
     public static boolean hasAccess() {
         String uuid = mc.player.getUniqueID().toString();

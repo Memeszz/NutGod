@@ -18,9 +18,9 @@ public class RootSliderUI extends AbstractComponentUI<Slider> {
 
     @Override
     public void renderComponent(Slider component, FontRenderer aa) {
-        float red = 255f / 255f;
-        float green = 255f / 255f;
-        float blue = 255f / 255f;
+        float red = 139f / 255f;
+        float green = 2f / 255f;
+        float blue = 237f / 255f;
         glColor4f(red,green,blue,component.getOpacity());
         glLineWidth(2.5f);
         int height = component.getHeight();

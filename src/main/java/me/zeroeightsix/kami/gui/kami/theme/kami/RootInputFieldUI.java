@@ -14,15 +14,15 @@ public class RootInputFieldUI<T extends InputField> extends AbstractComponentUI<
 
     @Override
     public void renderComponent(InputField component, FontRenderer fontRenderer) {
-        float red = 69f / 255f;
+        float red = 139f / 255f;
         float green = 2f / 255f;
-        float blue = 148f / 255f;
+        float blue = 237f / 255f;
 //        glColor3f(1,0.22f,0.22f);
 //        RenderHelper.drawOutlinedRoundedRectangle(0,0,100,component.getHeight(),6f);
         GL11.glColor3f(red,green,blue);
         RenderHelper.drawFilledRectangle(0,0,100,component.getHeight());
         GL11.glLineWidth(1.5f);
-        GL11.glColor4f(red,green,blue,0.9f);
+        GL11.glColor4f(red,green,blue,0.6f);
         RenderHelper.drawRectangle(0,0,100,component.getHeight());
     }
 
