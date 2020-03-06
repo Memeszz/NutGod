@@ -24,6 +24,8 @@ import static org.lwjgl.opengl.GL11.*;
 /**
  * Created by 086 on 26/06/2017.
  */
+
+// Modify by Rina in 05/03/20.
 public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
 
     ColourHolder frameColour = KamiGUI.primaryColour.setA(100);
