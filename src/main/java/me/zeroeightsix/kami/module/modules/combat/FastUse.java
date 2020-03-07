@@ -38,6 +38,7 @@ public class FastUse extends Module {
             if (this.blocks.getValue().booleanValue()) {
                 FastUse.mc.rightClickDelayTimer = 0;
             }
+        } else if (FastUse.mc.player.getHeldItemMainhand().getItem() instanceof ItemBow) {
             if (this.bow.getValue().booleanValue()) {
                 Minecraft mc = Minecraft.getMinecraft();
                 if (mc.player.getHeldItemMainhand().getItem() instanceof ItemBow && mc.player.isHandActive() && mc.player.getItemInUseMaxCount() >= 3) {

@@ -34,6 +34,7 @@ public class Aura extends Module {
     private Setting<Boolean> attackMobs = register(Settings.b("Mobs", false));
     private Setting<Boolean> attackAnimals = register(Settings.b("Animals", false));
     private Setting<Boolean> swordOnly = register(Settings.b("SwordOnly", false));
+    private Setting<Boolean> cacheck = register(Settings.b("CADisable", false));
     private Setting<Boolean> Criticals = register(Settings.b("Criticals", false));
     private Setting<Double> hitRange = register(Settings.d("Hit Range", 5.5d));
     private Setting<Boolean> ignoreWalls = register(Settings.b("Ignore Walls", true));
@@ -166,6 +167,8 @@ public class Aura extends Module {
             if(swordOnly.getValue())
                 if(!(mc.player.getHeldItemMainhand().getItem() instanceof ItemSword)) return;
  {
+     if(cacheck.getValue())
+         if(((NutGodCA)ModuleManager.getModuleByName("NutGodCA")).isEnabled()) return;
 
             int newSlot = -1;
 

@@ -54,8 +54,8 @@ public class NutGodCA extends Module {
     private Setting<Boolean> antiWeakness = register(Settings.b("Anti Weakness", false));
     private Setting<Boolean> slow = register(Settings.b("Single Place", false));
     private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
-    private Setting<Boolean> raytrace = register(Settings.b("RayTrace", false));
-    private Setting<Double> HitDelay = register(Settings.d("Hit Delay", 1.0));
+    private Setting<Boolean> raytrace = register(Settings.b("RayTrace", true));
+
 
     private BlockPos render;
     private Entity renderEnt;
@@ -70,27 +70,33 @@ public class NutGodCA extends Module {
 
     @Override
     public void onUpdate() {
-        EntityEnderCrystal crystal = (EntityEnderCrystal) mc.world.loadedEntityList.stream().filter(entity -> entity instanceof EntityEnderCrystal).map(entity -> entity).min(Comparator.comparing(d -> mc.player.getDistance(d))).orElse(null);
+        EntityEnderCrystal crystal = mc.world.loadedEntityList.stream()
+                .filter(entity -> entity instanceof EntityEnderCrystal)
+                .map(entity -> (EntityEnderCrystal) entity)
+                .min(Comparator.comparing(c -> mc.player.getDistance(c)))
+                .orElse(null);
         if (explode.getValue() && crystal != null && mc.player.getDistance(crystal) <= range.getValue()) {
-            if (System.nanoTime() / 1000000L - systemTime >= HitDelay.getValue()) {
+            if (true) {//fuck you dont laugh i havnt eatan protien in 3 days
                 if (antiWeakness.getValue() && mc.player.isPotionActive(MobEffects.WEAKNESS)) {
                     if (!isAttacking) {
-                        oldSlot  = Wrapper.getPlayer().inventory.currentItem;
+                        // save initial player hand
+                        oldSlot = Wrapper.getPlayer().inventory.currentItem;
                         isAttacking = true;
                     }
-
+                    // search for sword and tools in hotbar
                     newSlot = -1;
-                    for (int i = 0; i < 9; ++i) {
+                    for (int i = 0; i < 9; i++) {
                         ItemStack stack = Wrapper.getPlayer().inventory.getStackInSlot(i);
-                        if (stack != ItemStack.EMPTY) {
-                            if (stack.getItem() instanceof ItemSword) {
-                                newSlot = i;
-                                break;
-                            }
-                            if (stack.getItem() instanceof ItemTool) {
-                                newSlot = i;
-                                break;
-                            }
+                        if (stack == ItemStack.EMPTY) {
+                            continue;
+                        }
+                        if ((stack.getItem() instanceof ItemSword)) {
+                            newSlot = i;
+                            break;
+                        }
+                        if ((stack.getItem() instanceof ItemTool)) {
+                            newSlot = i;
+                            break;
                         }
                     }
                     // check if any swords or tools were found
@@ -165,7 +171,7 @@ public class NutGodCA extends Module {
                 }
                 double d = calculateDamage(blockPos.x + .5, blockPos.y + 1, blockPos.z + .5, entity);
                 if(d < minDamage.getValue()) {
-                    continue;    
+                    continue;
                 }
                 if (d > damage) {
                     double self = calculateDamage(blockPos.x + .5, blockPos.y + 1, blockPos.z + .5, mc.player);
@@ -237,13 +243,9 @@ public class NutGodCA extends Module {
     @Override
     public void onWorldRender(RenderEvent event) {
         if (render != null) {
-            KamiTessellator.prepare(7);
-            KamiTessellator.drawBox(this.render, 255, 0, 255, 83, 63);
+            KamiTessellator.prepare(GL11.GL_QUADS);
+            KamiTessellator.drawBox(render, 0x65BF06E6, GeometryMasks.Quad.ALL);
             KamiTessellator.release();
-            KamiTessellator.prepare(7);
-            KamiTessellator.drawBoundingBoxBlockPos(this.render, 1.05F, 255, 255, 255, 244);
-            KamiTessellator.release();
-
             if (renderEnt != null) {
                 Vec3d p = EntityUtil.getInterpolatedRenderPos(renderEnt, mc.getRenderPartialTicks());
             }
@@ -374,7 +376,6 @@ public class NutGodCA extends Module {
             }
         }
     });
-
 
     @Override
     protected void onEnable() {
