@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.gui.kami;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.gui.font.CFontRenderer;
 import me.zeroeightsix.kami.gui.kami.component.*;
 import me.zeroeightsix.kami.gui.kami.component.ActiveModules.*;
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiTheme;
@@ -36,12 +37,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nonnull;
+import java.awt.*;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -49,8 +52,9 @@ import java.util.stream.Collectors;
  * Welcomer update by Hamburger on 14/01/2020
  */
 public class KamiGUI extends GUI {
+    public static final RootFontRenderer fontRenderer = new RootFontRenderer(1.0F);
+    public static CFontRenderer cFontRenderer = new CFontRenderer(new Font("Verdana", 0, 18), true, false);
 
-    public static final RootFontRenderer fontRenderer = new RootFontRenderer(1);
     public Theme theme;
 
     public static String selectedTheme;
@@ -333,7 +337,7 @@ public class KamiGUI extends GUI {
         frame.setCloseable(false);
         frame.setPinneable(true);
         frame.setMinimumWidth(75);
-        Label watermark = new Label("NutGod B4.1");
+        Label watermark = new Label("NutGod B4.3");
         watermark.setX((frame.getWidth() / 2));
         watermark.setShadow(true);
         frame.addChild(watermark);

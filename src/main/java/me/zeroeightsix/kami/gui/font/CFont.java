@@ -8,7 +8,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 public class CFont {
-	
+
 	private float imgSize = 512;
 	protected CharData[] charData = new CharData[256];
 	protected Font font;
@@ -17,14 +17,14 @@ public class CFont {
 	protected int fontHeight = -1;
 	protected int charOffset = 0;
 	protected DynamicTexture tex;
-	
+
 	public CFont(Font font, boolean antiAlias, boolean fractionalMetrics) {
 		this.font = font;
 		this.antiAlias = antiAlias;
 		this.fractionalMetrics = fractionalMetrics;
 		tex = setupTexture(font, antiAlias, fractionalMetrics, this.charData);
 	}
-	
+
 	protected DynamicTexture setupTexture(Font font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars) {
 		BufferedImage img = generateFontImage(font, antiAlias, fractionalMetrics, chars);
 		try {
@@ -34,7 +34,7 @@ public class CFont {
 		}
 		return null;
 	}
-	
+
 	protected BufferedImage generateFontImage(Font font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars) {
 		int imgSize = (int) this.imgSize;
 		BufferedImage bufferedImage = new BufferedImage(imgSize, imgSize, BufferedImage.TYPE_INT_ARGB);
@@ -75,7 +75,7 @@ public class CFont {
 		}
 		return bufferedImage;
 	}
-	
+
 	public void drawChar(CharData[] chars, char c, float x, float y) throws ArrayIndexOutOfBoundsException {
 		try {
 			drawQuad(x, y, chars[c].width, chars[c].height, chars[c].storedX, chars[c].storedY, chars[c].width, chars[c].height);
@@ -83,7 +83,7 @@ public class CFont {
 			e.printStackTrace();
 		}
 	}
-	
+
 	protected void drawQuad(float x, float y, float width, float height, float srcX, float srcY, float srcWidth, float srcHeight) {
 		float renderSRCX = srcX / imgSize;
 		float renderSRCY = srcY / imgSize;
@@ -102,15 +102,15 @@ public class CFont {
 		GL11.glTexCoord2f(renderSRCX + renderSRCWidth, renderSRCY);
 		GL11.glVertex2d(x + width, y);
 	}
-	
+
 	public int getStringHeight(String text) {
 		return getHeight();
 	}
-	
+
 	public int getHeight() {
 		return (this.fontHeight - 8) / 2;
 	}
-	
+
 	public int getStringWidth(String text) {
 		int width = 0;
 		for (char c : text.toCharArray()) {
@@ -118,44 +118,44 @@ public class CFont {
 		}
 		return width / 2;
 	}
-	
+
 	public boolean isAntiAlias() {
 		return this.antiAlias;
 	}
-	
+
 	public void setAntiAlias(boolean antiAlias) {
 		if (this.antiAlias != antiAlias) {
 			this.antiAlias = antiAlias;
 			tex = setupTexture(this.font, antiAlias, this.fractionalMetrics, this.charData);
 		}
 	}
-	
+
 	public boolean isFractionalMetrics() {
 		return this.fractionalMetrics;
 	}
-	
+
 	public void setFractionalMetrics(boolean fractionalMetrics) {
 		if (this.fractionalMetrics != fractionalMetrics) {
 			this.fractionalMetrics = fractionalMetrics;
 			tex = setupTexture(this.font, this.antiAlias, fractionalMetrics, this.charData);
 		}
 	}
-	
+
 	public Font getFont() {
 		return this.font;
 	}
-	
+
 	public void setFont(Font font) {
 		this.font = font;
 		tex = setupTexture(font, this.antiAlias, this.fractionalMetrics, this.charData);
 	}
-	
+
 	protected class CharData {
 		public int width;
 		public int height;
 		public int storedX;
 		public int storedY;
-		
+
 		protected CharData() {
 		}
 	}

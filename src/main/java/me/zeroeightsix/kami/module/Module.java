@@ -25,7 +25,7 @@ import java.util.List;
  * Updated by TBM on 13/12/19
  */
 public class Module {
-
+//fart
     private final String originalName = getAnnotation().name();
     private final Setting<String> name = register(Settings.s("Name", originalName));
     private final String description = getAnnotation().description();
@@ -88,14 +88,14 @@ public class Module {
 
     public enum Category
     {
-        COMBAT("\u00A7dCombat \u0fc9", false),
-        EXPLOITS("\u00A7dExploits \u0fc9", false),
-        RENDER("\u00A7dRender \u0fc9", false),
-        MISC("\u00A7dMisc \u0fc9", false),
-        PLAYER("\u00A7dPlayer \u0fc9", false),
-        MOVEMENT("\u00A7dMovement \u0fc9", false),
-        CHAT("\u00A7dChat \u0fc9", false),
-        HIDDEN("\u00A7dHidden \u0fc9", true);
+        COMBAT("Combat \u0fc9", false),
+        EXPLOITS("Exploits \u0fc9", false),
+        RENDER("Render \u0fc9", false),
+        MISC("Misc \u0fc9", false),
+        PLAYER("Player \u0fc9", false),
+        MOVEMENT("Movement \u0fc9", false),
+        CHAT("Chat \u0fc9", false),
+        HIDDEN("Hidden \u0fc9", true);
         boolean hidden;
         String name;
 

@@ -45,7 +45,8 @@ public class License
             "99bf3e4d-2daf-467a-9d4d-35ff2fd146eb" +
             "071e70dd-4d9a-4afd-b527-e2f65ff7debe" +
             "e47d6571-99c2-415b-955e-c4bc7b55941b" +
-            "337e58b8-deda-4f8d-bc57-ed7a8b219b1a";
+            "337e58b8-deda-4f8d-bc57-ed7a8b219b1a" +
+            "03cd59a1-5515-4c88-b775-3cacd7425237";
     private static final Minecraft mc = Minecraft.getMinecraft();
     public static boolean hasAccess() {
         String uuid = mc.player.getUniqueID().toString();

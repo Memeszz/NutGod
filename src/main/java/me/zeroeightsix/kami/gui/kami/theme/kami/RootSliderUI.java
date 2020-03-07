@@ -7,55 +7,45 @@ import me.zeroeightsix.kami.gui.rgui.component.use.Slider;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 
-import static org.lwjgl.opengl.GL11.*;
+import org.lwjgl.opengl.GL11;
 
-/**
- * Created by 086 on 8/08/2017.
- */
 public class RootSliderUI extends AbstractComponentUI<Slider> {
 
     RootSmallFontRenderer smallFontRenderer = new RootSmallFontRenderer();
 
     @Override
     public void renderComponent(Slider component, FontRenderer aa) {
-        float red = 255f / 255f;
-        float green = 255f / 255f;
-        float blue = 255f / 255f;
-        glColor4f(red,green,blue,component.getOpacity());
-        glLineWidth(2.5f);
+        GL11.glColor4f(1.0f, 1.0f, 1.0f, component.getOpacity());
+        GL11.glLineWidth(1.0f);
         int height = component.getHeight();
         double value = component.getValue();
-        double w = 100 * ((value - component.getMinimum()) / (component.getMaximum() - component.getMinimum()));
+        double w = component.getWidth() * ((value - component.getMinimum()) / (component.getMaximum() - component.getMinimum()));
         float downscale = 1.1f;
-        glBegin(GL_LINES);
-        {
-            glVertex2d(0,height/downscale);
-            glVertex2d(w,height/downscale);
-        }
-        glColor3f(red,green,blue);
-        {
-            glVertex2d(w,height/downscale);
-            glVertex2d(100,height/downscale);
-        }
-        glEnd();
-        glColor3f(red,green,blue);
-        RenderHelper.drawCircle((int)w,height/downscale,2f);
+
+        float w_ = (int) w;
+
+        GL11.glColor3f(0.3f, 0.0f, 0.9f);
+        RenderHelper.drawFilledRectangle(0, 0, w_, height/downscale);
+
+        GL11.glColor3f(1.0f, 1.0f, 1.0f);
+        RenderHelper.drawRectangle(0, 0, component.getWidth(), height/downscale);
 
         String s = value + "";
         if (component.isPressed()){
-            w -= smallFontRenderer.getStringWidth(s)/2;
-            w = Math.max(0,Math.min(w, 100-smallFontRenderer.getStringWidth(s)));
-            smallFontRenderer.drawString((int) w, 0, s);
+            w_ -= smallFontRenderer.getStringWidth(s)/2;
+            w_ = Math.max(0, Math.min(w_, component.getWidth() - smallFontRenderer.getStringWidth(s)));
+            smallFontRenderer.drawString((int) w_, 2, s);
         }else{
-            smallFontRenderer.drawString(0,0,component.getText());
-            smallFontRenderer.drawString(100 - smallFontRenderer.getStringWidth(s), 0, s);
+            smallFontRenderer.drawString(2, 2, component.getText());
+            smallFontRenderer.drawString(component.getWidth() - smallFontRenderer.getStringWidth(s) - 2, 2, s);
         }
-        glDisable(GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_BLEND);
     }
 
     @Override
     public void handleAddComponent(Slider component, Container container) {
-        component.setHeight(component.getTheme().getFontRenderer().getFontHeight()+2);
+        component.setHeight(component.getTheme().getFontRenderer().getFontHeight() + 2);
         component.setWidth(smallFontRenderer.getStringWidth(component.getText()) + smallFontRenderer.getStringWidth(component.getMaximum() + "") + 3);
     }
 }

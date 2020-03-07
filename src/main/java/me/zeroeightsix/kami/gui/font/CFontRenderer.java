@@ -9,37 +9,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CFontRenderer extends CFont {
-	
+
 	protected CharData[] boldChars = new CharData[256];
 	protected CharData[] italicChars = new CharData[256];
 	protected CharData[] boldItalicChars = new CharData[256];
-	
+
 	private final int[] colorCode = new int[32];
 	private final String colorcodeIdentifiers = "0123456789abcdefklmnor";
-	
+
 	public CFontRenderer(Font font, boolean antiAlias, boolean fractionalMetrics) {
 		super(font, antiAlias, fractionalMetrics);
 		setupMinecraftColorcodes();
 		setupBoldItalicIDs();
 	}
-	
+
 	public float drawStringWithShadow(String text, double x, double y, int color) {
 		float shadowWidth = drawString(text, x + 1D, y + 1D, color, true);
 		return Math.max(shadowWidth, drawString(text, x, y, color, false));
 	}
-	
+
 	public float drawString(String text, float x, float y, int color) {
 		return drawString(text, x, y, color, false);
 	}
-	
+
 	public float drawCenteredStringWithShadow(String text, float x, float y, int color) {
 		return drawStringWithShadow(text, x - getStringWidth(text) / 2, y, color);
 	}
-	
+
 	public float drawCenteredString(String text, float x, float y, int color) {
 		return drawString(text, x - getStringWidth(text) / 2, y, color);
 	}
-	
+
 	public float drawString(String text, double x, double y, int color, boolean shadow) {
 		x -= 1;
 		y -= 2;
@@ -52,11 +52,11 @@ public class CFontRenderer extends CFont {
 		if ((color & 0xFC000000) == 0) {
 			color |= -16777216;
 		}
-		
+
 		if (shadow) {
 			color = (color & 0xFCFCFC) >> 2 | color & 0xFF000000;
 		}
-		
+
 		CharData[] currentData = this.charData;
 		float alpha = (color >> 24 & 0xFF) / 255.0F;
 		boolean randomCase = false;
@@ -155,7 +155,7 @@ public class CFontRenderer extends CFont {
 		}
 		return (float) x / 2.0F;
 	}
-	
+
 	@Override
 	public int getStringWidth(String text) {
 		if (text == null) {
@@ -166,7 +166,7 @@ public class CFontRenderer extends CFont {
 		boolean bold = false;
 		boolean italic = false;
 		int size = text.length();
-		
+
 		for (int i = 0; i < size; i++) {
 			char character = text.charAt(i);
 			if ((character == '\u00A7') && (i < size)) {
@@ -192,35 +192,35 @@ public class CFontRenderer extends CFont {
 				width += currentData[character].width - 8 + this.charOffset;
 			}
 		}
-		
+
 		return width / 2;
 	}
-	
+
 	public void setFont(Font font) {
 		super.setFont(font);
 		setupBoldItalicIDs();
 	}
-	
+
 	public void setAntiAlias(boolean antiAlias) {
 		super.setAntiAlias(antiAlias);
 		setupBoldItalicIDs();
 	}
-	
+
 	public void setFractionalMetrics(boolean fractionalMetrics) {
 		super.setFractionalMetrics(fractionalMetrics);
 		setupBoldItalicIDs();
 	}
-	
+
 	protected DynamicTexture texBold;
 	protected DynamicTexture texItalic;
 	protected DynamicTexture texItalicBold;
-	
+
 	private void setupBoldItalicIDs() {
 		texBold = setupTexture(this.font.deriveFont(1), this.antiAlias, this.fractionalMetrics, this.boldChars);
 		texItalic = setupTexture(this.font.deriveFont(2), this.antiAlias, this.fractionalMetrics, this.italicChars);
 		texItalicBold = setupTexture(this.font.deriveFont(3), this.antiAlias, this.fractionalMetrics, this.boldItalicChars);
 	}
-	
+
 	private void drawLine(double x, double y, double x1, double y1, float width) {
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glLineWidth(width);
@@ -230,18 +230,18 @@ public class CFontRenderer extends CFont {
 		GL11.glEnd();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
-	
+
 	public List<String> wrapWords(String text, double width) {
 		List finalWords = new ArrayList();
 		if (getStringWidth(text) > width) {
 			String[] words = text.split(" ");
 			String currentWord = "";
 			char lastColorCode = 65535;
-			
+
 			for (String word : words) {
 				for (int i = 0; i < word.toCharArray().length; i++) {
 					char c = word.toCharArray()[i];
-					
+
 					if ((c == '\u00A7') && (i < word.toCharArray().length - 1)) {
 						lastColorCode = word.toCharArray()[(i + 1)];
 					}
@@ -265,7 +265,7 @@ public class CFontRenderer extends CFont {
 		}
 		return finalWords;
 	}
-	
+
 	public List<String> formatString(String string, double width) {
 		List finalWords = new ArrayList();
 		String currentWord = "";
@@ -273,11 +273,11 @@ public class CFontRenderer extends CFont {
 		char[] chars = string.toCharArray();
 		for (int i = 0; i < chars.length; i++) {
 			char c = chars[i];
-			
+
 			if ((c == '\u00A7') && (i < chars.length - 1)) {
 				lastColorCode = chars[(i + 1)];
 			}
-			
+
 			if (getStringWidth(currentWord + c) < width) {
 				currentWord = currentWord + c;
 			} else {
@@ -285,31 +285,31 @@ public class CFontRenderer extends CFont {
 				currentWord = "\u00A7" + lastColorCode + String.valueOf(c);
 			}
 		}
-		
+
 		if (currentWord.length() > 0) {
 			finalWords.add(currentWord);
 		}
-		
+
 		return finalWords;
 	}
-	
+
 	private void setupMinecraftColorcodes() {
 		for (int index = 0; index < 32; index++) {
 			int noClue = (index >> 3 & 0x1) * 85;
 			int red = (index >> 2 & 0x1) * 170 + noClue;
 			int green = (index >> 1 & 0x1) * 170 + noClue;
 			int blue = (index >> 0 & 0x1) * 170 + noClue;
-			
+
 			if (index == 6) {
 				red += 85;
 			}
-			
+
 			if (index >= 16) {
 				red /= 4;
 				green /= 4;
 				blue /= 4;
 			}
-			
+
 			this.colorCode[index] = ((red & 0xFF) << 16 | (green & 0xFF) << 8 | blue & 0xFF);
 		}
 	}

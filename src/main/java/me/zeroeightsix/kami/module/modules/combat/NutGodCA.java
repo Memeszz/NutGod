@@ -379,13 +379,13 @@ public class NutGodCA extends Module {
     @Override
     protected void onEnable() {
         if(alert.getValue() && mc.world != null) {
-            Command.sendChatMessage("\u00A75AutoCrystal \u00A78ON");
+            Command.sendChatMessage("\u00A75AutoCrystal \u00A7aON");
         }
     }
 
     public void onDisable() {
         if(alert.getValue() && mc.world != null) {
-            Command.sendChatMessage("\u00A75AutoCrystal \u00A78OFF");
+            Command.sendChatMessage("\u00A75AutoCrystal \u00A7rOFF");
         }
         render = null;
         renderEnt = null;

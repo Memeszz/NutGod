@@ -29,7 +29,7 @@ import java.util.Iterator;
  */
 @Module.Info(name = "Aura", category = Module.Category.COMBAT, description = "Hits entities around you")
 public class Aura extends Module {
-
+//nigger
     private Setting<Boolean> attackPlayers = register(Settings.b("Players", true));
     private Setting<Boolean> attackMobs = register(Settings.b("Mobs", false));
     private Setting<Boolean> attackAnimals = register(Settings.b("Animals", false));
@@ -43,6 +43,14 @@ public class Aura extends Module {
     private int waitCounter;
     @Override
     public void onEnable() {
+        if (Criticals.getValue()) {
+            ModuleManager.getModuleByName("Criticals").enable();
+        } else {
+            return;
+        }
+    }
+    @Override
+    public void onDisable() {
         if (Criticals.getValue()) {
             ModuleManager.getModuleByName("Criticals").disable();
         } else {
