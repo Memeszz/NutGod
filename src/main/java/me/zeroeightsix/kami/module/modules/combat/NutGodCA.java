@@ -51,10 +51,11 @@ public class NutGodCA extends Module {
     private Setting<Boolean> alert = register(Settings.b("Chat Alert", true));
     private Setting<Integer> range = register(Settings.integerBuilder("Range").withMinimum(0).withValue(5).withMaximum(6).build());
     private Setting<Integer> minDamage = register(Settings.integerBuilder("MinDamage").withMinimum(0).withValue(4).withMaximum(13).build());
+    private Setting<Double> HitDelay = register(Settings.d("Hit Delay", 1.0));
+    private Setting<Boolean> raytrace = register(Settings.b("RayTrace", false));
     private Setting<Boolean> antiWeakness = register(Settings.b("Anti Weakness", false));
     private Setting<Boolean> slow = register(Settings.b("Single Place", false));
     private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
-    private Setting<Boolean> raytrace = register(Settings.b("RayTrace", true));
 
 
     private BlockPos render;
@@ -76,7 +77,7 @@ public class NutGodCA extends Module {
                 .min(Comparator.comparing(c -> mc.player.getDistance(c)))
                 .orElse(null);
         if (explode.getValue() && crystal != null && mc.player.getDistance(crystal) <= range.getValue()) {
-            if (true) {//fuck you dont laugh i havnt eatan protien in 3 days
+            if (System.nanoTime() / 1000000L - systemTime >= HitDelay.getValue()) {
                 if (antiWeakness.getValue() && mc.player.isPotionActive(MobEffects.WEAKNESS)) {
                     if (!isAttacking) {
                         // save initial player hand
