@@ -44,7 +44,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Created by 086 on 25/06/2017*/
+ * Created by 086 on 25/06/2017
+ */
+
+// Modify by rina in 07/03/20.
 public class KamiGUI extends GUI {
     public static RootFontRenderer fontRenderer = new RootFontRenderer(1);
     public static CFontRenderer cFontRenderer;
@@ -208,38 +211,34 @@ public class KamiGUI extends GUI {
         te.setShadow(true);
         te.addTickListener(() -> {
             te.setText("PvP Info Counts"); // dont change by Rina.
-            int totemCount=0;
-            int XPCount=0;
-            int gapCount=0;
-            int crystalCount=0;
+
+            int totem = 0;
+            int crystal = 0;
+            int exp_bottle = 0;
+            int gapples = 0;
             for (int i=0; i < 45; i++) {
                 ItemStack itemStack = Wrapper.getMinecraft().player.inventory.getStackInSlot(i);
                 if (itemStack.getItem() == Items.TOTEM_OF_UNDYING) {
-                    totemCount += itemStack.stackSize;
+                    totem += itemStack.stackSize;
                 }
-            }
-            for (int i=0; i < 45; i++) {
-                ItemStack itemStack = Wrapper.getMinecraft().player.inventory.getStackInSlot(i);
+
                 if (itemStack.getItem() == Items.END_CRYSTAL) {
-                    crystalCount += itemStack.stackSize;
+                    crystal += itemStack.stackSize;
                 }
-            }
-            for (int i=0; i < 45; i++) {
-                ItemStack itemStack = Wrapper.getMinecraft().player.inventory.getStackInSlot(i);
+
                 if (itemStack.getItem() == Items.EXPERIENCE_BOTTLE) {
-                    XPCount += itemStack.stackSize;
+                    exp_bottle += itemStack.stackSize;
                 }
-            }
-            for (int i=0; i < 45; i++) {
-                ItemStack itemStack = Wrapper.getMinecraft().player.inventory.getStackInSlot(i);
+
                 if (itemStack.getItem() == Items.GOLDEN_APPLE) {
-                    gapCount += itemStack.stackSize;
+                    gapples += itemStack.stackSize;
                 }
             }
-            te.addLine("\u00A7dTot:\u00A7a " + String.valueOf(totemCount));
-            te.addLine("\u00A7dExp:\u00A7a " + String.valueOf(XPCount));
-            te.addLine("\u00A7dCry:\u00A7a " + String.valueOf(crystalCount));
-            te.addLine("\u00A7dGap:\u00A7a " + String.valueOf(gapCount));
+
+            te.addLine("\u00A7dTot:\u00A7a " + String.valueOf(totem));
+            te.addLine("\u00A7dExp:\u00A7a " + String.valueOf(exp_bottle));
+            te.addLine("\u00A7dCry:\u00A7a " + String.valueOf(crystal));
+            te.addLine("\u00A7dGap:\u00A7a " + String.valueOf(gapples));
         });
         frame.addChild(te);
         te.setFontRenderer(fontRenderer);
