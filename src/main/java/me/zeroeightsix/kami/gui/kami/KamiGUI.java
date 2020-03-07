@@ -201,13 +201,13 @@ public class KamiGUI extends GUI {
         frame.setPinneable(true);
         frames.add(frame);
 
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "\u00A7dPvPInfo");
+        frame = new Frame(getTheme(), new Stretcherlayout(1), "\u00A7dPvP Info");
         frame.setCloseable(false);
         frame.setPinneable(true);
         Label te = new Label("");
         te.setShadow(true);
         te.addTickListener(() -> {
-            te.setText("u00A7dPvP Counts");
+            te.setText("PvP Info Counts"); // dont change by Rina.
             int totemCount=0;
             int XPCount=0;
             int gapCount=0;
