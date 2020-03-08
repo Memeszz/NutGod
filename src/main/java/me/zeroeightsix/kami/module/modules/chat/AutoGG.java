@@ -1,16 +1,14 @@
 package me.zeroeightsix.kami.module.modules.chat;
 
-
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.module.Module;
-import me.zeroeightsix.kami.module.ModuleManager;
-import me.zeroeightsix.kami.module.modules.combat.NutGodCA;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
+import me.zeroeightsix.kami.util.ChatTextUtils;
 import me.zeroeightsix.kami.util.EntityUtil;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,122 +20,186 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Thank you Rina!
+ * Created 15 November 2019 by hub
+ * Updated 24 November 2019 by hub
  */
-@Module.Info(name = "AutoGG", category = Module.Category.CHAT)
+@Module.Info(name = "AutoGG", category = Module.Category.CHAT, description = "Announce killed Players")
 public class AutoGG extends Module {
-    private ConcurrentHashMap<String, Integer> target_players = null;
-    private Setting<Boolean> Nut = register(Settings.b("Nutted on Mode", false));
 
-    private NutGodCA function_nutgodca = (NutGodCA) ModuleManager.getModuleByName("CrystalAura");
+    private ConcurrentHashMap<String, Integer> targetedPlayers = null;
+
+    private Setting<Boolean> toxicMode = register(Settings.b("ToxicMode", false));
+    private Setting<Boolean> clientName = register(Settings.b("ClientName", true));
+    private Setting<Integer> timeoutTicks = register(Settings.i("TimeoutTicks", 20));
 
     @Override
     public void onEnable() {
-        target_players = new ConcurrentHashMap<>();
+        targetedPlayers = new ConcurrentHashMap<>();
     }
 
     @Override
     public void onDisable() {
-        target_players = null;
+        targetedPlayers = null;
     }
 
     @Override
     public void onUpdate() {
-        if (isDisabled() || mc.player == null) return;
-        if (target_players == null) {
-            target_players = new ConcurrentHashMap<>();
+
+        if (isDisabled() || mc.player == null) {
+            return;
+        }
+
+        if (targetedPlayers == null) {
+            targetedPlayers = new ConcurrentHashMap<>();
         }
 
         for (Entity entity : mc.world.getLoadedEntityList()) {
-            if (!EntityUtil.isPlayer(entity)) continue;
 
+            // skip non player entities
+            if (!EntityUtil.isPlayer(entity)) {
+                continue;
+            }
             EntityPlayer player = (EntityPlayer) entity;
 
-            if (player.getHealth() > 0) continue;
+            // skip if player is alive
+            if (player.getHealth() > 0) {
+                continue;
+            }
 
             String name = player.getName();
-            if (should_announce(name)) {
-                send_announce(name);
+            if (shouldAnnounce(name)) {
+                doAnnounce(name);
                 break;
             }
+
         }
 
-        target_players.forEach((name, timeout) -> {
+        targetedPlayers.forEach((name, timeout) -> {
             if (timeout <= 0) {
-                target_players.remove(name);
+                targetedPlayers.remove(name);
             } else {
-                target_players.put(name, timeout - 1);
+                targetedPlayers.put(name, timeout - 1);
             }
         });
+
     }
 
     @EventHandler
     public Listener<PacketEvent.Send> sendListener = new Listener<>(event -> {
-        if (mc.player == null) return;
-        if (target_players == null) {
-            target_players = new ConcurrentHashMap<>();
+
+        if (mc.player == null) {
+            return;
         }
 
-        if (!(event.getPacket() instanceof CPacketUseEntity)) return;
-        CPacketUseEntity cpacketUseEntity = ((CPacketUseEntity) event.getPacket());
+        if (targetedPlayers == null) {
+            targetedPlayers = new ConcurrentHashMap<>();
+        }
 
-        if (!(cpacketUseEntity.getAction().equals(CPacketUseEntity.Action.ATTACK))) return;
+        // return if packet is not of type CPacketUseEntity
+        if (!(event.getPacket() instanceof CPacketUseEntity)) {
+            return;
+        }
+        CPacketUseEntity cPacketUseEntity = ((CPacketUseEntity) event.getPacket());
 
-        Entity target_entity = cpacketUseEntity.getEntityFromWorld(mc.world);
-        if (!EntityUtil.isPlayer(target_entity)) return;
+        // return if action is not of type CPacketUseEntity.Action.ATTACK
+        if (!(cPacketUseEntity.getAction().equals(CPacketUseEntity.Action.ATTACK))) {
+            return;
+        }
 
-        add_target_player(target_entity.getName());
+        // return if targeted Entity is not a player
+        Entity targetEntity = cPacketUseEntity.getEntityFromWorld(mc.world);
+        if (!EntityUtil.isPlayer(targetEntity)) {
+            return;
+        }
+
+        addTargetedPlayer(targetEntity.getName());
+
     });
 
     @EventHandler
-    public Listener<LivingDeathEvent> LivingDeathEvent = new Listener<>(event -> {
-        if (mc.player == null) return;
-        if (target_players == null) {
-            target_players = new ConcurrentHashMap<>();
+    public Listener<LivingDeathEvent> livingDeathEventListener = new Listener<>(event -> {
+
+        if (mc.player == null) {
+            return;
+        }
+
+        if (targetedPlayers == null) {
+            targetedPlayers = new ConcurrentHashMap<>();
         }
 
         EntityLivingBase entity = event.getEntityLiving();
-        if (entity == null) return;
+
+        if (entity == null) {
+            return;
+        }
+
+        // skip non player entities
+        if (!EntityUtil.isPlayer(entity)) {
+            return;
+        }
 
         EntityPlayer player = (EntityPlayer) entity;
-        if (player.getHealth() > 0) return;
+
+        // skip if player is alive
+        if (player.getHealth() > 0) {
+            return;
+        }
 
         String name = player.getName();
-        if (should_announce(name)) {
-            send_announce(name);
+        if (shouldAnnounce(name)) {
+            doAnnounce(name);
         }
+
     });
 
-    private boolean should_announce(String name) {
-        return target_players.containsKey(name);
+    private boolean shouldAnnounce(String name) {
+        return targetedPlayers.containsKey(name);
     }
 
-    private void send_announce(String name) {
-        target_players.remove(name);
+    private void doAnnounce(String name) {
 
-        StringBuilder msg = new StringBuilder();
+        targetedPlayers.remove(name);
 
-        if (Nut.getValue()) {
-            msg.append("" + name + ", NIGGA YOU JUST GOT NUTTED ON BY NUTGOD!!");
+        StringBuilder message = new StringBuilder();
+
+        if (toxicMode.getValue()) {
+            message.append("EZZZ ");
         } else {
-            msg.append("GG " + name + ", NutGod Ca was to strong for you.");
+            message.append("good fight ");
         }
 
-        String msg_ = msg.toString().replaceAll("\u00A7", "");
+        message.append(name);
+        message.append("!");
 
-        if (msg_.length() > 255) {
-            msg_ = msg_.substring(0, 255);
+        if (clientName.getValue()) {
+            message.append(" ");
+            message.append(KamiMod.KAMI_KANJI);
+            message.append(" owns me and all");
         }
 
-        mc.player.connection.sendPacket(new CPacketChatMessage(msg_));
+        String messageSanitized = message.toString().replaceAll(ChatTextUtils.SECTIONSIGN, "");
+
+        if (messageSanitized.length() > 255) {
+            messageSanitized = messageSanitized.substring(0, 255);
+        }
+
+        mc.player.connection.sendPacket(new CPacketChatMessage(messageSanitized));
+
     }
 
-    public void add_target_player(String name) {
-        if (Objects.equals(name, mc.player.getName())) return;
+    public void addTargetedPlayer(String name) {
 
-        if (target_players == null) {
-            target_players = new ConcurrentHashMap<>();
+        // skip if self is the target
+        if (Objects.equals(name, mc.player.getName())) {
+            return;
         }
-        target_players.put(name, 20);
+
+        if (targetedPlayers == null) {
+            targetedPlayers = new ConcurrentHashMap<>();
+        }
+
+        targetedPlayers.put(name, timeoutTicks.getValue());
+
     }
+
 }

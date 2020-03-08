@@ -2,6 +2,7 @@
 package me.zeroeightsix.kami.module.modules.combat;
 
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -14,10 +15,20 @@ import net.minecraft.item.ItemStack;
 public class AutoOffhandCrystal
 
         extends Module {
+    private Setting<Boolean> ca = register(Settings.b("CAToggle", true));
 
     int crystals;
     boolean moving = false;
     boolean returnI = false;
+    @Override
+    public void onEnable() {
+        if (ca.getValue()) {
+            ModuleManager.getModuleByName("NutGodCA").enable();
+        } else {
+            return;
+        }
+    }
+
 
     @Override
     public void onUpdate() {
@@ -87,6 +98,11 @@ public class AutoOffhandCrystal
     @Override
     public void onDisable() {
         if (AutoOffhandCrystal.mc.currentScreen instanceof GuiContainer) {
+            return;
+        }
+        if (ca.getValue()) {
+            ModuleManager.getModuleByName("NutGodCA").disable();
+        } else {
             return;
         }
         this.crystals = AutoOffhandCrystal.mc.player.inventory.mainInventory.stream().filter(itemStack -> itemStack.getItem() == Items.TOTEM_OF_UNDYING).mapToInt(ItemStack::getCount).sum();

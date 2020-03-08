@@ -21,7 +21,7 @@ public class AutoTotem
     boolean offhand = false;
     boolean shouldSwitch = false;
     private Setting<Boolean> soft = this.register(Settings.b("Soft"));
-    private Setting<Double> Hearts = this.register(Settings.d("Health", 11.0));
+    private Setting<Double> Health = this.register(Settings.d("Health", 11.0));
     private static AutoTotem INSTANCE = new AutoTotem();
 
     public AutoTotem() {
@@ -37,7 +37,7 @@ public class AutoTotem
         if (AutoTotem.mc.player.getHeldItemOffhand().getItem() == Items.TOTEM_OF_UNDYING) {
             ++this.totems;
         } else {
-            if (this.soft.getValue().booleanValue() && !AutoTotem.mc.player.getHeldItemOffhand().isEmpty && (double)(AutoTotem.mc.player.getHealth() + AutoTotem.mc.player.getAbsorptionAmount()) >= this.Hearts.getValue()) {
+            if (this.soft.getValue().booleanValue() && !AutoTotem.mc.player.getHeldItemOffhand().isEmpty && (double)(AutoTotem.mc.player.getHealth() + AutoTotem.mc.player.getAbsorptionAmount()) >= this.Health.getValue()) {
                 return;
             }
             this.offhand = !AutoTotem.mc.player.getHeldItemOffhand().isEmpty;
@@ -51,7 +51,7 @@ public class AutoTotem
                     t = i;
                     break;
                 }
-                if (t == -1 || AutoTotem.mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL && ModuleManager.isModuleEnabled("LunarCrystal")) {
+                if (t == -1 || AutoTotem.mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL && ModuleManager.isModuleEnabled("NutGodCA")) {
                     return;
                 }
                 AutoTotem.mc.playerController.windowClick(0, t < 9 ? t + 36 : t, 0, ClickType.PICKUP, (EntityPlayer)AutoTotem.mc.player);
@@ -63,7 +63,7 @@ public class AutoTotem
     }
 
     public static double health() {
-        return AutoTotem.INSTANCE.Hearts.getValue();
+        return AutoTotem.INSTANCE.Health.getValue();
     }
 }
 

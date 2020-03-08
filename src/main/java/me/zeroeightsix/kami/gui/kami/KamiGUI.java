@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
 /**
  * Created by 086 on 25/06/2017.
  * Welcomer update by Hamburger on 14/01/2020
+ * updated by Memeszz
  */
 public class KamiGUI extends GUI {
     public static final RootFontRenderer fontRenderer = new RootFontRenderer(1.0F);
@@ -337,7 +338,7 @@ public class KamiGUI extends GUI {
         frame.setCloseable(false);
         frame.setPinneable(true);
         frame.setMinimumWidth(75);
-        Label watermark = new Label("NutGod B4.3");
+        Label watermark = new Label("NutGod B4.4");
         watermark.setX((frame.getWidth() / 2));
         watermark.setShadow(true);
         frame.addChild(watermark);
