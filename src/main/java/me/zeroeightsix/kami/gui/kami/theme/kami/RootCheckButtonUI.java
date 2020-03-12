@@ -11,11 +11,15 @@ import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
+// Rina.
+import me.zeroeightsix.kami.util.TurokGL;
+
 /**
  * Created by 086 on 4/08/2017.
  */
-public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentUI<CheckButton> {
 
+// Update by Rina in 12/03/20.
+public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentUI<CheckButton> {
     protected Color backgroundColour = new Color(200, 56, 56);
     protected Color backgroundColourHover = new Color(255,66,66);
 
@@ -27,23 +31,26 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
 
     @Override
     public void renderComponent(CheckButton component, FontRenderer ff) {
-
-        GL11.glColor4f((float)((float)this.backgroundColour.getRed() / 255.0f), (float)((float)this.backgroundColour.getGreen() / 255.0f), (float)((float)this.backgroundColour.getBlue() / 255.0f), (float)component.getOpacity());
+        TurokGL.turok_RGBA((float) this.backgroundColour.getRed(), (float) this.backgroundColour.getGreen(), (float) this.backgroundColour.getBlue(), (float) component.getOpacity());
+        
         if (component.isToggled()){
-            GL11.glColor3f((float)((float)this.backgroundColour.getRed() / 255.0f), (float)((float)this.backgroundColour.getGreen() / 255.0f), (float)((float)this.backgroundColour.getBlue() / 255.0f));
+            TurokGL.turok_RGB((float) this.backgroundColour.getRed(), (float) this.backgroundColour.getGreen(), (float) this.backgroundColour.getBlue());
         }
+        
         if (component.isHovered() || component.isPressed()){
-            GL11.glColor4f((float)((float)this.backgroundColourHover.getRed() / 255.0f), (float)((float)this.backgroundColourHover.getGreen() / 255.0f), (float)((float)this.backgroundColourHover.getBlue() / 255.0f), (float)component.getOpacity());
+            TurokGl.turok_RGBA((float) this.backgroundColourHover.getRed(), (float) this.backgroundColourHover.getGreen(), this.backgroundColourHover.getBlue(), (float) component.getOpacity());
         }
 
         String text = component.getName();
         int c = component.isPressed() ? 0xaaaaaa : component.isToggled() ? 0x02d8ed : 0xdddddd;
 
-        glColor3f(1,1,1);
-        glEnable(GL_TEXTURE_2D);
-        KamiGUI.fontRenderer.drawString(1, KamiGUI.fontRenderer.getFontHeight()/2-2, c, text);
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
+        TurokGL.turok_RGB(255, 255, 255);
+        TurokGL.turok_Enable(GL_TEXTURE_2D);
+
+        KamiGUI.fontRenderer.drawString(1, KamiGUI.fontRenderer.getFontHeight() / 2 - 2, c, text);
+
+        TurokGL.turok_Disable(GL_TEXTURE_2D);
+        TurokGL.turok_Disable(GL_BLEND);
     }
 
     @Override
