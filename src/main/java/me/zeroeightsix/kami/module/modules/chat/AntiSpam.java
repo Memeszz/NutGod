@@ -12,10 +12,8 @@ import java.util.List;
 
 @Module.Info(name = "AntiSpam", description = "Detects spam and blocks it", category = Module.Category.CHAT)
 public class AntiSpam extends Module {
-
     private Setting<Boolean> discordLinks = register(Settings.b("Discord Invites", true));
     private Setting<Boolean> announcer = register(Settings.b("Announcer", true));
-
 
 
     @EventHandler
