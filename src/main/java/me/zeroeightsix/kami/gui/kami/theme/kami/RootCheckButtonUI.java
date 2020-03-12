@@ -11,12 +11,12 @@ import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
-// Rina.
-import me.zeroeightsix.kami.util.TurokGL;
-
 /**
  * Created by 086 on 4/08/2017.
  */
+
+// Rina.
+import me.zeroeightsix.kami.util.TurokGL;
 
 // Update by Rina in 12/03/20.
 public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentUI<CheckButton> {
