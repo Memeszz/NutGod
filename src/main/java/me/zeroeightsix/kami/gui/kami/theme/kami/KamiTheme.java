@@ -1,49 +1,64 @@
+/*
+ * Decompiled with CFR 0.145.
+ */
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
+import me.zeroeightsix.kami.gui.kami.RootFontRenderer;
+import me.zeroeightsix.kami.gui.kami.theme.kami.KamiActiveModulesUI;
+import me.zeroeightsix.kami.gui.kami.theme.kami.KamiEnumbuttonUI;
+import me.zeroeightsix.kami.gui.kami.theme.kami.KamiFrameUI;
+import me.zeroeightsix.kami.gui.kami.theme.kami.KamiSettingsPanelUI;
+import me.zeroeightsix.kami.gui.kami.theme.kami.KamiUnboundSliderUI;
+import me.zeroeightsix.kami.gui.kami.theme.kami.RootButtonUI;
+import me.zeroeightsix.kami.gui.kami.theme.kami.RootChatUI;
+import me.zeroeightsix.kami.gui.kami.theme.kami.RootCheckButtonUI;
+import me.zeroeightsix.kami.gui.kami.theme.kami.RootColorizedCheckButtonUI;
+import me.zeroeightsix.kami.gui.kami.theme.kami.RootGroupboxUI;
+import me.zeroeightsix.kami.gui.kami.theme.kami.RootInputFieldUI;
+import me.zeroeightsix.kami.gui.kami.theme.kami.RootLabelUI;
+import me.zeroeightsix.kami.gui.kami.theme.kami.RootScrollpaneUI;
+import me.zeroeightsix.kami.gui.kami.theme.kami.RootSliderUI;
 import me.zeroeightsix.kami.gui.kami.theme.staticui.RadarUI;
 import me.zeroeightsix.kami.gui.kami.theme.staticui.TabGuiUI;
-import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
-import me.zeroeightsix.kami.gui.rgui.component.use.Button;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
+import me.zeroeightsix.kami.gui.rgui.render.ComponentUI;
 import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 import me.zeroeightsix.kami.gui.rgui.render.theme.AbstractTheme;
 
-/**
- * Created by 086 on 26/06/2017.
- */
-public class KamiTheme extends AbstractTheme {
-
+public class KamiTheme
+extends AbstractTheme {
     FontRenderer fontRenderer;
 
     public KamiTheme() {
-        installUI(new RootButtonUI<Button>());
-        installUI(new GUIUI());
-        installUI(new RootGroupboxUI());
-        installUI(new KamiFrameUI<Frame>());
-        installUI(new RootScrollpaneUI());
-        installUI(new RootInputFieldUI());
-        installUI(new RootLabelUI());
-        installUI(new RootChatUI());
-        installUI(new RootCheckButtonUI());
-        installUI(new KamiActiveModulesUI());
-        installUI(new KamiSettingsPanelUI());
-        installUI(new RootSliderUI());
-        installUI(new KamiEnumbuttonUI());
-        installUI(new RootColorizedCheckButtonUI());
-        installUI(new KamiUnboundSliderUI());
-
-        installUI(new RadarUI());
-        installUI(new TabGuiUI());
-
-        fontRenderer = KamiGUI.fontRenderer;
+        this.installUI(new RootButtonUI());
+        this.installUI(new GUIUI());
+        this.installUI(new RootGroupboxUI());
+        this.installUI(new KamiFrameUI());
+        this.installUI(new RootScrollpaneUI());
+        this.installUI(new RootInputFieldUI());
+        this.installUI(new RootLabelUI());
+        this.installUI(new RootChatUI());
+        this.installUI(new RootCheckButtonUI());
+        this.installUI(new KamiActiveModulesUI());
+        this.installUI(new KamiSettingsPanelUI());
+        this.installUI(new RootSliderUI());
+        this.installUI(new KamiEnumbuttonUI());
+        this.installUI(new RootColorizedCheckButtonUI());
+        this.installUI(new KamiUnboundSliderUI());
+        this.installUI(new RadarUI());
+        this.installUI(new TabGuiUI());
+        this.fontRenderer = KamiGUI.fontRenderer;
     }
 
     @Override
     public FontRenderer getFontRenderer() {
-        return fontRenderer;
+        return this.fontRenderer;
     }
 
-    public class GUIUI extends AbstractComponentUI<KamiGUI> {
+    public class GUIUI
+    extends AbstractComponentUI<KamiGUI> {
     }
+
 }
+

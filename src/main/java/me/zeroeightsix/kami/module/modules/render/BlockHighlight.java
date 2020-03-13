@@ -20,10 +20,10 @@ import java.awt.Color;
 @Module.Info(name = "BlockHighlight", description = "Happy Halloween <3", category = Module.Category.RENDER)
 public class BlockHighlight extends Module {
     private Setting<Boolean> boundingbox = register(Settings.b("Bouding Box", true));
-    private Setting<Boolean> box = register(Settings.b("Full Block Highlight", false));
-    private Setting<Double> width = register(Settings.d("Width", 3.0));
+    private Setting<Boolean> box = register(Settings.b("Full Block Highlight", true));
+    private Setting<Double> width = register(Settings.d("Width", 1.0));
     private Setting<Integer> alpha = register(
-            Settings.integerBuilder("Alpha").withMinimum(1).withMaximum(255).withValue(70));
+            Settings.integerBuilder("Alpha").withMinimum(1).withMaximum(255).withValue(28));
     private Setting<Integer> Red = register(
             Settings.integerBuilder("Red").withMinimum(1).withMaximum(255).withValue(255));
     private Setting<Integer> Green = register(

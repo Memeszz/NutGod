@@ -10,7 +10,6 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.ItemStack;
 
-// Rina.
 @Module.Info(name = "AutoGapple", category = Module.Category.COMBAT)
 public class AutoGapple extends Module {
     private int gapples;

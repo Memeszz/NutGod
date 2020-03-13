@@ -30,14 +30,28 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
+
 /**
  * Created by 086 on 11/11/2017.
  */
 public class ForgeEventProcessor {
-
+    float hue = 0;
+    Color c;
+    int rgb;
+    int speed = 2;
     private int displayWidth;
     private int displayHeight;
-
+    public static ForgeEventProcessor INSTANCE;
+    public ForgeEventProcessor(){
+        INSTANCE = this;
+    }
+    public Color getC(){
+        return c;
+    }
+    public int getRgb(){
+        return rgb;
+    }
     @SubscribeEvent
     public void onUpdate(LivingEvent.LivingUpdateEvent event) {
         if (event.isCanceled()) return;
@@ -69,7 +83,14 @@ public class ForgeEventProcessor {
         if (Wrapper.getPlayer() == null) return;
         ModuleManager.onUpdate();
         KamiMod.getInstance().getGuiManager().callTick(KamiMod.getInstance().getGuiManager());
-    }
+            c = Color.getHSBColor(hue, 1f, 1f);
+            rgb = Color.HSBtoRGB(hue, 1f, 1f);
+            hue += speed / 2000f;
+            //Module onUpdate
+        final Minecraft mc = Minecraft.getMinecraft();
+            if (mc.player != null)
+                ModuleManager.onUpdate();
+        }
 
     @SubscribeEvent
     public void onWorldRender(RenderWorldLastEvent event) {
@@ -102,6 +123,13 @@ public class ForgeEventProcessor {
             BossStack.render(event);
         }
     }
+    public void setRainbowSpeed(int s){
+        speed = s;
+    }
+    public int getRainbowSpeed(){
+        return speed;
+    }
+
 
     @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
     public void onKeyInput(InputEvent.KeyInputEvent event) {

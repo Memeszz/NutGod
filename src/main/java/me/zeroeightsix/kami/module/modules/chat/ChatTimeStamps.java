@@ -4,37 +4,28 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.setting.Setting;
+import me.zeroeightsix.kami.setting.Settings;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-@Module.Info(name = "ChatTimestamps", description = "Shows timestamps next to messages in chat", category = Module.Category.MISC)
+
+@Module.Info(name = "ChatTimeStamps", category = Module.Category.CHAT)
 public class ChatTimeStamps extends Module {
 
-    DateTimeFormatter dtf;
-    LocalDateTime now;
-
-    @Override
-    public void onUpdate() {
-        dtf = DateTimeFormatter.ofPattern("<HH:mm:ss> ");
-        now = LocalDateTime.now();
-    }
+    private Setting<Boolean> deco = register(Settings.b("Deco", true));
 
     @EventHandler
     public Listener<ClientChatReceivedEvent> listener = new Listener<>(event -> {
-        if(this.isDisabled()) {
-            return;
-        }
 
-        TextComponentString m = new TextComponentString(ChatFormatting.GRAY + dtf.format(now) + ChatFormatting.RESET);
-        m.appendSibling(event.getMessage());
+        TextComponentString newTextComponentString = new TextComponentString(ChatFormatting.GRAY + (deco.getValue() ? "<" : "") + new SimpleDateFormat("k:mm").format(new Date()) + (deco.getValue() ? ">" : "") + ChatFormatting.RESET + " ");
+        newTextComponentString.appendSibling(event.getMessage());
 
-        event.setMessage(m);
+        event.setMessage(newTextComponentString);
+
     });
-
-
-
 
 }

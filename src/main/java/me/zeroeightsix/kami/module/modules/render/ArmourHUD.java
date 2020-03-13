@@ -1,6 +1,7 @@
 
 package me.zeroeightsix.kami.module.modules.render;
 
+import me.zeroeightsix.kami.gui.font.CFontRenderer;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
@@ -11,10 +12,14 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.item.ItemStack;
 
+import java.awt.*;
+
 @Module.Info(name="ArmourHUD", category=Module.Category.RENDER)
 public class ArmourHUD
         extends Module {
     private static RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
+    CFontRenderer cFontRenderer = new CFontRenderer(new Font("Arial", 0, 18), true, false);
+
     private Setting<Boolean> damage = this.register(Settings.b("Damage", false));
 
     @Override
@@ -37,7 +42,7 @@ public class ArmourHUD
             GlStateManager.disableLighting();
             GlStateManager.disableDepth();
             String s = is.getCount() > 1 ? is.getCount() + "" : "";
-            ArmourHUD.mc.fontRenderer.drawStringWithShadow(s, (float)(x + 19 - 2 - ArmourHUD.mc.fontRenderer.getStringWidth(s)), (float)(y + 9), 16777215);
+            cFontRenderer.drawStringWithShadow(s, (float)(x + 19 - 2 - ArmourHUD.mc.fontRenderer.getStringWidth(s)), (float)(y + 9), 16777215);
             if (!this.damage.getValue().booleanValue()) continue;
             this.drawDamage(is, x, y);
         }
@@ -49,7 +54,7 @@ public class ArmourHUD
         float green = ((float)itemstack.getMaxDamage() - (float)itemstack.getItemDamage()) / (float)itemstack.getMaxDamage();
         float red = 1.0f - green;
         int dmg = 100 - (int)(red * 100.0f);
-        ArmourHUD.mc.fontRenderer.drawStringWithShadow(dmg + "", (float)(x + 8 - ArmourHUD.mc.fontRenderer.getStringWidth(dmg + "") / 2), (float)(y - 11), ColourHolder.toHex((int)(red * 255.0f), (int)(green * 255.0f), 0));
+        cFontRenderer.drawStringWithShadow(dmg + "", (float)(x + 8 - ArmourHUD.mc.fontRenderer.getStringWidth(dmg + "") / 2), (float)(y - 11), ColourHolder.toHex((int)(red * 255.0f), (int)(green * 255.0f), 0));
     }
 }
 

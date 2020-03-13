@@ -36,7 +36,7 @@ public class Aura extends Module {
     private Setting<Boolean> swordOnly = register(Settings.b("SwordOnly", false));
     private Setting<Boolean> cacheck = register(Settings.b("CADisable", false));
     private Setting<Boolean> Criticals = register(Settings.b("Criticals", false));
-    private Setting<Double> hitRange = register(Settings.d("Hit Range", 5.5d));
+    private Setting<Double> hitRange = register(Settings.d("Hit Range", 4.5d));
     private Setting<Boolean> ignoreWalls = register(Settings.b("Ignore Walls", true));
     private Setting<WaitMode> waitMode = register(Settings.e("Mode", WaitMode.DYNAMIC));
     private Setting<Integer> waitTick = register(Settings.integerBuilder("Tick Delay").withMinimum(0).withValue(3).withVisibility(o -> waitMode.getValue().equals(WaitMode.STATIC)).build());
@@ -64,6 +64,7 @@ public class Aura extends Module {
         if (mc.player.isDead) {
             return;
         }
+
 
 
 

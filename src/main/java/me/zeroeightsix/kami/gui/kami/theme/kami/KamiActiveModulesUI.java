@@ -1,8 +1,7 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
 import me.zeroeightsix.kami.command.Command;
-import me.zeroeightsix.kami.gui.kami.KamiGUI;
-import me.zeroeightsix.kami.gui.kami.RootFontRenderer;
+import me.zeroeightsix.kami.gui.font.CFontRenderer;
 import me.zeroeightsix.kami.gui.kami.component.ActiveModules;
 import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
@@ -25,6 +24,7 @@ import static org.lwjgl.opengl.GL11.glDisable;
  * Created by 086 on 4/08/2017.
  */
 public class KamiActiveModulesUI extends AbstractComponentUI<ActiveModules> {
+    CFontRenderer cFontRenderer = new CFontRenderer(new Font("Arial", 0, 18), true, false);
 
     @Override
     public void renderComponent(ActiveModules component, FontRenderer f) {
@@ -35,11 +35,8 @@ public class KamiActiveModulesUI extends AbstractComponentUI<ActiveModules> {
         FontRenderer renderer = Wrapper.getFontRenderer();
         List<Module> mods = ModuleManager.getModules().stream()
                 .filter(Module::isEnabled)
-                .filter(Module::isShowOnArray)
-                .sorted(Comparator.comparing(module -> renderer.getStringWidth(module.getName()+(module.getHudInfo()==null?"":module.getHudInfo()+" "))*(component.sort_up?-1:1)))
+                .sorted(Comparator.comparing(module -> cFontRenderer.getStringWidth(module.getName()+(module.getHudInfo()==null?"":module.getHudInfo()+" "))*(component.sort_up?-1:1)))
                 .collect(Collectors.toList());
-
-
 
         final int[] y = {2};
 
@@ -63,54 +60,21 @@ public class KamiActiveModulesUI extends AbstractComponentUI<ActiveModules> {
                 break;
         }
 
-        if (KamiGUI.selectedArrayColour == "RB") {
-            mods.stream().forEach(module -> {
-                int rgb = Color.HSBtoRGB(hue[0], 1, 1);
-                String s = module.getHudInfo();
-                String text = module.getName() + (s==null?"" : " " + Command.SECTIONSIGN() + "7" + s);
-                int textwidth = renderer.getStringWidth(text);
-                int textheight = renderer.getFontHeight()+1;
-                int red = (rgb >> 16) & 0xFF;
-                int green = (rgb >> 8) & 0xFF;
-                int blue = rgb & 0xFF;
+        mods.stream().forEach(module -> {
+            int rgb = Color.HSBtoRGB(hue[0], 1, 1);
+            String s = module.getHudInfo();
+            String text = module.getName() + (s==null?"" : " " + Command.SECTIONSIGN() + "7" + s);
+            int textwidth = cFontRenderer.getStringWidth(text);
+            int textheight = renderer.getFontHeight()+1;
+            int red = (255);
+            int green = (85);
+            int blue = (255);
 
-                renderer.drawStringWithShadow(xFunc.apply(textwidth), y[0], red,green,blue, text);
-                hue[0] +=.02f;
-                y[0] += textheight;
-            });
-        } else {
-            mods.stream().forEach(module -> {
-                String s = module.getHudInfo();
-                String text = module.getName() + (s==null?"" : " " + Command.SECTIONSIGN() + "7" + s);
-                int textwidth = renderer.getStringWidth(text);
-                int textheight = renderer.getFontHeight()+1;
+            cFontRenderer.drawStringWithShadow(text, xFunc.apply(textwidth), y[0], new Color(red, green,  blue).getRGB());
 
-                if (KamiGUI.arrayColour[0] + KamiGUI.arrayColour[1] + KamiGUI.arrayColour[2] == 0d) {
-                    renderer.drawStringWithShadow(
-                            xFunc.apply(textwidth),
-                            y[0],
-                            255,
-                            255,
-                            255,
-                            text
-                    );
-                } else {
-                    renderer.drawStringWithShadow(
-                            xFunc.apply(textwidth),
-                            y[0],
-                            KamiGUI.arrayColour[0].intValue(),
-                            KamiGUI.arrayColour[1].intValue(),
-                            KamiGUI.arrayColour[2].intValue(),
-                            text
-                    );
-                }
-
-
-
-
-                y[0] += textheight;
-            });
-        }
+                    hue[0] +=.02f;
+            y[0] += textheight;
+        });
 
         component.setHeight(y[0]);
 

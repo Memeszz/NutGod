@@ -1,8 +1,9 @@
+
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
 import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.gui.font.CFontRenderer;
 import me.zeroeightsix.kami.gui.kami.*;
-import me.zeroeightsix.kami.gui.rgui.GUI;
 import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.Container;
@@ -16,24 +17,17 @@ import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.util.Bind;
 import me.zeroeightsix.kami.util.ColourHolder;
-import me.zeroeightsix.kami.util.Wrapper;
-import org.lwjgl.opengl.GL11;
-
-import static org.lwjgl.opengl.GL11.*;
-
-/**
- * Created by 086 on 26/06/2017.
- */
-
-// Modify by Rina in 05/03/20.
-// Modfify again by Rina in 06/03/20.
-
 import me.zeroeightsix.kami.util.TurokGL;
+import me.zeroeightsix.kami.util.Wrapper;
 
-public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
+import java.awt.*;
+
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+
+public class KamiFrameUI<T extends Frame>
+        extends AbstractComponentUI<Frame> {
     ColourHolder frameColour = KamiGUI.primaryColour.setA(100);
-    ColourHolder outlineColour = frameColour.darker();
-
+    ColourHolder outlineColour = this.frameColour.darker();
     Component yLineComponent = null;
     Component xLineComponent = null;
     Component centerXComponent = null;
@@ -41,8 +35,11 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
     boolean centerX = false;
     boolean centerY = false;
     int xLineOffset = 0;
-
     private static final RootFontRenderer ff = new RootLargeFontRenderer();
+    CFontRenderer cFontRendererLarge = new CFontRenderer(new Font("Verdana", 0, 24), true, false);
+    public float redForBG;
+    public float greenForBG;
+    public float blueForBG;
 
     @Override
     public void renderComponent(Frame component, FontRenderer fontRenderer) {
