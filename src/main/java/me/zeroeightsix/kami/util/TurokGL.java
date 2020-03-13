@@ -43,4 +43,8 @@ public class TurokGL {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);
     }
+
+    public static void turok_Translatef(int x_, int y_, int z_) {
+        GL11.glTranslatef(x_, y_, z_);
+    }
 }
