@@ -7,9 +7,7 @@ import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.BlockInteractionHelper;
-import me.zeroeightsix.kami.util.GeometryMasks;
-import me.zeroeightsix.kami.util.KamiTessellator;
+import me.zeroeightsix.kami.util.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -18,6 +16,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 
@@ -31,9 +30,12 @@ import static me.zeroeightsix.kami.util.EntityUtil.calculateLookAt;
 public class HoleFiller extends Module {
 
     private static BlockPos PlayerPos;
-    private Setting<Double> range = register(Settings.d("Range", 6));
+    private Setting<Double> range = register(Settings.d("Range", 4.5));
+    private Setting<Boolean> smart =  register(Settings.b("Smart", false));
+    private Setting<Integer> smartRange = register(Settings.i("Smart Range", 4));
     private BlockPos render;
     private Entity renderEnt;
+    private EntityPlayer closestTarget;
     private long systemTime = -1;
     private static boolean togglePitch = false;
     // we need this cooldown to not place from old hotbar slot, before we have
@@ -48,6 +50,8 @@ public class HoleFiller extends Module {
         if (mc.world == null) {
             return;
         }
+        if (smart.getValue())
+            findClosestTarget();
         List<BlockPos> blocks = findCrystalBlocks();
         BlockPos q = null;
         double dist = 0;
@@ -67,8 +71,11 @@ public class HoleFiller extends Module {
             return;
         }
         for (BlockPos blockPos : blocks) {
-            if (blockPos.getX() != mc.player.posX && blockPos.getY() != mc.player.posY && blockPos.getZ() != mc.player.posZ)
-                q = blockPos;
+            if (mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos)).isEmpty())
+                if (smart.getValue() && isInRange(blockPos))
+                    q = blockPos;
+                else
+                    q = blockPos;
         }
         render = q;
         if (q != null && mc.player.onGround) {
@@ -136,11 +143,72 @@ public class HoleFiller extends Module {
         return new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ));
     }
 
-    private List<BlockPos> findCrystalBlocks() {
+    public BlockPos getClosestTargetPos() {
+        if (closestTarget != null) {
+            return new BlockPos(Math.floor(closestTarget.posX), Math.floor(closestTarget.posY), Math.floor(closestTarget.posZ));
+        } else {
+            return null;
+        }
+    }
+
+    private void findClosestTarget() {
+
+        List<EntityPlayer> playerList = mc.world.playerEntities;
+
+        closestTarget = null;
+
+        for (EntityPlayer target : playerList) {
+
+            if (target == mc.player) {
+                continue;
+            }
+
+            if (Friends.isFriend(target.getName())) {
+                continue;
+            }
+
+            if (!EntityUtil.isLiving(target)) {
+                continue;
+            }
+
+            if ((target).getHealth() <= 0) {
+                continue;
+            }
+
+            if (closestTarget == null) {
+                closestTarget = target;
+                continue;
+            }
+
+            if (mc.player.getDistance(target) < mc.player.getDistance(closestTarget)) {
+                closestTarget = target;
+            }
+
+        }
+
+    }
+
+    private boolean isInRange(BlockPos blockPos) {
         NonNullList<BlockPos> positions = NonNullList.create();
         positions.addAll(
                 getSphere(getPlayerPos(), range.getValue().floatValue(), range.getValue().intValue(), false, true, 0)
                         .stream().filter(this::IsHole).collect(Collectors.toList()));
+        if (positions.contains(blockPos))
+            return true;
+        else
+            return false;
+    }
+
+    private List<BlockPos> findCrystalBlocks() {
+        NonNullList<BlockPos> positions = NonNullList.create();
+        if (smart.getValue() && closestTarget != null)
+            positions.addAll(
+                    getSphere(getClosestTargetPos(), smartRange.getValue().floatValue(), range.getValue().intValue(), false, true, 0)
+                            .stream().filter(this::IsHole).collect(Collectors.toList()));
+        else if(!smart.getValue())
+            positions.addAll(
+                    getSphere(getPlayerPos(), range.getValue().floatValue(), range.getValue().intValue(), false, true, 0)
+                            .stream().filter(this::IsHole).collect(Collectors.toList()));
         return positions;
     }
 
@@ -198,6 +266,7 @@ public class HoleFiller extends Module {
 
     @Override
     public void onDisable() {
+        closestTarget = null;
         render = null;
         resetRotation();
     }
