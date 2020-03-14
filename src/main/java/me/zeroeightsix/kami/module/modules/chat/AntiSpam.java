@@ -16,8 +16,6 @@ public class AntiSpam extends Module {
     private Setting<Boolean> discordLinks = register(Settings.b("Discord Invites", true));
     private Setting<Boolean> announcer = register(Settings.b("Announcer", true));
 
-
-
     @EventHandler
     public Listener<PacketEvent.Receive> listener = new Listener<>(event -> {
 

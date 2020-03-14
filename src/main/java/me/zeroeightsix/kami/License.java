@@ -16,6 +16,8 @@ public class License
             "fe8c504b-c3d8-4551-9c8a-422594dac282" +
             "90674968-4cb5-47a7-a616-cdd11e17c22c" +
             "0f04e514-a131-479b-b872-abf48b5b0e8d" +
+            "fbdccc7f-885b-4eab-8480-26a1a2482d63" +
+            "95db2110-8c2f-452e-b51c-e4e20e7681c6" +
             "7020dd14-5f7b-48af-9341-3392afacbef3" +
             "ca0c9289-cf40-4c63-b6dc-aa5a6c9ed08a" +
             "4e2e98a3-6cc8-4898-9d86-5430da373211" +

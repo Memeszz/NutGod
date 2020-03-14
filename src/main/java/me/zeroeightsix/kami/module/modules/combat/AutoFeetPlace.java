@@ -1,9 +1,11 @@
 package me.zeroeightsix.kami.module.modules.combat;
 
 
+import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
+import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
@@ -32,26 +34,34 @@ public class AutoFeetPlace extends Module {
 
     private List<Block> whiteList = Arrays.asList(Blocks.OBSIDIAN, Blocks.ENDER_CHEST);
     private Setting<Boolean> sneak = register(Settings.b("SneakToggle", false));
+    private Setting<Boolean> alert = register(Settings.b("ChatAlert", true));
+
     private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
     private Setting<Double> bpt = this.register(Settings.d("BlocksPerTick", 7.0));
-
-
-
+    private Setting<AutoCenter> autoCenter = register(Settings.e("AutoCenter", AutoCenter.TP));
+    private Vec3d playerPos;
+    private BlockPos basePos;
+    private int offsetStep = 0;
+    private int playerHotbarSlot = -1;
+    private int lastHotbarSlot = -1;
 
     RenderItem itemRenderer = mc.getRenderItem();
 
     public static boolean hasNeighbour(BlockPos blockPos) {
         for (EnumFacing side : EnumFacing.values()) {
             BlockPos neighbour = blockPos.offset(side);
-            if(!mc.world.getBlockState(neighbour).getMaterial().isReplaceable())
+            if (!mc.world.getBlockState(neighbour).getMaterial().isReplaceable())
                 return true;
         }
         return false;
     }
+    private enum AutoCenter {
+        OFF, TP
+    }
     @Override
 
     public void onUpdate() {
-        if(sneak.getValue() && !mc.gameSettings.keyBindSneak.isKeyDown()) return;
+        if (sneak.getValue() && !mc.gameSettings.keyBindSneak.isKeyDown()) return;
         if (!isEnabled() || mc.player == null) return;
         Vec3d vec3d = getInterpolatedPos(mc.player, 0);
         BlockPos northBlockPos = new BlockPos(vec3d).north();
@@ -63,12 +73,11 @@ public class AutoFeetPlace extends Module {
 
 
         int newSlot = -1;
-        for(int i = 0; i < 9; i++)
-        {
+        for (int i = 0; i < 9; i++) {
             ItemStack stack =
                     mc.player.inventory.getStackInSlot(i);
 
-            if(stack == ItemStack.EMPTY || !(stack.getItem() instanceof ItemBlock)) {
+            if (stack == ItemStack.EMPTY || !(stack.getItem() instanceof ItemBlock)) {
                 continue;
             }
             Block block = ((ItemBlock) stack.getItem()).getBlock();
@@ -80,13 +89,14 @@ public class AutoFeetPlace extends Module {
             break;
         }
 
-        if(newSlot == -1)
+        if (newSlot == -1)
             return;
 
         int oldSlot = mc.player.inventory.currentItem;
         mc.player.inventory.currentItem = newSlot;
 
-        A: if (!hasNeighbour(northBlockPos)) {
+        A:
+        if (!hasNeighbour(northBlockPos)) {
             // find air adjacent to blockpos that does have a block adjacent to it, let's fill this first as to form a bridge between the player and the original blockpos. necessary if the player is going diagonal.
             for (EnumFacing side : EnumFacing.values()) {
                 BlockPos neighbour = northBlockPos.offset(side);
@@ -99,7 +109,8 @@ public class AutoFeetPlace extends Module {
         }
 
         // check if we don't have a block adjacent to South blockpos
-        B: if (!hasNeighbour(southBlockPos)) {
+        B:
+        if (!hasNeighbour(southBlockPos)) {
             // find air adjacent to blockpos that does have a block adjacent to it, let's fill this first as to form a bridge between the player and the original blockpos. necessary if the player is going diagonal.
             for (EnumFacing side : EnumFacing.values()) {
                 BlockPos neighbour = southBlockPos.offset(side);
@@ -112,7 +123,8 @@ public class AutoFeetPlace extends Module {
         }
 
         // check if we don't have a block adjacent to East blockpos
-        C: if (!hasNeighbour(eastBlockPos)) {
+        C:
+        if (!hasNeighbour(eastBlockPos)) {
             // find air adjacent to blockpos that does have a block adjacent to it, let's fill this first as to form a bridge between the player and the original blockpos. necessary if the player is going diagonal.
             for (EnumFacing side : EnumFacing.values()) {
                 BlockPos neighbour = eastBlockPos.offset(side);
@@ -125,7 +137,8 @@ public class AutoFeetPlace extends Module {
         }
 
         // check if we don't have a block adjacent to West blockpos
-        D: if (!hasNeighbour(westBlockPos)) {
+        D:
+        if (!hasNeighbour(westBlockPos)) {
             // find air adjacent to blockpos that does have a block adjacent to it, let's fill this first as to form a bridge between the player and the original blockpos. necessary if the player is going diagonal.
             for (EnumFacing side : EnumFacing.values()) {
                 BlockPos neighbour = westBlockPos.offset(side);
@@ -138,58 +151,69 @@ public class AutoFeetPlace extends Module {
         }
 
 
-
         // place blocks
-        if(mc.world.getBlockState(northBlockPos).getMaterial().isReplaceable()) {
-            if(isEntitiesEmpty(northBlockPos)) {
+        if (mc.world.getBlockState(northBlockPos).getMaterial().isReplaceable()) {
+            if (isEntitiesEmpty(northBlockPos)) {
                 placeBlockScaffold(northBlockPos, rotate.getValue());
                 blocksPlaced++;
-            } else if(isEntitiesEmpty(northBlockPos.north()) && mc.world.getBlockState(northBlockPos).getMaterial().isReplaceable()){
+            } else if (isEntitiesEmpty(northBlockPos.north()) && mc.world.getBlockState(northBlockPos).getMaterial().isReplaceable()) {
                 placeBlockScaffold(northBlockPos.north(), rotate.getValue());
                 blocksPlaced++;
             }
         }
-        if(blocksPlaced >= bpt.getValue()){ mc.player.inventory.currentItem = oldSlot; return; }
+        if (blocksPlaced >= bpt.getValue()) {
+            mc.player.inventory.currentItem = oldSlot;
+            return;
+        }
 
-        if(mc.world.getBlockState(southBlockPos).getMaterial().isReplaceable()) {
-            if(isEntitiesEmpty(southBlockPos)) {
+        if (mc.world.getBlockState(southBlockPos).getMaterial().isReplaceable()) {
+            if (isEntitiesEmpty(southBlockPos)) {
                 placeBlockScaffold(southBlockPos, rotate.getValue());
                 blocksPlaced++;
-            } else if(isEntitiesEmpty(southBlockPos.south()) && mc.world.getBlockState(southBlockPos.south()).getMaterial().isReplaceable()){
+            } else if (isEntitiesEmpty(southBlockPos.south()) && mc.world.getBlockState(southBlockPos.south()).getMaterial().isReplaceable()) {
                 placeBlockScaffold(southBlockPos.south(), rotate.getValue());
                 blocksPlaced++;
             }
         }
-        if(blocksPlaced >= bpt.getValue()){ mc.player.inventory.currentItem = oldSlot; return; }
+        if (blocksPlaced >= bpt.getValue()) {
+            mc.player.inventory.currentItem = oldSlot;
+            return;
+        }
 
-        if(mc.world.getBlockState(eastBlockPos).getMaterial().isReplaceable()) {
-            if(isEntitiesEmpty(eastBlockPos)) {
+        if (mc.world.getBlockState(eastBlockPos).getMaterial().isReplaceable()) {
+            if (isEntitiesEmpty(eastBlockPos)) {
                 placeBlockScaffold(eastBlockPos, rotate.getValue());
                 blocksPlaced++;
-            } else if(isEntitiesEmpty(eastBlockPos.east()) && mc.world.getBlockState(eastBlockPos.east()).getMaterial().isReplaceable()){
+            } else if (isEntitiesEmpty(eastBlockPos.east()) && mc.world.getBlockState(eastBlockPos.east()).getMaterial().isReplaceable()) {
                 placeBlockScaffold(eastBlockPos.east(), rotate.getValue());
                 blocksPlaced++;
             }
         }
-        if(blocksPlaced >= bpt.getValue()){ mc.player.inventory.currentItem = oldSlot; return; }
+        if (blocksPlaced >= bpt.getValue()) {
+            mc.player.inventory.currentItem = oldSlot;
+            return;
+        }
 
-        if(mc.world.getBlockState(westBlockPos).getMaterial().isReplaceable()) {
-            if(isEntitiesEmpty(westBlockPos)) {
+        if (mc.world.getBlockState(westBlockPos).getMaterial().isReplaceable()) {
+            if (isEntitiesEmpty(westBlockPos)) {
                 placeBlockScaffold(westBlockPos, rotate.getValue());
                 blocksPlaced++;
-            } else if(isEntitiesEmpty(westBlockPos.west()) && mc.world.getBlockState(westBlockPos.west()).getMaterial().isReplaceable()){
+            } else if (isEntitiesEmpty(westBlockPos.west()) && mc.world.getBlockState(westBlockPos.west()).getMaterial().isReplaceable()) {
                 placeBlockScaffold(westBlockPos.west(), rotate.getValue());
                 blocksPlaced++;
             }
         }
-        if(blocksPlaced >= bpt.getValue()){ mc.player.inventory.currentItem = oldSlot; return; }
+        if (blocksPlaced >= bpt.getValue()) {
+            mc.player.inventory.currentItem = oldSlot;
+            return;
+        }
 
         // reset slot
         mc.player.inventory.currentItem = oldSlot;
     }
 
-    private boolean isEntitiesEmpty(BlockPos pos){
-        List<Entity> entities =  mc.world.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(pos)).stream()
+    private boolean isEntitiesEmpty(BlockPos pos) {
+        List<Entity> entities = mc.world.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(pos)).stream()
                 .filter(e -> !(e instanceof EntityItem))
                 .filter(e -> !(e instanceof EntityXPOrb))
                 .collect(Collectors.toList());
@@ -201,20 +225,19 @@ public class AutoFeetPlace extends Module {
                 mc.player.posY + mc.player.getEyeHeight(),
                 mc.player.posZ);
 
-        for(EnumFacing side : EnumFacing.values())
-        {
+        for (EnumFacing side : EnumFacing.values()) {
             BlockPos neighbor = pos.offset(side);
             EnumFacing side2 = side.getOpposite();
 
 
-            if(!canBeClicked(neighbor))
+            if (!canBeClicked(neighbor))
                 continue;
 
             Vec3d hitVec = new Vec3d(neighbor).add(0.5, 0.5, 0.5)
                     .add(new Vec3d(side2.getDirectionVec()).scale(0.5));
 
 
-            if(rotate)
+            if (rotate)
                 faceVectorPacketInstant(hitVec);
             mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
             processRightClickBlock(neighbor, side2, hitVec);
@@ -228,43 +251,36 @@ public class AutoFeetPlace extends Module {
         return false;
     }
 
-    private static PlayerControllerMP getPlayerController()
-    {
+    private static PlayerControllerMP getPlayerController() {
         return mc.playerController;
     }
 
     public static void processRightClickBlock(BlockPos pos, EnumFacing side,
-                                              Vec3d hitVec)
-    {
+                                              Vec3d hitVec) {
         getPlayerController().processRightClickBlock(mc.player,
                 mc.world, pos, side, hitVec, EnumHand.MAIN_HAND);
     }
 
-    public static IBlockState getState(BlockPos pos)
-    {
+    public static IBlockState getState(BlockPos pos) {
         return mc.world.getBlockState(pos);
     }
 
-    public static Block getBlock(BlockPos pos)
-    {
+    public static Block getBlock(BlockPos pos) {
         return getState(pos).getBlock();
     }
 
-    public static boolean canBeClicked(BlockPos pos)
-    {
+    public static boolean canBeClicked(BlockPos pos) {
         return getBlock(pos).canCollideCheck(getState(pos), false);
     }
 
-    public static void faceVectorPacketInstant(Vec3d vec)
-    {
+    public static void faceVectorPacketInstant(Vec3d vec) {
         float[] rotations = getNeededRotations2(vec);
 
         mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rotations[0],
                 rotations[1], mc.player.onGround));
     }
 
-    private static float[] getNeededRotations2(Vec3d vec)
-    {
+    private static float[] getNeededRotations2(Vec3d vec) {
         Vec3d eyesPos = getEyesPos();
 
         double diffX = vec.x - eyesPos.x;
@@ -273,8 +289,8 @@ public class AutoFeetPlace extends Module {
 
         double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
 
-        float yaw = (float)Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F;
-        float pitch = (float)-Math.toDegrees(Math.atan2(diffY, diffXZ));
+        float yaw = (float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F;
+        float pitch = (float) -Math.toDegrees(Math.atan2(diffY, diffXZ));
 
         return new float[]{
                 mc.player.rotationYaw
@@ -283,8 +299,7 @@ public class AutoFeetPlace extends Module {
                         .wrapDegrees(pitch - mc.player.rotationPitch)};
     }
 
-    public static Vec3d getEyesPos()
-    {
+    public static Vec3d getEyesPos() {
         return new Vec3d(mc.player.posX,
                 mc.player.posY + mc.player.getEyeHeight(),
                 mc.player.posZ);
@@ -305,4 +320,70 @@ public class AutoFeetPlace extends Module {
                 (entity.posZ - entity.lastTickPosZ) * z
         );
     }
-}
+
+    /* Autocenter */
+    private void centerPlayer(double x, double y, double z) {
+
+        mc.player.connection.sendPacket(new CPacketPlayer.Position(x, y, z, true));
+        mc.player.setPosition(x, y, z);
+    }
+
+    double getDst(Vec3d vec) {
+        return playerPos.distanceTo(vec);
+    }
+    /* End of Autocenter */
+
+    public void onEnable() {
+            if (this.alert.getValue() && NutGodCA.mc.world != null) {
+                Command.sendRawChatMessage("\u00A7aSurround ON");
+            }
+
+
+        if (mc.player == null) return;
+        /* Autocenter */
+        BlockPos centerPos = mc.player.getPosition();
+        playerPos = mc.player.getPositionVector();
+        double y = centerPos.getY();
+        double x = centerPos.getX();
+        double z = centerPos.getZ();
+
+        final Vec3d plusPlus = new Vec3d(x + 0.5, y, z + 0.5);
+        final Vec3d plusMinus = new Vec3d(x + 0.5, y, z - 0.5);
+        final Vec3d minusMinus = new Vec3d(x - 0.5, y, z - 0.5);
+        final Vec3d minusPlus = new Vec3d(x - 0.5, y, z + 0.5);
+
+        if (autoCenter.getValue().equals(AutoCenter.TP)) {
+            if (getDst(plusPlus) < getDst(plusMinus) && getDst(plusPlus) < getDst(minusMinus) && getDst(plusPlus) < getDst(minusPlus)) {
+                x = centerPos.getX() + 0.5;
+                z = centerPos.getZ() + 0.5;
+                centerPlayer(x, y, z);
+            }
+            if (getDst(plusMinus) < getDst(plusPlus) && getDst(plusMinus) < getDst(minusMinus) && getDst(plusMinus) < getDst(minusPlus)) {
+                x = centerPos.getX() + 0.5;
+                z = centerPos.getZ() - 0.5;
+                centerPlayer(x, y, z);
+            }
+            if (getDst(minusMinus) < getDst(plusPlus) && getDst(minusMinus) < getDst(plusMinus) && getDst(minusMinus) < getDst(minusPlus)) {
+                x = centerPos.getX() - 0.5;
+                z = centerPos.getZ() - 0.5;
+                centerPlayer(x, y, z);
+            }
+            if (getDst(minusPlus) < getDst(plusPlus) && getDst(minusPlus) < getDst(plusMinus) && getDst(minusPlus) < getDst(minusMinus)) {
+                x = centerPos.getX() - 0.5;
+                z = centerPos.getZ() + 0.5;
+                centerPlayer(x, y, z);
+            }
+        }
+        /* End of Autocenter*/
+
+        playerHotbarSlot = Wrapper.getPlayer().inventory.currentItem;
+        lastHotbarSlot = -1;
+
+
+       }
+        public void onDisable() {
+    if (this.alert.getValue() && NutGodCA.mc.world != null) {
+        Command.sendRawChatMessage("\u00A7cSurround OFF");
+
+    }
+}}

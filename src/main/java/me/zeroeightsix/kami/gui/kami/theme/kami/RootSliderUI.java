@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
+import me.zeroeightsix.kami.gui.font.CFontRenderer;
 import me.zeroeightsix.kami.gui.kami.RenderHelper;
 import me.zeroeightsix.kami.gui.kami.RootSmallFontRenderer;
 import me.zeroeightsix.kami.gui.rgui.component.container.Container;
@@ -9,9 +10,12 @@ import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
+
 public class RootSliderUI extends AbstractComponentUI<Slider> {
 
     RootSmallFontRenderer smallFontRenderer = new RootSmallFontRenderer();
+    CFontRenderer cFontRenderer = new CFontRenderer(new Font("Verdana", 0, 24), true, false);
 
     @Override
     public void renderComponent(Slider component, FontRenderer aa) {
@@ -37,7 +41,7 @@ public class RootSliderUI extends AbstractComponentUI<Slider> {
             smallFontRenderer.drawString((int) w_, 2, s);
         }else{
             smallFontRenderer.drawString(2, 2, component.getText());
-            smallFontRenderer.drawString(component.getWidth() - smallFontRenderer.getStringWidth(s) - 2, 2, s);
+            smallFontRenderer.drawString(component.getWidth() - cFontRenderer.getStringWidth(s) - 2, 2, s);
         }
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);

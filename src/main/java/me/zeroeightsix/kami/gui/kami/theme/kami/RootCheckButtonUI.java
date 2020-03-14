@@ -23,11 +23,11 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
 
     public RootCheckButtonUI() {
         this.cFontRenderer = new CFontRenderer(new Font("Arial", 0, 18), true, false);
-        this.backgroundColour = new Color(200, 56, 56);
-        this.backgroundColourHover = new Color(255, 66, 66);
-        this.idleColourNormal = new Color(200, 200, 200);
-        this.downColourNormal = new Color(190, 190, 190);
-        this.idleColourToggle = new Color(250, 120, 120);
+        this.backgroundColour = new Color(0, 0, 255);;
+        this.backgroundColourHover = new Color(19, 255, 225);
+        this.idleColourNormal = new Color(37, 200, 2);
+        this.downColourNormal = new Color(19, 255, 225);
+        this.idleColourToggle = new Color(0, 0, 255);
         this.downColourToggle = this.idleColourToggle.brighter();
     }
 
@@ -36,7 +36,7 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
         if (component.isToggled()) {}
         if (component.isHovered() || component.isPressed()) {}
         final String text = component.getName();
-        int c = component.isPressed() ? 11184810 : (component.isToggled() ? 16724787 : 14540253);
+        int c = component.isPressed() ? 0xffffff : component.isToggled() ? 0x0bc9e7 : 0xffffff;
         if (component.isHovered()) {
             c = (c & 0x7F7F7F) << 1;
         }

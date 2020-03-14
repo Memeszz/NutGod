@@ -234,7 +234,7 @@ public class KamiGUI
         frame.setCloseable(false);
         frame.setPinneable(true);
         frame.setMinimumWidth(75);
-        Label watermark = new Label ("\u00A7dNutGod 4.6");
+        Label watermark = new Label ("\u00A7dNutGod 4.7");
         watermark.setX((frame.getWidth() / 2));
         watermark.setShadow(true);
         frame.addChild(watermark);

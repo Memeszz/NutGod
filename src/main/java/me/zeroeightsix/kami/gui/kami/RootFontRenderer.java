@@ -1,7 +1,9 @@
 
 package me.zeroeightsix.kami.gui.kami;
 
-import java.awt.Color;
+import java.awt.*;
+
+import me.zeroeightsix.kami.gui.font.CFontRenderer;
 import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.GL11;
@@ -14,6 +16,8 @@ implements FontRenderer {
     public RootFontRenderer(float fontsize) {
         this.fontRenderer = Minecraft.getMinecraft().fontRenderer;
         this.fontsize = fontsize;
+        CFontRenderer cFontRenderer = new CFontRenderer(new Font("Verdana", 0, 24), true, false);
+
     }
 
     @Override

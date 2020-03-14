@@ -25,7 +25,9 @@ import java.util.stream.Collectors;
 @Module.Info(name = "AutoTrap", description = "Draws nice little lines around storage items", category = Module.Category.COMBAT)
 public class AutoTrap extends Module {
     private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
+    private Setting<Boolean> alert = register(Settings.b("ChatAlert", false));
     private Setting<Boolean> ec = register(Settings.b("EnderChest", true));
+
     private Setting<Double> bpt = this.register(Settings.d("BlocksPerTick", 7.0));
     private Setting<Double> range = this.register(Settings.d("Range", 5.0));
 

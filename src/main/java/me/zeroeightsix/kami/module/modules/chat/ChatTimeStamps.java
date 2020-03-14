@@ -21,7 +21,7 @@ public class ChatTimeStamps extends Module {
     @EventHandler
     public Listener<ClientChatReceivedEvent> listener = new Listener<>(event -> {
 
-        TextComponentString newTextComponentString = new TextComponentString(ChatFormatting.GRAY + (deco.getValue() ? "<" : "") + new SimpleDateFormat("k:mm").format(new Date()) + (deco.getValue() ? ">" : "") + ChatFormatting.RESET + " ");
+        TextComponentString newTextComponentString = new TextComponentString(ChatFormatting.DARK_GRAY + (deco.getValue() ? "<" : "") + new SimpleDateFormat("k:mm").format(new Date()) + (deco.getValue() ? ">" : "") + ChatFormatting.RESET + " ");
         newTextComponentString.appendSibling(event.getMessage());
 
         event.setMessage(newTextComponentString);

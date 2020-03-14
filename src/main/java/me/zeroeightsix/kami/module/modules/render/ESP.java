@@ -9,14 +9,16 @@ import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.GeometryMasks;
 import me.zeroeightsix.kami.util.KamiTessellator;
 import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.entity.item.*;
+import net.minecraft.entity.item.EntityEnderPearl;
+import net.minecraft.entity.item.EntityExpBottle;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
 @Module.Info(name = "ESP", description = "Draws Boxes around entities", category = Module.Category.RENDER)
-public class BoxESP extends Module {
+public class ESP extends Module {
 
     private Setting<Boolean> players = register(Settings.b("Players", true));
     private Setting<Boolean> rainbow = register(Settings.b("Chroma", true));
@@ -42,10 +44,11 @@ public class BoxESP extends Module {
                 .filter(entity -> entity != mc.player)
                 .forEach(e -> {
                     KamiTessellator.prepare(GL11.GL_QUADS);
-                    if(players.getValue() && e instanceof EntityPlayer) {
-                        if (Friends.isFriend(e.getName())) KamiTessellator.drawBox(e.getRenderBoundingBox(), friend.getRGB(), GeometryMasks.Quad.ALL);
+                    if (players.getValue() && e instanceof EntityPlayer) {
+                        if (Friends.isFriend(e.getName()))
+                            KamiTessellator.drawBox(e.getRenderBoundingBox(), friend.getRGB(), GeometryMasks.Quad.ALL);
                         else KamiTessellator.drawBox(e.getRenderBoundingBox(), enemy.getRGB(), GeometryMasks.Quad.ALL);
-                    }
+                }
                     if(exp.getValue() && e instanceof EntityExpBottle){
                         KamiTessellator.drawBox(e.getRenderBoundingBox(), finalC.getRGB(), GeometryMasks.Quad.ALL);
                     }

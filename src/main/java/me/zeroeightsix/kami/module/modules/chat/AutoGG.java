@@ -20,7 +20,6 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-//heph skid, sorry hub
 @Module.Info(name = "AutoGG", description = "Says gg after a nigga dies", category = Module.Category.CHAT)
 public class AutoGG extends Module {
 

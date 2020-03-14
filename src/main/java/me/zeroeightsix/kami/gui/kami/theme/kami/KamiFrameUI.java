@@ -36,7 +36,6 @@ public class KamiFrameUI<T extends Frame>
     boolean centerY = false;
     int xLineOffset = 0;
     private static final RootFontRenderer ff = new RootLargeFontRenderer();
-    CFontRenderer cFontRendererLarge = new CFontRenderer(new Font("Verdana", 0, 24), true, false);
     public float redForBG;
     public float greenForBG;
     public float blueForBG;

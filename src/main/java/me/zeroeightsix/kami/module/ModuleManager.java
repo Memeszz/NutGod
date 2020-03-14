@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.lang.reflect.InvocationTargetException;
@@ -33,8 +34,9 @@ public class ModuleManager {
 
     public static void updateLookup() {
         lookup.clear();
-        for (Module m : modules)
+        for (Module m : modules) {
             lookup.put(m.getName().toLowerCase(), m);
+        }
     }
 
     public static void initialize() {
@@ -106,9 +108,16 @@ public class ModuleManager {
     }
 
     public static void onBind(int eventKey) {
-        if (eventKey == 0) return; // if key is the 'none' key (stuff like mod key in i3 might return 0)
+        // if key is the 'none' key (stuff like mod key in i3 might return 0)
+        if (eventKey == 0) {
+            return;
+        }
+        // if not down, return
+        if (!Keyboard.getEventKeyState()) {
+            return;
+        }
         modules.forEach(module -> {
-            if (module.getBind().isDown(eventKey)) {
+            if (module.getBind().getKey() == eventKey) {
                 module.toggle();
             }
         });
@@ -125,7 +134,9 @@ public class ModuleManager {
 
     public static boolean isModuleEnabled(String moduleName) {
         Module m = getModuleByName(moduleName);
-        if (m == null) return false;
+        if (m == null) {
+            return false;
+        }
         return m.isEnabled();
     }
 }

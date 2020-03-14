@@ -195,7 +195,10 @@ public class ForgeEventProcessor {
     public void onEntityJoinWorldEvent(EntityJoinWorldEvent entityJoinWorldEvent) {
         KamiMod.EVENT_BUS.post(entityJoinWorldEvent);
     }
-
+    @SubscribeEvent
+    public void onClientChatReceivedEvent(ClientChatReceivedEvent clientChatReceivedEvent) {
+        KamiMod.EVENT_BUS.post(clientChatReceivedEvent);
+    }
     @SubscribeEvent
     public void onPlayerPush(PlayerSPPushOutOfBlocksEvent event) {
         KamiMod.EVENT_BUS.post(event);

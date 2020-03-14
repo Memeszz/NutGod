@@ -8,6 +8,8 @@ import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
+import me.zeroeightsix.kami.module.modules.chat.AutoGG;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.EntityUtil;
@@ -38,9 +40,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@Module.Info(name = "AutoCrystal", category = Module.Category.COMBAT)
-public class NutGodCA extends Module
-{
+@Module.Info(name = "NutGodCA", category = Module.Category.COMBAT)
+public class NutGodCA extends Module {
     private Setting<Boolean> place;
     private Setting<Boolean> raytrace;
     private Setting<Boolean> autoSwitch;
@@ -57,6 +58,7 @@ public class NutGodCA extends Module
     private Setting<Integer> placeRange;
     private Setting<Integer> breakRange;
     private BlockPos render;
+    public boolean isActive = false;
     private Entity renderEnt;
     private long placeSystemTime;
     private long breakSystemTime;
@@ -70,6 +72,8 @@ public class NutGodCA extends Module
     private static boolean isSpoofingAngles;
     private static double yaw;
     private static double pitch;
+    private EntityPlayer target;
+
     @EventHandler
     private Listener<PacketEvent.Send> packetListener;
 
@@ -81,14 +85,14 @@ public class NutGodCA extends Module
         this.multiPlace = this.register(Settings.b("MultiPlace", false));
         this.alert = this.register(Settings.b("ChatAlerts", true));
         this.antiSui = this.register(Settings.b("AntiSuicide", true));
-        this.attackSpeed = this.register((Setting<Integer>)Settings.integerBuilder("AttackSpeed").withMinimum(0).withMaximum(20).withValue(17).build());
-        this.placeDelay = this.register((Setting<Integer>)Settings.integerBuilder("PlaceDelay").withMinimum(0).withMaximum(50).withValue(0).build());
-        this.enemyRange = this.register((Setting<Integer>)Settings.integerBuilder("EnemyRange").withMinimum(1).withMaximum(13).withValue(9).build());
-        this.minDamage = this.register((Setting<Integer>)Settings.integerBuilder("MinDamage").withMinimum(0).withMaximum(16).withValue(4).build());
-        this.facePlace = this.register((Setting<Integer>)Settings.integerBuilder("FacePlace").withMinimum(0).withMaximum(16).withValue(7).build());
-        this.multiPlaceSpeed = this.register((Setting<Integer>)Settings.integerBuilder("MultiPlaceSpeed").withMinimum(1).withMaximum(10).withValue(4).build());
-        this.placeRange = this.register((Setting<Integer>)Settings.integerBuilder("PlaceRange").withMinimum(1).withMaximum(6).withValue(6).build());
-        this.breakRange = this.register((Setting<Integer>)Settings.integerBuilder("BreakRange").withMinimum(1).withMaximum(6).withValue(6).build());
+        this.attackSpeed = this.register((Setting<Integer>) Settings.integerBuilder("AttackSpeed").withMinimum(0).withMaximum(20).withValue(17).build());
+        this.placeDelay = this.register((Setting<Integer>) Settings.integerBuilder("PlaceDelay").withMinimum(0).withMaximum(50).withValue(0).build());
+        this.enemyRange = this.register((Setting<Integer>) Settings.integerBuilder("EnemyRange").withMinimum(1).withMaximum(13).withValue(9).build());
+        this.minDamage = this.register((Setting<Integer>) Settings.integerBuilder("MinDamage").withMinimum(0).withMaximum(16).withValue(4).build());
+        this.facePlace = this.register((Setting<Integer>) Settings.integerBuilder("FacePlace").withMinimum(0).withMaximum(16).withValue(7).build());
+        this.multiPlaceSpeed = this.register((Setting<Integer>) Settings.integerBuilder("MultiPlaceSpeed").withMinimum(1).withMaximum(10).withValue(4).build());
+        this.placeRange = this.register((Setting<Integer>) Settings.integerBuilder("PlaceRange").withMinimum(1).withMaximum(6).withValue(6).build());
+        this.breakRange = this.register((Setting<Integer>) Settings.integerBuilder("BreakRange").withMinimum(1).withMaximum(6).withValue(6).build());
         this.placeSystemTime = -1L;
         this.breakSystemTime = -1L;
         this.chatSystemTime = -1L;
@@ -100,19 +104,19 @@ public class NutGodCA extends Module
         this.packetListener = new Listener<PacketEvent.Send>(event -> {
             packet[0] = event.getPacket();
             if (packet[0] instanceof CPacketPlayer && NutGodCA.isSpoofingAngles) {
-                ((CPacketPlayer) packet[0]).yaw = (float)NutGodCA.yaw;
-                ((CPacketPlayer) packet[0]).pitch = (float)NutGodCA.pitch;
+                ((CPacketPlayer) packet[0]).yaw = (float) NutGodCA.yaw;
+                ((CPacketPlayer) packet[0]).pitch = (float) NutGodCA.pitch;
             }
-        }, (Predicate<PacketEvent.Send>[])new Predicate[0]);
+        }, (Predicate<PacketEvent.Send>[]) new Predicate[0]);
     }
 
     @Override
     public void onUpdate() {
-        final EntityEnderCrystal crystal = (EntityEnderCrystal)NutGodCA.mc.world.loadedEntityList.stream().filter(entity -> entity instanceof EntityEnderCrystal).map(entity -> entity).min(Comparator.comparing(c -> NutGodCA.mc.player.getDistance(c))).orElse(null);
-        if (crystal != null && NutGodCA.mc.player.getDistance((Entity)crystal) <= this.breakRange.getValue()) {
+        final EntityEnderCrystal crystal = (EntityEnderCrystal) NutGodCA.mc.world.loadedEntityList.stream().filter(entity -> entity instanceof EntityEnderCrystal).map(entity -> entity).min(Comparator.comparing(c -> NutGodCA.mc.player.getDistance(c))).orElse(null);
+        if (crystal != null && NutGodCA.mc.player.getDistance((Entity) crystal) <= this.breakRange.getValue()) {
             if (System.nanoTime() / 1000000L - this.breakSystemTime >= 420 - this.attackSpeed.getValue() * 20) {
-                this.lookAtPacket(crystal.posX, crystal.posY, crystal.posZ, (EntityPlayer)NutGodCA.mc.player);
-                NutGodCA.mc.playerController.attackEntity((EntityPlayer)NutGodCA.mc.player, (Entity)crystal);
+                this.lookAtPacket(crystal.posX, crystal.posY, crystal.posZ, (EntityPlayer) NutGodCA.mc.player);
+                NutGodCA.mc.playerController.attackEntity((EntityPlayer) NutGodCA.mc.player, (Entity) crystal);
                 NutGodCA.mc.player.swingArm(EnumHand.MAIN_HAND);
                 this.breakSystemTime = System.nanoTime() / 1000000L;
             }
@@ -121,12 +125,10 @@ public class NutGodCA extends Module
                     this.multiPlaceSystemTime = System.nanoTime() / 1000000L;
                     return;
                 }
-            }
-            else if (System.nanoTime() / 1000000L - this.antiStuckSystemTime <= 400 + (400 - this.attackSpeed.getValue() * 20)) {
+            } else if (System.nanoTime() / 1000000L - this.antiStuckSystemTime <= 400 + (400 - this.attackSpeed.getValue() * 20)) {
                 return;
             }
-        }
-        else {
+        } else {
             resetRotation();
         }
         int crystalSlot = (NutGodCA.mc.player.getHeldItemMainhand().getItem() == Items.END_CRYSTAL) ? NutGodCA.mc.player.inventory.currentItem : -1;
@@ -148,11 +150,11 @@ public class NutGodCA extends Module
         BlockPos finalPos = null;
         final List<BlockPos> blocks = this.findCrystalBlocks();
         final List<Entity> entities = new ArrayList<Entity>();
-        entities.addAll((Collection<? extends Entity>)NutGodCA.mc.world.playerEntities.stream().filter(entityPlayer -> !Friends.isFriend(entityPlayer.getName())).collect(Collectors.toList()));
+        entities.addAll((Collection<? extends Entity>) NutGodCA.mc.world.playerEntities.stream().filter(entityPlayer -> !Friends.isFriend(entityPlayer.getName())).collect(Collectors.toList()));
         double damage = 0.5;
         for (final Entity entity2 : entities) {
             if (entity2 != NutGodCA.mc.player) {
-                if (((EntityLivingBase)entity2).getHealth() <= 0.0f) {
+                if (((EntityLivingBase) entity2).getHealth() <= 0.0f) {
                     continue;
                 }
                 if (NutGodCA.mc.player.getDistanceSq(entity2) > this.enemyRange.getValue() * this.enemyRange.getValue()) {
@@ -167,13 +169,13 @@ public class NutGodCA extends Module
                         continue;
                     }
                     final double d = calculateDamage(blockPos.x + 0.5, blockPos.y + 1, blockPos.z + 0.5, entity2);
-                    if (d < this.minDamage.getValue() && ((EntityLivingBase)entity2).getHealth() + ((EntityLivingBase)entity2).getAbsorptionAmount() > this.facePlace.getValue()) {
+                    if (d < this.minDamage.getValue() && ((EntityLivingBase) entity2).getHealth() + ((EntityLivingBase) entity2).getAbsorptionAmount() > this.facePlace.getValue()) {
                         continue;
                     }
                     if (d <= damage) {
                         continue;
                     }
-                    final double self = calculateDamage(blockPos.x + 0.5, blockPos.y + 1, blockPos.z + 0.5, (Entity)NutGodCA.mc.player);
+                    final double self = calculateDamage(blockPos.x + 0.5, blockPos.y + 1, blockPos.z + 0.5, (Entity) NutGodCA.mc.player);
                     if (this.antiSui.getValue()) {
                         if (NutGodCA.mc.player.getHealth() + NutGodCA.mc.player.getAbsorptionAmount() - self <= 7.0) {
                             continue;
@@ -194,8 +196,13 @@ public class NutGodCA extends Module
             resetRotation();
             return;
         }
+
         this.render = finalPos;
         this.renderEnt = ent;
+        if (ModuleManager.getModuleByName("AutoGG").isEnabled()) {
+            AutoGG autoGG = (AutoGG) ModuleManager.getModuleByName("AutoGG");
+            autoGG.addTargetedPlayer(target.getName());
+        }
         if (this.place.getValue()) {
             if (!offhand && NutGodCA.mc.player.inventory.currentItem != crystalSlot) {
                 if (this.autoSwitch.getValue()) {
@@ -205,13 +212,12 @@ public class NutGodCA extends Module
                 }
                 return;
             }
-            this.lookAtPacket(finalPos.x + 0.5, finalPos.y - 0.5, finalPos.z + 0.5, (EntityPlayer)NutGodCA.mc.player);
+            this.lookAtPacket(finalPos.x + 0.5, finalPos.y - 0.5, finalPos.z + 0.5, (EntityPlayer) NutGodCA.mc.player);
             final RayTraceResult result = NutGodCA.mc.world.rayTraceBlocks(new Vec3d(NutGodCA.mc.player.posX, NutGodCA.mc.player.posY + NutGodCA.mc.player.getEyeHeight(), NutGodCA.mc.player.posZ), new Vec3d(finalPos.x + 0.5, finalPos.y - 0.5, finalPos.z + 0.5));
             EnumFacing f;
             if (result == null || result.sideHit == null) {
                 f = EnumFacing.UP;
-            }
-            else {
+            } else {
                 f = result.sideHit;
             }
             if (this.switchCooldown) {
@@ -219,7 +225,7 @@ public class NutGodCA extends Module
                 return;
             }
             if (System.nanoTime() / 1000000L - this.placeSystemTime >= this.placeDelay.getValue() * 2) {
-                NutGodCA.mc.player.connection.sendPacket((Packet)new CPacketPlayerTryUseItemOnBlock(finalPos, f, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0.0f, 0.0f, 0.0f));
+                NutGodCA.mc.player.connection.sendPacket((Packet) new CPacketPlayerTryUseItemOnBlock(finalPos, f, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0.0f, 0.0f, 0.0f));
                 ++this.placements;
                 this.antiStuckSystemTime = System.nanoTime() / 1000000L;
                 this.placeSystemTime = System.nanoTime() / 1000000L;
@@ -228,16 +234,21 @@ public class NutGodCA extends Module
         if (NutGodCA.isSpoofingAngles) {
             if (NutGodCA.togglePitch) {
                 final EntityPlayerSP player = NutGodCA.mc.player;
-                player.rotationPitch += (float)4.0E-4;
+                player.rotationPitch += (float) 4.0E-4;
                 NutGodCA.togglePitch = false;
-            }
-            else {
+            } else {
                 final EntityPlayerSP player2 = NutGodCA.mc.player;
-                player2.rotationPitch -= (float)4.0E-4;
+                player2.rotationPitch -= (float) 4.0E-4;
                 NutGodCA.togglePitch = true;
             }
         }
     }
+
+
+
+
+
+
 
     @Override
     public void onWorldRender(final RenderEvent event) {
@@ -353,13 +364,13 @@ public class NutGodCA extends Module
     @Override
     protected void onEnable() {
         if (this.alert.getValue() && NutGodCA.mc.world != null) {
-            Command.sendRawChatMessage("§aAutoCrystal ON");
+            Command.sendRawChatMessage("\u00A7aAutoCrystal ON");
         }
     }
 
     public void onDisable() {
         if (this.alert.getValue() && NutGodCA.mc.world != null) {
-            Command.sendRawChatMessage("§cAutoCrystal OFF");
+            Command.sendRawChatMessage("\u00A7cAutoCrystal OFF");
         }
         this.render = null;
         resetRotation();

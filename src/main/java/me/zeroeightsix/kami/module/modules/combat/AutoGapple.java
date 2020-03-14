@@ -17,26 +17,39 @@ public class AutoGapple extends Module {
     private boolean returnI = false;
 
     private Setting<Boolean> soft = register(Settings.b("Soft", false));
-    private Setting<Boolean> totem_disable = register(Settings.b("TotemOnDisable", true));
+    private Setting<Boolean> totemdisable = register(Settings.b("TotemOnDisable", true));
+    private Setting<Boolean> offhandcaDisable = register(Settings.b("OffhandCADisable", true));
 
 
     @Override
     public void onEnable() {
-        if (totem_disable.getValue()) {
+        if (totemdisable.getValue()) {
             ModuleManager.getModuleByName("AutoTotem").disable();
+        } else {
+            return;
+        }
+        if (offhandcaDisable.getValue()) {
+            ModuleManager.getModuleByName("AutoOffhandCrystal").disable();
         } else {
             return;
         }
     }
 
+
     @Override
     public void onDisable() {
-        if (totem_disable.getValue()) {
+        if (totemdisable.getValue()) {
             ModuleManager.getModuleByName("AutoTotem").enable();
         } else {
             return;
         }
-    }
+            if (offhandcaDisable.getValue()) {
+                ModuleManager.getModuleByName("AutoOffhandCrystal").enable();
+            } else {
+                return;
+            }
+        }
+
 
     @Override
     public void onUpdate() {

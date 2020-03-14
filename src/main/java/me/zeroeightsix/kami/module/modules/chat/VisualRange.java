@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/*
- * Created by Hamburger 29/02/2020
- */
+
 @Module.Info(name = "VisualRange", description = "Reports Players in VisualRange", category = Module.Category.CHAT)
 public class VisualRange extends Module {
 
