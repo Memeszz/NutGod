@@ -2,7 +2,8 @@
 package me.zeroeightsix.kami.gui.kami;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import java.awt.Font;
+
+import java.awt.*;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -234,7 +235,8 @@ public class KamiGUI
         frame.setCloseable(false);
         frame.setPinneable(true);
         frame.setMinimumWidth(75);
-        Label watermark = new Label ("\u00A7dNutGod 4.7");
+
+        Label watermark = new Label("NutGod 4.8");
         watermark.setX((frame.getWidth() / 2));
         watermark.setShadow(true);
         frame.addChild(watermark);
@@ -294,7 +296,7 @@ public class KamiGUI
                     if (effectStrength != null && entityPlayer.isPotionActive(MobEffects.STRENGTH)) {
                         int duration = effectStrength.getDuration();
                         if (duration > 0) {
-                            potsSB.append(ChatFormatting.RED);
+                            potsSB.append(ChatFormatting.DARK_RED);
                             potsSB.append(" S ");
                             potsSB.append(ChatFormatting.GRAY);
                             potsSB.append(Potion.getPotionDurationString(effectStrength, 1.0f));
