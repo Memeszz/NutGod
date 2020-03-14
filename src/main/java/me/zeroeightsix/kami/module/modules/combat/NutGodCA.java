@@ -199,10 +199,7 @@ public class NutGodCA extends Module {
 
         this.render = finalPos;
         this.renderEnt = ent;
-        if (ModuleManager.getModuleByName("AutoGG").isEnabled()) {
-            AutoGG autoGG = (AutoGG) ModuleManager.getModuleByName("AutoGG");
-            autoGG.addTargetedPlayer(target.getName());
-        }
+
         if (this.place.getValue()) {
             if (!offhand && NutGodCA.mc.player.inventory.currentItem != crystalSlot) {
                 if (this.autoSwitch.getValue()) {

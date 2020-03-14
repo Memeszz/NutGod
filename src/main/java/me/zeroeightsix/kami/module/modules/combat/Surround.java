@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Module.Info(name = "Surround", description = "Places obby around your black feet", category = Module.Category.COMBAT)
-public class AutoFeetPlace extends Module {
+public class Surround extends Module {
 
     private List<Block> whiteList = Arrays.asList(Blocks.OBSIDIAN, Blocks.ENDER_CHEST);
     private Setting<Boolean> sneak = register(Settings.b("SneakToggle", false));

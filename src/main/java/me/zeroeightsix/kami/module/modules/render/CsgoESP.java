@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.render;
 
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
-import me.zeroeightsix.kami.module.modules.combat.AutoFeetPlace;
+import me.zeroeightsix.kami.module.modules.combat.Surround;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.Friends;
@@ -35,7 +35,7 @@ public class CsgoESP extends Module {
                 .forEach(e -> {
                     KamiTessellator.prepareGL();
                     GlStateManager.pushMatrix();
-                    Vec3d pos = AutoFeetPlace.getInterpolatedPos(e, mc.getRenderPartialTicks());
+                    Vec3d pos = Surround.getInterpolatedPos(e, mc.getRenderPartialTicks());
                     GlStateManager.translate(pos.x-mc.getRenderManager().renderPosX, pos.y-mc.getRenderManager().renderPosY, pos.z-mc.getRenderManager().renderPosZ);
                     GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
                     GlStateManager.rotate(-viewerYaw, 0.0F, 1.0F, 0.0F);

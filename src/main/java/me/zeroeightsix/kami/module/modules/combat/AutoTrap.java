@@ -40,7 +40,7 @@ public class AutoTrap extends Module {
                 .filter(e -> !Friends.isFriend(e.getName()))
                 .sorted(Comparator.comparing(e -> mc.player.getDistance(e)))
                 .forEach(e -> {
-                    Vec3d vec = AutoFeetPlace.getInterpolatedPos(e, mc.getRenderPartialTicks());
+                    Vec3d vec = Surround.getInterpolatedPos(e, mc.getRenderPartialTicks());
                     BlockPos playerPos = new BlockPos(vec);
                     BlockPos x = playerPos.add(1, 0, 0);
                     BlockPos xMinus = playerPos.add(-1, 0, 0);
@@ -99,67 +99,67 @@ public class AutoTrap extends Module {
 //                    if(mc.player.getName().equalsIgnoreCase("LolmanPlox")) return;
                     // x
                     if (shouldPlace(x)) {
-                        AutoFeetPlace.placeBlockScaffold(x, rotate.getValue());
+                        Surround.placeBlockScaffold(x, rotate.getValue());
                         blocksPlaced++;
                     }
                     // xMinus
                     if (shouldPlace(xMinus)) {
-                        AutoFeetPlace.placeBlockScaffold(xMinus, rotate.getValue());
+                        Surround.placeBlockScaffold(xMinus, rotate.getValue());
                         blocksPlaced++;
                     }
                     // z
                     if (shouldPlace(z)) {
-                        AutoFeetPlace.placeBlockScaffold(z, rotate.getValue());
+                        Surround.placeBlockScaffold(z, rotate.getValue());
                         blocksPlaced++;
                     }
                     // zMinus
                     if (shouldPlace(zMinus)) {
-                        AutoFeetPlace.placeBlockScaffold(zMinus, rotate.getValue());
+                        Surround.placeBlockScaffold(zMinus, rotate.getValue());
                         blocksPlaced++;
                     }
                     // xUp
                     if (shouldPlace(xUp)) {
-                        AutoFeetPlace.placeBlockScaffold(xUp, rotate.getValue());
+                        Surround.placeBlockScaffold(xUp, rotate.getValue());
                         blocksPlaced++;
                     }
                     // xMinusUp
                     if (shouldPlace(xMinusUp)) {
-                        AutoFeetPlace.placeBlockScaffold(xMinusUp, rotate.getValue());
+                        Surround.placeBlockScaffold(xMinusUp, rotate.getValue());
                         blocksPlaced++;
                     }
                     // zUp
                     if (shouldPlace(zUp)) {
-                        AutoFeetPlace.placeBlockScaffold(zUp, rotate.getValue());
+                        Surround.placeBlockScaffold(zUp, rotate.getValue());
                         blocksPlaced++;
                     }
                     // zMinusUp
                     if (shouldPlace(zMinusUp)) {
-                        AutoFeetPlace.placeBlockScaffold(zMinusUp, rotate.getValue());
+                        Surround.placeBlockScaffold(zMinusUp, rotate.getValue());
                         blocksPlaced++;
                     }
                     // xUp2
                     if (shouldPlace(xUp2)) {
-                        AutoFeetPlace.placeBlockScaffold(xUp2, rotate.getValue());
+                        Surround.placeBlockScaffold(xUp2, rotate.getValue());
                         blocksPlaced++;
                     }
                     // xMinusUp2
                     if (shouldPlace(xMinusUp2)) {
-                        AutoFeetPlace.placeBlockScaffold(xMinusUp2, rotate.getValue());
+                        Surround.placeBlockScaffold(xMinusUp2, rotate.getValue());
                         blocksPlaced++;
                     }
                     // zUp2
                     if (shouldPlace(zUp2)) {
-                        AutoFeetPlace.placeBlockScaffold(zUp2, rotate.getValue());
+                        Surround.placeBlockScaffold(zUp2, rotate.getValue());
                         blocksPlaced++;
                     }
                     // zMinusUp2
                     if (shouldPlace(zMinusUp2)) {
-                        AutoFeetPlace.placeBlockScaffold(zMinusUp2, rotate.getValue());
+                        Surround.placeBlockScaffold(zMinusUp2, rotate.getValue());
                         blocksPlaced++;
                     }
                     // up
                     if (shouldPlace(up)) {
-                        AutoFeetPlace.placeBlockScaffold(up, rotate.getValue());
+                        Surround.placeBlockScaffold(up, rotate.getValue());
                         blocksPlaced++;
                     }
                     mc.player.inventory.currentItem = oldSlot;

@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat;
 
+import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.misc.AutoTool;
@@ -34,8 +35,10 @@ public class Aura extends Module {
     private Setting<Boolean> attackMobs = register(Settings.b("Mobs", false));
     private Setting<Boolean> attackAnimals = register(Settings.b("Animals", false));
     private Setting<Boolean> swordOnly = register(Settings.b("SwordOnly", false));
-    private Setting<Boolean> cacheck = register(Settings.b("CADisable", false));
-    private Setting<Boolean> Criticals = register(Settings.b("Criticals", false));
+    private Setting<Boolean> cacheck = register(Settings.b("CADisable", true));
+    private Setting<Boolean> alert = register(Settings.b("ChatAlert", true));
+
+    private Setting<Boolean> Criticals = register(Settings.b("Criticals", true));
     private Setting<Double> hitRange = register(Settings.d("Hit Range", 4.5d));
     private Setting<Boolean> ignoreWalls = register(Settings.b("Ignore Walls", true));
     private Setting<WaitMode> waitMode = register(Settings.e("Mode", WaitMode.DYNAMIC));
@@ -49,6 +52,9 @@ public class Aura extends Module {
         } else {
             return;
         }
+        if (this.alert.getValue() && NutGodCA.mc.world != null) {
+            Command.sendRawChatMessage("\u00A7aKillAura ON");
+        }
     }
     @Override
     public void onDisable() {
@@ -56,6 +62,9 @@ public class Aura extends Module {
             ModuleManager.getModuleByName("Criticals").disable();
         } else {
             return;
+        }
+        if (this.alert.getValue() && NutGodCA.mc.world != null) {
+            Command.sendRawChatMessage("\u00A7aKillAura Off");
         }
     }
     @Override
