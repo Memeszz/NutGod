@@ -44,14 +44,14 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
         int c = component.isPressed() ? 0x3300ff : component.isToggled() ? 0x34eb92 : 0xffffff;
 
         TurokGL.turok_RGB(255, 255, 255);
-        KamiGUI.fontRenderer.drawString(1, KamiGUI.fontRenderer.getFontHeight()/2-2, c, text);
+        KamiGUI.fontRenderer.drawString(1, KamiGUI.cFontRenderer.getFontHeight()/2-2, c, text);
         
         TurokGL.turok_FixGL("Fixing...");
     }
 
     @Override
     public void handleAddComponent(CheckButton component, Container container) {
-        component.setWidth(KamiGUI.fontRenderer.getStringWidth(component.getName()) + 28);
-        component.setHeight(KamiGUI.fontRenderer.getFontHeight() + 2);
+        component.setWidth(KamiGUI.cFontRenderer.getStringWidth(component.getName()) + 28);
+        component.setHeight(KamiGUI.cFontRenderer.getFontHeight() + 2);
     }
 }
