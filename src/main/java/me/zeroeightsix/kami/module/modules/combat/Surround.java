@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.combat;
 
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.Wrapper;
@@ -35,6 +36,7 @@ public class Surround extends Module {
     private List<Block> whiteList = Arrays.asList(Blocks.OBSIDIAN, Blocks.ENDER_CHEST);
     private Setting<Boolean> sneak = register(Settings.b("SneakToggle", false));
     private Setting<Boolean> alert = register(Settings.b("ChatAlert", true));
+    private Setting<Boolean> disableCA = register(Settings.b("Disable CA On Enable", false));
 
     private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
     private Setting<Double> bpt = this.register(Settings.d("BlocksPerTick", 7.0));
@@ -334,6 +336,11 @@ public class Surround extends Module {
     /* End of Autocenter */
 
     public void onEnable() {
+
+            if (disableCA.getValue()) {
+                ModuleManager.getModuleByName("NutgodCA").disable();
+            }
+
             if (this.alert.getValue() && NutGodCA.mc.world != null) {
                 Command.sendRawChatMessage("\u00A7aSurround ON");
             }

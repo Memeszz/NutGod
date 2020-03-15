@@ -66,6 +66,10 @@ public class SelfTrap extends Module {
         playerHotbarSlot = mc.player.inventory.currentItem;
         lastHotbarSlot = -1;
 
+        if (announceUsage.getValue()) {
+            Command.sendChatMessage("[SelfTrap] " + ChatFormatting.GREEN.toString() + "Enabled" + ChatFormatting.RESET.toString() + "!");
+        }
+
     }
 
     @Override
