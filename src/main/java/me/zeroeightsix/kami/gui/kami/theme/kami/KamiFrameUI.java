@@ -1,4 +1,3 @@
-
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
 import me.zeroeightsix.kami.KamiMod;
@@ -22,7 +21,7 @@ import me.zeroeightsix.kami.util.Wrapper;
 
 import java.awt.*;
 
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.*;
 
 public class KamiFrameUI<T extends Frame>
         extends AbstractComponentUI<Frame> {
@@ -50,10 +49,10 @@ public class KamiFrameUI<T extends Frame>
 
         TurokGL.turok_Disable(GL_TEXTURE_2D);
 
-        TurokGL.turok_RGBA(128, 2, 128, 130);
+        TurokGL.turok_RGBA(0, 0, 0, 130);
         RenderHelper.drawFilledRectangle(0, 0, component.getWidth(), component.getHeight());
 
-        TurokGL.turok_RGBA(0, 0, 0, 255);
+        TurokGL.turok_RGBA(220, 2, 250,  200);
         RenderHelper.drawFilledRectangle(0, 0, component.getWidth(), ff.getStringHeight(component.getTitle()) + 2);
 
         int top_y = 5;
@@ -70,11 +69,19 @@ public class KamiFrameUI<T extends Frame>
         }
 
         if (component.isPinneable()){
-            if (component.isPinned()) {
-                TurokGL.turok_RGBA(128, 2, 128, 150);
-            } else {
-                TurokGL.turok_RGBA(0, 0, 0, 255);
+            if (component.isPinned())
+                glColor3f(1,.33f,.33f);
+            else
+                glColor3f(0.66f,0.66f,0.66f);
+            RenderHelper.drawCircle(7,4,2f);
+            glLineWidth(3f);
+            glBegin(GL_LINES);
+            {
+                glVertex2d(7,4);
+                glVertex2d(4,8);
             }
+            glEnd();
+
 
             RenderHelper.drawFilledRectangle(0, 0, component.getWidth(), ff.getStringHeight(component.getTitle()) + 2);
 

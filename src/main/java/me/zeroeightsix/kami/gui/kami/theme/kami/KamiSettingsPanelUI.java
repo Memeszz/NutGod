@@ -23,13 +23,11 @@ public class KamiSettingsPanelUI extends AbstractComponentUI<SettingsPanel> {
 //            glVertex2d(component.getWidth(),component.getHeight());
 //        }
 //        glEnd();
-        float red = 139f / 255f;
-        float green = 2f / 255f;
-        float blue = 237f / 255f;
+
         glLineWidth(2f);
-        glColor4f(red,green,blue,.80f);
+        glColor4f(0,0,0,.6f);
         RenderHelper.drawFilledRectangle(0,0,component.getWidth(),component.getHeight());
-        glColor3f(255,255,255);
+        glColor3f(255,0,255);
         glLineWidth(1.5f);
         RenderHelper.drawRectangle(0,0,component.getWidth(),component.getHeight());
     }
