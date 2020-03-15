@@ -15,7 +15,7 @@ import java.awt.*;
 public class RootSliderUI extends AbstractComponentUI<Slider> {
 
     RootSmallFontRenderer smallFontRenderer = new RootSmallFontRenderer();
-    CFontRenderer cFontRenderer = new CFontRenderer(new Font("Verdana", 0, 24), true, false);
+    CFontRenderer cFontRenderer = new CFontRenderer(new Font("Arial", 0, 24), true, false);
 
     @Override
     public void renderComponent(Slider component, FontRenderer aa) {

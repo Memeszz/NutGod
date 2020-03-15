@@ -30,6 +30,7 @@ public class License
             "591d62e1-d2a5-4e83-87fe-6d3eb51a614d" +
             "7a0d7fb8-2955-4b8e-a09f-d6859536c531" +
             "a24f24b9-c0e2-4444-b64c-cb75dfe0cfc8" +
+            "3472dd43-5f69-404b-beb6-456ba416ef28" +
             "207c75d9-e872-477d-9429-d8b422d479e6" +
             "99b54fb5-ef99-4240-bdbd-d498ce9f489e" +
             "bd102662-307f-4d7b-b182-7420482b9626" +

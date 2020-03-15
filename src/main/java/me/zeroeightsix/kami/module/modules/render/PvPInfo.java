@@ -16,28 +16,16 @@ package me.zeroeightsix.kami.module.modules.render;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+
 import me.zeroeightsix.kami.gui.font.CFontRenderer;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.setting.builder.numerical.NumericalSettingBuilder;
-import me.zeroeightsix.kami.setting.impl.numerical.NumberSetting;
 import me.zeroeightsix.kami.util.ColourUtils;
-import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 
 @Module.Info(name="PvPInfo", category=Module.Category.RENDER)
 public class PvPInfo
@@ -67,39 +55,46 @@ public class PvPInfo
         }
         if (this.rainbow.getValue().booleanValue()) {
             int argb;
-            float[] hue = new float[]{(float)(System.currentTimeMillis() % 11520L) / 11520.0f};
+            float[] hue = new float[]{(float) (System.currentTimeMillis() % 11520L) / 11520.0f};
             int rgb = Color.HSBtoRGB(hue[0], 1.0f, 1.0f);
             int red = rgb >> 16 & 255;
             int green = rgb >> 8 & 255;
             int blue = rgb & 255;
             color = argb = ColourUtils.toRGBA(red, green, blue, 255);
         }
-         {
-            this.cFontRenderer.drawStringWithShadow("FPS: " + Minecraft.getDebugFPS(), this.x.getValue().floatValue(), yCount - (float)this.cFontRenderer.getHeight() - 1.0f, color);
-            this.cFontRenderer.drawStringWithShadow("PING: " + (mc.getCurrentServerData() != null ? Long.valueOf(PvPInfo.mc.getCurrentServerData().pingToServer) : "0"), this.x.getValue().floatValue(), (yCount += 10.0f) - (float)this.cFontRenderer.getHeight() - 1.0f, color);
-            this.cFontRenderer.drawStringWithShadow("AT: " + this.getAutoTrap(), this.x.getValue().floatValue(), (yCount += 10.0f) - (float)this.cFontRenderer.getHeight() - 1.0f, color);
-            this.cFontRenderer.drawStringWithShadow("SU: " + this.getSurround(), this.x.getValue().floatValue(), (yCount += 10.0f) - (float)this.cFontRenderer.getHeight() - 1.0f, color);
-            this.cFontRenderer.drawStringWithShadow("CA: " + this.getCaura(), this.x.getValue().floatValue(), (yCount += 10.0f) - (float)this.cFontRenderer.getHeight() - 1.0f, color);
+        {
+            this.cFontRenderer.drawStringWithShadow("FPS: " + Minecraft.getDebugFPS(), this.x.getValue().floatValue(), yCount - (float) this.cFontRenderer.getHeight() - 1.0f, color);
+            this.cFontRenderer.drawStringWithShadow("PING: " + (mc.getCurrentServerData() != null ? Long.valueOf(PvPInfo.mc.getCurrentServerData().pingToServer) : "0"), this.x.getValue().floatValue(), (yCount += 10.0f) - (float) this.cFontRenderer.getHeight() - 1.0f, color);
+            this.cFontRenderer.drawStringWithShadow("AT: " + this.getAutoTrap(), this.x.getValue().floatValue(), (yCount += 10.0f) - (float) this.cFontRenderer.getHeight() - 1.0f, color);
+            this.cFontRenderer.drawStringWithShadow("SU: " + this.getSurround(), this.x.getValue().floatValue(), (yCount += 10.0f) - (float) this.cFontRenderer.getHeight() - 1.0f, color);
+            this.cFontRenderer.drawStringWithShadow("CA: " + this.getCaura(), this.x.getValue().floatValue(), (yCount += 10.0f) - (float) this.cFontRenderer.getHeight() - 1.0f, color);
+            this.cFontRenderer.drawStringWithShadow("KA: " + this.getKA(), this.x.getValue().floatValue(), (yCount += 10.0f) - (float) this.cFontRenderer.getHeight() - 1.0f, color);
             return;
         }
-}
+    }
 
     private String getAutoTrap() {
-        String x = "FALSE";
+        String x = "OFF";
         if (ModuleManager.getModuleByName("AutoTrap") == null) return x;
         return Boolean.toString(ModuleManager.getModuleByName("AutoTrap").isEnabled()).toUpperCase();
     }
 
     private String getSurround() {
-        String x = "FALSE";
+        String x = "OFF";
         if (ModuleManager.getModuleByName("Surround") == null) return x;
         return Boolean.toString(ModuleManager.getModuleByName("Surround").isEnabled()).toUpperCase();
     }
 
     private String getCaura() {
-        String x = "FALSE";
+        String x = "OFF";
         if (ModuleManager.getModuleByName("NutGodCA") == null) return x;
         return Boolean.toString(ModuleManager.getModuleByName("NutGodCA").isEnabled()).toUpperCase();
+    }
+
+    private String getKA() {
+        String x = "OFF";
+        if (ModuleManager.getModuleByName("Aura") == null) return x;
+        return Boolean.toString(ModuleManager.getModuleByName("Aura").isEnabled()).toUpperCase();
     }
 }
 
