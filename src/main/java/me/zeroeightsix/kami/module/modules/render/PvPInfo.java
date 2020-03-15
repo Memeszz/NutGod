@@ -66,6 +66,7 @@ public class PvPInfo
             this.cFontRenderer.drawStringWithShadow("FPS: " + Minecraft.getDebugFPS(), this.x.getValue().floatValue(), yCount - (float) this.cFontRenderer.getHeight() - 1.0f, color);
             this.cFontRenderer.drawStringWithShadow("PING: " + (mc.getCurrentServerData() != null ? Long.valueOf(PvPInfo.mc.getCurrentServerData().pingToServer) : "0"), this.x.getValue().floatValue(), (yCount += 10.0f) - (float) this.cFontRenderer.getHeight() - 1.0f, color);
             this.cFontRenderer.drawStringWithShadow("AT: " + this.getAutoTrap(), this.x.getValue().floatValue(), (yCount += 10.0f) - (float) this.cFontRenderer.getHeight() - 1.0f, color);
+            this.cFontRenderer.drawStringWithShadow("HF: " + this.getHoleFiller(), this.x.getValue().floatValue(), (yCount += 10.0f) - (float) this.cFontRenderer.getHeight() - 1.0f, color);
             this.cFontRenderer.drawStringWithShadow("SU: " + this.getSurround(), this.x.getValue().floatValue(), (yCount += 10.0f) - (float) this.cFontRenderer.getHeight() - 1.0f, color);
             this.cFontRenderer.drawStringWithShadow("CA: " + this.getCaura(), this.x.getValue().floatValue(), (yCount += 10.0f) - (float) this.cFontRenderer.getHeight() - 1.0f, color);
             this.cFontRenderer.drawStringWithShadow("KA: " + this.getKA(), this.x.getValue().floatValue(), (yCount += 10.0f) - (float) this.cFontRenderer.getHeight() - 1.0f, color);
@@ -95,6 +96,12 @@ public class PvPInfo
         String x = "OFF";
         if (ModuleManager.getModuleByName("Aura") == null) return x;
         return Boolean.toString(ModuleManager.getModuleByName("Aura").isEnabled()).toUpperCase();
+    }
+
+    private String getHoleFiller() {
+        String x = "OFF";
+        if (ModuleManager.getModuleByName("HoleFiller") == null) return x;
+        return Boolean.toString(ModuleManager.getModuleByName("HoleFiller").isEnabled()).toUpperCase();
     }
 }
 
