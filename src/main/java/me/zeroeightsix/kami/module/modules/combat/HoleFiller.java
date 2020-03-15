@@ -33,6 +33,7 @@ public class HoleFiller extends Module {
     private Setting<Double> range = register(Settings.d("Range", 4.5));
     private Setting<Boolean> smart =  register(Settings.b("Smart", false));
     private Setting<Integer> smartRange = register(Settings.i("Smart Range", 4));
+    private Setting<Boolean> web = register(Settings.b("Web", false));
     private BlockPos render;
     private Entity renderEnt;
     private EntityPlayer closestTarget;
@@ -56,20 +57,38 @@ public class HoleFiller extends Module {
         BlockPos q = null;
         double dist = 0;
         double prevDist = 0;
-        int crystalSlot = mc.player.getHeldItemMainhand().getItem() == Item.getItemFromBlock(Blocks.OBSIDIAN)
+        int obsidianSlot = mc.player.getHeldItemMainhand().getItem() == Item.getItemFromBlock(Blocks.OBSIDIAN)
                 ? mc.player.inventory.currentItem
                 : -1;
-        if (crystalSlot == -1) {
-            for (int l = 0; l < 9; ++l) {
-                if (mc.player.inventory.getStackInSlot(l).getItem() == Item.getItemFromBlock(Blocks.OBSIDIAN)) {
-                    crystalSlot = l;
-                    break;
+        int webSlot = mc.player.getHeldItemMainhand().getItem() == Item.getItemFromBlock(Blocks.WEB)
+                ? mc.player.inventory.currentItem
+                : -1;
+         if (web.getValue())
+             if (webSlot == -1) {
+                 for (int l = 0; l < 9; ++l) {
+                     if (mc.player.inventory.getStackInSlot(l).getItem() == Item.getItemFromBlock(Blocks.WEB)) {
+                         webSlot = l;
+                         break;
+                     }
+                 }
+             }
+         else
+            if (obsidianSlot == -1) {
+                for (int l = 0; l < 9; ++l) {
+                    if (mc.player.inventory.getStackInSlot(l).getItem() == Item.getItemFromBlock(Blocks.OBSIDIAN)) {
+                        obsidianSlot = l;
+                        break;
+                    }
                 }
             }
-        }
-        if (crystalSlot == -1) {
-            return;
-        }
+         if (web.getValue())
+             if (webSlot == -1) {
+                 return;
+             }
+         else
+            if (obsidianSlot == -1) {
+                return;
+            }
         for (BlockPos blockPos : blocks) {
             if (mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos)).isEmpty())
                 if (smart.getValue() && isInRange(blockPos))
@@ -80,8 +99,12 @@ public class HoleFiller extends Module {
         render = q;
         if (q != null && mc.player.onGround) {
             int oldSlot = mc.player.inventory.currentItem;
-            if (mc.player.inventory.currentItem != crystalSlot)
-                mc.player.inventory.currentItem = crystalSlot;
+            if (web.getValue())
+                if (mc.player.inventory.currentItem != webSlot)
+                    mc.player.inventory.currentItem = webSlot;
+            else
+                if (mc.player.inventory.currentItem != obsidianSlot)
+                    mc.player.inventory.currentItem = obsidianSlot;
             lookAtPacket(q.x + .5, q.y - .5, q.z + .5, mc.player);
             BlockInteractionHelper.placeBlockScaffold(render);
             mc.player.swingArm(EnumHand.MAIN_HAND);
@@ -99,14 +122,6 @@ public class HoleFiller extends Module {
             KamiTessellator.drawBoundingBoxBlockPos(render, 1f, 0, 255, 0, 170);
             KamiTessellator.release();
         }
-    }
-
-    private double getDistanceToBlockPos(BlockPos pos1, BlockPos pos2) {
-        double x = pos1.getX() - pos2.getX();
-        double y = pos1.getY() - pos2.getY();
-        double z = pos1.getZ() - pos2.getZ();
-
-        return Math.sqrt((x * x) + (y * y) + (z * z));
     }
 
     private void lookAtPacket(double px, double py, double pz, EntityPlayer me) {

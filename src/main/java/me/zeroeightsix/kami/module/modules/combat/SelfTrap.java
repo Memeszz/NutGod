@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -28,6 +29,7 @@ import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static me.zeroeightsix.kami.util.BlockInteractionHelper.canBeClicked;
 import static me.zeroeightsix.kami.util.BlockInteractionHelper.faceVectorPacketInstant;
@@ -35,18 +37,20 @@ import static me.zeroeightsix.kami.util.BlockInteractionHelper.faceVectorPacketI
 @Module.Info(name = "SelfTrap", category = Module.Category.COMBAT)
 public class SelfTrap extends Module {
 
-    private Setting<Double> range = register(Settings.doubleBuilder("Range").withMinimum(3.5).withValue(4.5).withMaximum(32.0).build());
+    private Setting<Double> smartRange = register(Settings.doubleBuilder("Range").withMinimum(0.0).withValue(4.5).withMaximum(32.0).build());
     private Setting<Integer> blocksPerTick = register(Settings.integerBuilder("BlocksPerTick").withMinimum(1).withValue(2).withMaximum(23).build());
     private Setting<Integer> tickDelay = register(Settings.integerBuilder("TickDelay").withMinimum(0).withValue(2).withMaximum(10).build());
     private Setting<SelfTrap.Cage> cage = register(Settings.e("Cage", SelfTrap.Cage.TRAP));
     private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
     private Setting<Boolean> announceUsage = register(Settings.b("AnnounceUsage", true));
+    private Setting<Boolean> smart = register(Settings.b("Smart", false));
     private int playerHotbarSlot = -1;
     private int lastHotbarSlot = -1;
     private int delayStep = 0;
     private boolean isSneaking = false;
     private int offsetStep = 0;
     private boolean firstRun;
+    private EntityPlayer closestTarget;
 
     @Override
     protected void onEnable() {
@@ -66,6 +70,8 @@ public class SelfTrap extends Module {
 
     @Override
     protected void onDisable() {
+
+        closestTarget = null;
 
         if (mc.player == null) {
             return;
@@ -91,6 +97,9 @@ public class SelfTrap extends Module {
 
     @Override
     public void onUpdate() {
+
+        if (smart.getValue())
+            findClosestTarget();
 
         if (mc.player == null) {
             return;
@@ -137,9 +146,18 @@ public class SelfTrap extends Module {
             BlockPos offsetPos = new BlockPos(placeTargets.get(offsetStep));
             BlockPos targetPos = new BlockPos(mc.player.getPositionVector()).down().add(offsetPos.x, offsetPos.y, offsetPos.z);
 
-            if (placeBlockInRange(targetPos, range.getValue())) {
-                blocksPlaced++;
+            if (closestTarget != null && smart.getValue()) {
+                if (isInRange(getClosestTargetPos())) {
+                    if (placeBlockInRange(targetPos)) {
+                        blocksPlaced++;
+                    }
+                }
+            } else if (!smart.getValue()) {
+                if (placeBlockInRange(targetPos)) {
+                    blocksPlaced++;
+                }
             }
+
 
             offsetStep++;
 
@@ -161,7 +179,7 @@ public class SelfTrap extends Module {
 
     }
 
-    private boolean placeBlockInRange(BlockPos pos, double range) {
+    private boolean placeBlockInRange(BlockPos pos) {
 
         // check if block is already placed
         Block block = mc.world.getBlockState(pos).getBlock();
@@ -194,10 +212,6 @@ public class SelfTrap extends Module {
         Vec3d hitVec = new Vec3d(neighbour).add(0.5, 0.5, 0.5).add(new Vec3d(opposite.getDirectionVec()).scale(0.5));
         Block neighbourBlock = mc.world.getBlockState(neighbour).getBlock();
 
-        if (mc.player.getPositionVector().distanceTo(hitVec) > range) {
-            return false;
-        }
-
         int obiSlot = findObiInHotbar();
 
         if (obiSlot == -1) {
@@ -227,6 +241,85 @@ public class SelfTrap extends Module {
 
         return true;
 
+    }
+
+    public static BlockPos getPlayerPos() {
+        return new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ));
+    }
+
+    public BlockPos getClosestTargetPos() {
+        if (closestTarget != null) {
+            return new BlockPos(Math.floor(closestTarget.posX), Math.floor(closestTarget.posY), Math.floor(closestTarget.posZ));
+        } else {
+            return null;
+        }
+    }
+
+    private void findClosestTarget() {
+
+        List<EntityPlayer> playerList = mc.world.playerEntities;
+
+        closestTarget = null;
+
+        for (EntityPlayer target : playerList) {
+
+            if (target == mc.player) {
+                continue;
+            }
+
+            if (Friends.isFriend(target.getName())) {
+                continue;
+            }
+
+            if (!EntityUtil.isLiving(target)) {
+                continue;
+            }
+
+            if ((target).getHealth() <= 0) {
+                continue;
+            }
+
+            if (closestTarget == null) {
+                closestTarget = target;
+                continue;
+            }
+
+            if (mc.player.getDistance(target) < mc.player.getDistance(closestTarget)) {
+                closestTarget = target;
+            }
+
+        }
+
+    }
+
+    private boolean isInRange(BlockPos blockPos) {
+        NonNullList<BlockPos> positions = NonNullList.create();
+        positions.addAll(
+                getSphere(getPlayerPos(), smartRange.getValue().floatValue(), smartRange.getValue().intValue(), false, true, 0)
+                        .stream().collect(Collectors.toList()));
+        if (positions.contains(blockPos))
+            return true;
+        else
+            return false;
+    }
+
+    public List<BlockPos> getSphere(BlockPos loc, float r, int h, boolean hollow, boolean sphere, int plus_y) {
+        List<BlockPos> circleblocks = new ArrayList<>();
+        int cx = loc.getX();
+        int cy = loc.getY();
+        int cz = loc.getZ();
+        for (int x = cx - (int) r; x <= cx + r; x++) {
+            for (int z = cz - (int) r; z <= cz + r; z++) {
+                for (int y = (sphere ? cy - (int) r : cy); y < (sphere ? cy + r : cy + h); y++) {
+                    double dist = (cx - x) * (cx - x) + (cz - z) * (cz - z) + (sphere ? (cy - y) * (cy - y) : 0);
+                    if (dist < r * r && !(hollow && dist < (r - 1) * (r - 1))) {
+                        BlockPos l = new BlockPos(x, y + plus_y, z);
+                        circleblocks.add(l);
+                    }
+                }
+            }
+        }
+        return circleblocks;
     }
 
     private int findObiInHotbar() {
