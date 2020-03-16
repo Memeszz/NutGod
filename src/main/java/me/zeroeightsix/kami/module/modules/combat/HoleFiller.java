@@ -86,6 +86,7 @@ public class HoleFiller extends Module {
             BlockInteractionHelper.placeBlockScaffold(render);
             mc.player.swingArm(EnumHand.MAIN_HAND);
             mc.player.inventory.currentItem = oldSlot;
+            resetRotation();
         }
     }
 
