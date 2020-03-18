@@ -1,7 +1,9 @@
 package me.zeroeightsix.kami.module.modules.combat;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
@@ -33,6 +35,7 @@ public class HoleFiller extends Module {
     private Setting<Double> range = register(Settings.d("Range", 4.5));
     private Setting<Boolean> smart =  register(Settings.b("Smart", false));
     private Setting<Integer> smartRange = register(Settings.i("Smart Range", 4));
+    private Setting<Boolean> announceUsage = register(Settings.b("Announce Usage", false));
     private BlockPos render;
     private Entity renderEnt;
     private EntityPlayer closestTarget;
@@ -44,6 +47,13 @@ public class HoleFiller extends Module {
     private boolean isAttacking = false;
     private int newSlot;
     double d;
+
+    @Override
+    public void onEnable() {
+        if (announceUsage.getValue()) {
+            Command.sendChatMessage("[HoleFiller] " + ChatFormatting.GREEN.toString() + "Enabled" + ChatFormatting.RESET.toString() + "!");
+        }
+    }
 
     @Override
     public void onUpdate() {
@@ -270,5 +280,9 @@ public class HoleFiller extends Module {
         closestTarget = null;
         render = null;
         resetRotation();
+
+        if (announceUsage.getValue()) {
+            Command.sendChatMessage("[HoleFiller] " + ChatFormatting.RED.toString() + "Disabled" + ChatFormatting.RESET.toString() + "!");
+        }
     }
 }

@@ -360,6 +360,7 @@ public class NutGodCA extends Module {
 
     @Override
     protected void onEnable() {
+
         if (this.alert.getValue() && NutGodCA.mc.world != null) {
             Command.sendRawChatMessage("\u00A7aAutoCrystal ON");
         }

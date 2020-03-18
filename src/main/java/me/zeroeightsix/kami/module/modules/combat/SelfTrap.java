@@ -13,6 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockObsidian;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
@@ -41,7 +42,7 @@ public class SelfTrap extends Module {
     private Setting<Double> smartRange = register(Settings.doubleBuilder("Range").withMinimum(0.0).withValue(4.5).withMaximum(32.0).build());
     private Setting<Integer> blocksPerTick = register(Settings.integerBuilder("BlocksPerTick").withMinimum(1).withValue(2).withMaximum(23).build());
     private Setting<Integer> tickDelay = register(Settings.integerBuilder("TickDelay").withMinimum(0).withValue(2).withMaximum(10).build());
-    private Setting<SelfTrap.Cage> cage = register(Settings.e("Cage", SelfTrap.Cage.TRAP));
+    private Setting<SelfTrap.Cage> cage = register(Settings.e("Cage", SelfTrap.Cage.BLOCKOVERHEAD));
     private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
     private Setting<Boolean> announceUsage = register(Settings.b("AnnounceUsage", true));
     private Setting<Boolean> smart = register(Settings.b("Smart", false));
@@ -54,6 +55,8 @@ public class SelfTrap extends Module {
     private int offsetStep = 0;
     private boolean firstRun;
     private boolean caOn;
+    private boolean isSpoofingAngles;
+    private static double yaw;
     private EntityPlayer closestTarget;
 
     @Override
@@ -138,7 +141,14 @@ public class SelfTrap extends Module {
         }
 
         if (cage.getValue().equals(SelfTrap.Cage.BLOCKOVERHEAD)) {
-            Collections.addAll(placeTargets, SelfTrap.Offsets.BLOCKOVERHEAD);
+            if (getViewYaw() <= 315 && getViewYaw() >= 225)
+                Collections.addAll(placeTargets, SelfTrap.Offsets.BLOCKOVERHEADFACINGNEGX);
+            else if (getViewYaw() < 45 && getViewYaw() > 0 || getViewYaw() > 315 && getViewYaw() < 360)
+                Collections.addAll(placeTargets, SelfTrap.Offsets.BLOCKOVERHEADFACINGPOSZ);
+            else if (getViewYaw() <= 135 && getViewYaw() >= 45)
+                Collections.addAll(placeTargets, SelfTrap.Offsets.BLOCKOVERHEADFACINGPOSX);
+            else if (getViewYaw() < 225 && getViewYaw() > 135)
+                Collections.addAll(placeTargets, SelfTrap.Offsets.BLOCKOVERHEADFACINGNEGZ);
         }
 
         // TODO: dont use static bridging in offset but calculate them on the fly
@@ -283,6 +293,10 @@ public class SelfTrap extends Module {
         }
     }
 
+    public int getViewYaw() {
+        return (int)Math.abs(Math.floor(Minecraft.getMinecraft().player.rotationYaw * 8.0F / 360.0F));
+    }
+
     private void findClosestTarget() {
 
         List<EntityPlayer> playerList = mc.world.playerEntities;
@@ -398,13 +412,38 @@ public class SelfTrap extends Module {
                 new Vec3d(0, 3, 0)
         };
 
-        private static final Vec3d[] BLOCKOVERHEAD = {
+        private static final Vec3d[] BLOCKOVERHEADFACINGPOSX = {
+                new Vec3d(1, 0, 0),
+                new Vec3d(1, 1, 0),
+                new Vec3d(1, 2, 0),
+                new Vec3d(1, 3, 0),
+                new Vec3d(0, 3, 0)
+        };
+
+        private static final Vec3d[] BLOCKOVERHEADFACINGPOSZ = {
+                new Vec3d(0, 0, 1),
+                new Vec3d(0, 1, 1),
+                new Vec3d(0, 2, 1),
+                new Vec3d(0, 3, 1),
+                new Vec3d(0, 3, 0)
+        };
+
+        private static final Vec3d[] BLOCKOVERHEADFACINGNEGX = {
+                new Vec3d(-1, 0, 0),
+                new Vec3d(-1, 1, 0),
+                new Vec3d(-1, 2, 0),
+                new Vec3d(-1, 3, 0),
+                new Vec3d(0, 3, 0)
+        };
+
+        private static final Vec3d[] BLOCKOVERHEADFACINGNEGZ = {
                 new Vec3d(0, 0, -1),
                 new Vec3d(0, 1, -1),
                 new Vec3d(0, 2, -1),
                 new Vec3d(0, 3, -1),
                 new Vec3d(0, 3, 0)
         };
+
     }
 
 }
