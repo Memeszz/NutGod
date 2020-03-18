@@ -34,7 +34,7 @@ public class ChatMutator extends Module {
         Matcher m = p.matcher(text);
 
         if (m.find()) {
-            String finalText = text.replaceAll("^<.*", "");
+            String finalText = text.replaceAll("^<.*>", "");
             String name = text.replaceAll(" .*$", "" );
             String name1 = name.replace("<", "");
             String finalName = name1.replace(">", "");
