@@ -12,6 +12,7 @@ import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.EntityUtil;
 import me.zeroeightsix.kami.util.Friends;
+import me.zeroeightsix.kami.util.KamiTessellator;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -29,6 +30,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 import net.minecraft.world.Explosion;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -74,7 +76,8 @@ public class MegynCA extends Module {
     private Setting<Boolean> raytrace;
     private Setting<Boolean> place;
     private Setting<Boolean> explode;
-    
+    private Setting<Boolean> rainbow;
+    private Setting<Boolean> antiWeaknessOffhand;
 
     private long breakSystemTime;
     private long placeSystemTime;
@@ -102,23 +105,28 @@ public class MegynCA extends Module {
         this.antiStuck = this.register(Settings.b("Anti Stuck", true));
         this.raytrace = this.register(Settings.b("Raytrace", false));
         this.autoSwitch = this.register(Settings.b("Auto Switch", true));
-        this.red = this.register((Setting<Integer>) Settings.integerBuilder("Red").withMinimum(0).withMaximum(256).withValue(256).build());
-        this.green = this.register((Setting<Integer>) Settings.integerBuilder("Green").withMinimum(0).withMaximum(256).withValue(0).build());
-        this.blue = this.register((Setting<Integer>) Settings.integerBuilder("Blue").withMinimum(0).withMaximum(256).withValue(0).build());
-        this.msBreakDelay = this.register((Setting<Integer>) Settings.integerBuilder("MS Break Delay").withMinimum(0).withMaximum(1000).withValue(10).build());
+        this.selfProtect = this.register(Settings.b("Self Protect", false));
+        this.rainbow = this.register(Settings.b("Rainbow", false));
+        this.antiWeaknessOffhand = this.register(Settings.b("Anti Weakness Offhand", false));
+        this.red = this.register((Setting<Integer>) Settings.integerBuilder("Red").withMinimum(0).withMaximum(255).withValue(256).build());
+        this.green = this.register((Setting<Integer>) Settings.integerBuilder("Green").withMinimum(0).withMaximum(255).withValue(0).build());
+        this.blue = this.register((Setting<Integer>) Settings.integerBuilder("Blue").withMinimum(0).withMaximum(255).withValue(0).build());
+        this.msBreakDelay = this.register((Setting<Integer>) Settings.integerBuilder("MS Break Delay").withMinimum(0).withMaximum(300).withValue(10).build());
+        this.msPlaceDelay = this.register((Setting<Integer>) Settings.integerBuilder("MS Place Delay").withMinimum(0).withMaximum(300).withValue(10).build());
         this.placeRange = this.register((Setting<Double>) Settings.doubleBuilder("Place Range").withMinimum(0.0).withMaximum(8.0).withValue(4.5).build());
         this.breakRange = this.register((Setting<Double>) Settings.doubleBuilder("Break Range").withMinimum(0.0).withMaximum(8.0).withValue(4.5).build());
         this.breakThroughWallsRange = this.register((Setting<Double>) Settings.doubleBuilder("Through Walls Break Range").withMinimum(0.0).withMaximum(8.0).withValue(4.5).build());
         this.enemyRange = this.register((Setting<Integer>) Settings.integerBuilder("Enemy Range").withMinimum(0).withMaximum(36).withValue(10).build());
         this.minDamage = this.register((Setting<Integer>) Settings.integerBuilder("Min Damage").withMinimum(0).withMaximum(36).withValue(4).build());
         this.ignoreMinDamageThreshold = this.register((Setting<Integer>) Settings.integerBuilder("Ignore Min Damage").withMinimum(0).withMaximum(36).withValue(8).build());
+        this.selfProtectThreshold = this.register((Setting<Integer>) Settings.integerBuilder("Max Self Damage").withMinimum(0).withMaximum(16).withValue(8).build());
         this.breakSystemTime = -1L;
         final Packet[] packet = new Packet[1];
         this.packetListener = new Listener<PacketEvent.Send>(event -> {
             packet[0] = event.getPacket();
-            if (packet[0] instanceof CPacketPlayer && MegynCA.isSpoofingAngles) {
-                ((CPacketPlayer) packet[0]).yaw = (float) MegynCA.yaw;
-                ((CPacketPlayer) packet[0]).pitch = (float) MegynCA.pitch;
+            if (packet[0] instanceof CPacketPlayer && isSpoofingAngles) {
+                ((CPacketPlayer) packet[0]).yaw = (float) yaw;
+                ((CPacketPlayer) packet[0]).pitch = (float) pitch;
             }
         });
 
@@ -153,26 +161,43 @@ public class MegynCA extends Module {
 
     @Override
     public void onUpdate() {
-        final EntityEnderCrystal crystal = (EntityEnderCrystal) NutGodCA.mc.world.loadedEntityList.stream().filter(entity -> entity instanceof EntityEnderCrystal).map(entity -> entity).min(Comparator.comparing(c -> NutGodCA.mc.player.getDistance(c))).orElse(null);
+        final EntityEnderCrystal crystal = (EntityEnderCrystal) mc.world.loadedEntityList.stream().filter(entity -> entity instanceof EntityEnderCrystal).map(entity -> entity).min(Comparator.comparing(c -> mc.player.getDistance(c))).orElse(null);
         if (crystal != null && this.explode.getValue()) {
             BlockPos breakTarget = new BlockPos(crystal.posX, crystal.posY, crystal.posZ);
-            if (!canBlockBeSeen(breakTarget))
-                if (MegynCA.mc.player.getDistance((Entity) crystal) <= this.breakThroughWallsRange.getValue()) {
-                    if (System.nanoTime() / 1000000L - this.breakSystemTime >= this.msBreakDelay.getValue()) {
-                        this.lookAtPacket(crystal.posX, crystal.posY, crystal.posZ, (EntityPlayer) MegynCA.mc.player);
-                        MegynCA.mc.playerController.attackEntity((EntityPlayer) MegynCA.mc.player, (Entity) crystal);
-                        MegynCA.mc.player.swingArm(EnumHand.MAIN_HAND);
-                        this.breakSystemTime = System.nanoTime() / 1000000L;
+            if (!canBlockBeSeen(breakTarget)) {
+                if (mc.player.getDistance((Entity) crystal) <= this.breakThroughWallsRange.getValue()) {
+                    if (this.selfProtect.getValue() && calculateDamage(crystal, mc.player) <= selfProtectThreshold.getValue()) {
+                        if (System.nanoTime() / 1000000L - this.breakSystemTime >= this.msBreakDelay.getValue()) {
+                            this.lookAtPacket(crystal.posX, crystal.posY, crystal.posZ, (EntityPlayer) mc.player);
+                            mc.playerController.attackEntity((EntityPlayer) mc.player, (Entity) crystal);
+                            mc.player.swingArm(EnumHand.MAIN_HAND);
+                            this.breakSystemTime = System.nanoTime() / 1000000L;
+                        }
+                    } else if (!this.selfProtect.getValue()) {
+                        if (System.nanoTime() / 1000000L - this.breakSystemTime >= this.msBreakDelay.getValue()) {
+                            this.lookAtPacket(crystal.posX, crystal.posY, crystal.posZ, (EntityPlayer) mc.player);
+                            mc.playerController.attackEntity((EntityPlayer) mc.player, (Entity) crystal);
+                            mc.player.swingArm(EnumHand.MAIN_HAND);
+                            this.breakSystemTime = System.nanoTime() / 1000000L;
+                        }
                     }
                 }
-
-            else if (canBlockBeSeen(breakTarget)) {
-                if (MegynCA.mc.player.getDistance((Entity) crystal) <= this.breakRange.getValue()) {
-                    if (System.nanoTime() / 1000000L - this.breakSystemTime >= this.msBreakDelay.getValue()) {
-                        this.lookAtPacket(crystal.posX, crystal.posY, crystal.posZ, (EntityPlayer) MegynCA.mc.player);
-                        MegynCA.mc.playerController.attackEntity((EntityPlayer) MegynCA.mc.player, (Entity) crystal);
-                        MegynCA.mc.player.swingArm(EnumHand.MAIN_HAND);
-                        this.breakSystemTime = System.nanoTime() / 1000000L;
+            } else {
+                if (mc.player.getDistance((Entity) crystal) <= this.breakRange.getValue()) {
+                    if (this.selfProtect.getValue() && calculateDamage(crystal, mc.player) <= selfProtectThreshold.getValue()) {
+                        if (System.nanoTime() / 1000000L - this.breakSystemTime >= this.msBreakDelay.getValue()) {
+                            this.lookAtPacket(crystal.posX, crystal.posY, crystal.posZ, (EntityPlayer) mc.player);
+                            mc.playerController.attackEntity((EntityPlayer) mc.player, (Entity) crystal);
+                            mc.player.swingArm(EnumHand.MAIN_HAND);
+                            this.breakSystemTime = System.nanoTime() / 1000000L;
+                        }
+                    } else if (!this.selfProtect.getValue()) {
+                        if (System.nanoTime() / 1000000L - this.breakSystemTime >= this.msBreakDelay.getValue()) {
+                            this.lookAtPacket(crystal.posX, crystal.posY, crystal.posZ, (EntityPlayer) mc.player);
+                            mc.playerController.attackEntity((EntityPlayer) mc.player, (Entity) crystal);
+                            mc.player.swingArm(EnumHand.MAIN_HAND);
+                            this.breakSystemTime = System.nanoTime() / 1000000L;
+                        }
                     }
                 }
             }
@@ -181,10 +206,10 @@ public class MegynCA extends Module {
             resetRotation();
         }
 
-        int crystalSlot = (MegynCA.mc.player.getHeldItemMainhand().getItem() == Items.END_CRYSTAL) ? MegynCA.mc.player.inventory.currentItem : -1;
+        int crystalSlot = (mc.player.getHeldItemMainhand().getItem() == Items.END_CRYSTAL) ? mc.player.inventory.currentItem : -1;
         if (crystalSlot == -1) {
             for (int l = 0; l < 9; ++l) {
-                if (MegynCA.mc.player.inventory.getStackInSlot(l).getItem() == Items.END_CRYSTAL) {
+                if (mc.player.inventory.getStackInSlot(l).getItem() == Items.END_CRYSTAL) {
                     crystalSlot = l;
                     break;
                 }
@@ -200,18 +225,18 @@ public class MegynCA extends Module {
         BlockPos finalPos = null;
         final List<BlockPos> blocks = this.findCrystalBlocks();
         final List<Entity> entities = new ArrayList<Entity>();
-        entities.addAll((Collection<? extends Entity>) MegynCA.mc.world.playerEntities.stream().filter(entityPlayer -> !Friends.isFriend(entityPlayer.getName())).collect(Collectors.toList()));
+        entities.addAll(mc.world.playerEntities.stream().filter(entityPlayer -> !Friends.isFriend(entityPlayer.getName())).collect(Collectors.toList()));
         double damage = 0.5;
         for (final Entity entity2 : entities) {
-            if (entity2 != MegynCA.mc.player) {
+            if (entity2 != mc.player) {
                 if (((EntityLivingBase) entity2).getHealth() <= 0.0f) {
                     continue;
                 }
-                if (MegynCA.mc.player.getDistanceSq(entity2) > this.enemyRange.getValue() * this.enemyRange.getValue()) {
+                if (mc.player.getDistanceSq(entity2) > this.enemyRange.getValue() * this.enemyRange.getValue()) {
                     continue;
                 }
                 for (final BlockPos blockPos : blocks) {
-                    if (!canBlockBeSeen(blockPos) && MegynCA.mc.player.getDistanceSq(blockPos) > 25.0 && this.raytrace.getValue()) {
+                    if (!canBlockBeSeen(blockPos) && mc.player.getDistanceSq(blockPos) > 25.0 && this.raytrace.getValue()) {
                         continue;
                     }
                     final double b = entity2.getDistanceSq(blockPos);
@@ -225,9 +250,9 @@ public class MegynCA extends Module {
                     if (d <= damage) {
                         continue;
                     }
-                    final double self = calculateDamage(blockPos.x + 0.5, blockPos.y + 1, blockPos.z + 0.5, (Entity) MegynCA.mc.player);
+                    final double self = calculateDamage(blockPos.x + 0.5, blockPos.y + 1, blockPos.z + 0.5, (Entity) mc.player);
                     if (this.antiSuicide.getValue()) {
-                        if (MegynCA.mc.player.getHealth() + MegynCA.mc.player.getAbsorptionAmount() - self <= 7.0) {
+                        if (mc.player.getHealth() + mc.player.getAbsorptionAmount() - self <= 7.0) {
                             continue;
                         }
                         if (self > d) {
@@ -251,16 +276,16 @@ public class MegynCA extends Module {
         this.renderEnt = ent;
 
         if (this.place.getValue()) {
-            if (!offhand && MegynCA.mc.player.inventory.currentItem != crystalSlot) {
+            if (!offhand && mc.player.inventory.currentItem != crystalSlot) {
                 if (this.autoSwitch.getValue()) {
-                    MegynCA.mc.player.inventory.currentItem = crystalSlot;
+                    mc.player.inventory.currentItem = crystalSlot;
                     resetRotation();
                     this.switchCooldown = true;
                 }
                 return;
             }
-            this.lookAtPacket(finalPos.x + 0.5, finalPos.y - 0.5, finalPos.z + 0.5, (EntityPlayer) MegynCA.mc.player);
-            final RayTraceResult result = MegynCA.mc.world.rayTraceBlocks(new Vec3d(MegynCA.mc.player.posX, MegynCA.mc.player.posY + MegynCA.mc.player.getEyeHeight(), MegynCA.mc.player.posZ), new Vec3d(finalPos.x + 0.5, finalPos.y - 0.5, finalPos.z + 0.5));
+            this.lookAtPacket(finalPos.x + 0.5, finalPos.y - 0.5, finalPos.z + 0.5, (EntityPlayer) mc.player);
+            final RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(finalPos.x + 0.5, finalPos.y - 0.5, finalPos.z + 0.5));
             EnumFacing f;
             if (result == null || result.sideHit == null) {
                 f = EnumFacing.UP;
@@ -271,30 +296,49 @@ public class MegynCA extends Module {
                 this.switchCooldown = false;
                 return;
             }
-            if (System.nanoTime() / 1000000L - this.placeSystemTime >= this.msPlaceDelay.getValue() * 2) {
-                MegynCA.mc.player.connection.sendPacket((Packet) new CPacketPlayerTryUseItemOnBlock(finalPos, f, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0.0f, 0.0f, 0.0f));
+            if (System.nanoTime() / 1000000L - this.placeSystemTime >= this.msPlaceDelay.getValue()) {
+                mc.player.connection.sendPacket((Packet) new CPacketPlayerTryUseItemOnBlock(finalPos, f, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0.0f, 0.0f, 0.0f));
                 ++this.placements;
                 this.antiStuckSystemTime = System.nanoTime() / 1000000L;
                 this.placeSystemTime = System.nanoTime() / 1000000L;
             }
         }
-        if (MegynCA.isSpoofingAngles) {
-            if (MegynCA.togglePitch) {
-                final EntityPlayerSP player = MegynCA.mc.player;
+        if (isSpoofingAngles) {
+            if (togglePitch) {
+                final EntityPlayerSP player = mc.player;
                 player.rotationPitch += (float) 4.0E-4;
-                MegynCA.togglePitch = false;
+                togglePitch = false;
             } else {
-                final EntityPlayerSP player2 = MegynCA.mc.player;
+                final EntityPlayerSP player2 = mc.player;
                 player2.rotationPitch -= (float) 4.0E-4;
-                MegynCA.togglePitch = true;
+                togglePitch = true;
             }
         }
     }
 
     @Override
     public void onWorldRender(final RenderEvent event) {
-
-
+        if (this.render != null) {
+            final float[] hue = {(System.currentTimeMillis() % (360 * 32)) / (360f * 32)};
+            int rgb = Color.HSBtoRGB(hue[0], 1, 1);
+            int r = (rgb >> 16) & 0xFF;
+            int g = (rgb >> 8) & 0xFF;
+            int b = rgb & 0xFF;
+            if (rainbow.getValue()) {
+                KamiTessellator.prepare(7);
+                KamiTessellator.drawBox(this.render, r, g, b, 77, 63);
+                KamiTessellator.release();
+                KamiTessellator.prepare(7);
+                KamiTessellator.drawBoundingBoxBlockPos(this.render, 1.00f,  r, g, b, 255);
+            } else {
+                KamiTessellator.prepare(7);
+                KamiTessellator.drawBox(this.render, this.red.getValue(), this.green.getValue(), this.blue.getValue(), 77, 63);
+                KamiTessellator.release();
+                KamiTessellator.prepare(7);
+                KamiTessellator.drawBoundingBoxBlockPos(this.render, 1.00f, this.red.getValue(), this.green.getValue(), this.blue.getValue(), 244);
+            }
+            KamiTessellator.release();
+        }
 
     }
 
@@ -306,16 +350,16 @@ public class MegynCA extends Module {
     private boolean canPlaceCrystal(final BlockPos blockPos) {
         final BlockPos boost = blockPos.add(0, 1, 0);
         final BlockPos boost2 = blockPos.add(0, 2, 0);
-        return (MegynCA.mc.world.getBlockState(blockPos).getBlock() == Blocks.BEDROCK || MegynCA.mc.world.getBlockState(blockPos).getBlock() == Blocks.OBSIDIAN) && MegynCA.mc.world.getBlockState(boost).getBlock() == Blocks.AIR && MegynCA.mc.world.getBlockState(boost2).getBlock() == Blocks.AIR && MegynCA.mc.world.getEntitiesWithinAABB((Class)Entity.class, new AxisAlignedBB(boost)).isEmpty() && MegynCA.mc.world.getEntitiesWithinAABB((Class)Entity.class, new AxisAlignedBB(boost2)).isEmpty();
+        return (mc.world.getBlockState(blockPos).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockPos).getBlock() == Blocks.OBSIDIAN) && mc.world.getBlockState(boost).getBlock() == Blocks.AIR && mc.world.getBlockState(boost2).getBlock() == Blocks.AIR && mc.world.getEntitiesWithinAABB((Class)Entity.class, new AxisAlignedBB(boost)).isEmpty() && mc.world.getEntitiesWithinAABB((Class)Entity.class, new AxisAlignedBB(boost2)).isEmpty();
     }
 
     public static BlockPos getPlayerPos() {
-        return new BlockPos(Math.floor(MegynCA.mc.player.posX), Math.floor(MegynCA.mc.player.posY), Math.floor(MegynCA.mc.player.posZ));
+        return new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ));
     }
 
     private List<BlockPos> findCrystalBlocks() {
         NonNullList positions = NonNullList.create();
-        positions.addAll((Collection)this.getSphere(MegynCA.getPlayerPos(), this.placeRange.getValue().floatValue(), this.placeRange.getValue().intValue(), false, true, 0).stream().filter(this::canPlaceCrystal).collect(Collectors.toList()));
+        positions.addAll(this.getSphere(getPlayerPos(), this.placeRange.getValue().floatValue(), this.placeRange.getValue().intValue(), false, true, 0).stream().filter(this::canPlaceCrystal).collect(Collectors.toList()));
         return (List<BlockPos>)positions;
     }
 
@@ -385,20 +429,20 @@ public class MegynCA extends Module {
     }
 
     public static boolean canBlockBeSeen(final BlockPos blockPos) {
-        return MegynCA.mc.world.rayTraceBlocks(new Vec3d(MegynCA.mc.player.posX, MegynCA.mc.player.posY + MegynCA.mc.player.getEyeHeight(), MegynCA.mc.player.posZ), new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), false, true, false) == null;
+        return mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), false, true, false) == null;
     }
 
     private static void setYawAndPitch(final float yaw1, final float pitch1) {
-        MegynCA.yaw = yaw1;
-        MegynCA.pitch = pitch1;
-        MegynCA.isSpoofingAngles = true;
+        yaw = yaw1;
+        pitch = pitch1;
+        isSpoofingAngles = true;
     }
 
     private static void resetRotation() {
-        if (MegynCA.isSpoofingAngles) {
-            MegynCA.yaw = MegynCA.mc.player.rotationYaw;
-            MegynCA.pitch = MegynCA.mc.player.rotationPitch;
-            MegynCA.isSpoofingAngles = false;
+        if (isSpoofingAngles) {
+            yaw = mc.player.rotationYaw;
+            pitch = mc.player.rotationPitch;
+            isSpoofingAngles = false;
         }
     }
 

@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.*;
@@ -45,11 +46,16 @@ public class HoleFiller extends Module {
     // switched to crystals
     private boolean switchCooldown = false;
     private boolean isAttacking = false;
+    private boolean caOn;
     private int newSlot;
     double d;
 
     @Override
     public void onEnable() {
+
+        if (ModuleManager.getModuleByName("NutgodCA").isEnabled())
+            caOn = true;
+
         if (announceUsage.getValue()) {
             Command.sendChatMessage("[HoleFiller] " + ChatFormatting.GREEN.toString() + "Enabled" + ChatFormatting.RESET.toString() + "!");
         }
@@ -89,6 +95,8 @@ public class HoleFiller extends Module {
         }
         render = q;
         if (q != null && mc.player.onGround) {
+            if (caOn)
+                ModuleManager.getModuleByName("NutgodCA").disable();
             int oldSlot = mc.player.inventory.currentItem;
             if (mc.player.inventory.currentItem != obsidianSlot)
                 mc.player.inventory.currentItem = obsidianSlot;
@@ -97,6 +105,8 @@ public class HoleFiller extends Module {
             mc.player.swingArm(EnumHand.MAIN_HAND);
             mc.player.inventory.currentItem = oldSlot;
             resetRotation();
+            if (caOn)
+                ModuleManager.getModuleByName("NutgodCA").enable();
         }
     }
 

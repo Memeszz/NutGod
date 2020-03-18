@@ -19,6 +19,7 @@ public class ChatMutator extends Module {
 
     private Setting<ChatMutator.nameColour> nameColourMode = register(Settings.e("Name Colour", nameColour.DARK_PURPLE));
     private Setting<ChatMutator.messageColour> messageColourMode = register(Settings.e("Message Colour", messageColour.DARK_PURPLE));
+    private Setting<ChatMutator.pmColour> pmColourMode = register(Settings.e("Private Message Colour", pmColour.DARK_PURPLE));
 
     @EventHandler
     public Listener<PacketEvent.Receive> listener = new Listener<>(event -> {
@@ -31,7 +32,9 @@ public class ChatMutator extends Module {
 
         String text = chatMessage.chatComponent.getUnformattedText();
         Pattern p = Pattern.compile("^<.*>");
+        Pattern p1 = Pattern.compile(".* whispers:");
         Matcher m = p.matcher(text);
+        Matcher m1 = p1.matcher(text);
 
         if (m.find()) {
             String finalText = text.replaceAll("^<.*> ", "");
@@ -42,8 +45,16 @@ public class ChatMutator extends Module {
             event.cancel();
             Command.sendRawChatMessage("&l" + nameColourChoice() + finalName + ": " + messageColourChoice() + finalText);
         } else if (!m.find()){
-            event.cancel();
-            Command.sendRawChatMessage(messageColourChoice() + text);
+            if (m1.find()) {
+                String finalName = text.replaceAll(" whispers:.*$", "");
+                String finalText = text.replaceAll("^.* whispers: ", "");
+                event.cancel();
+                Command.sendRawChatMessage(nameColourChoice() + finalName + messageColourChoice() + " -> " + nameColourChoice() + mc.player.getName() + pmColourChoice() + ": " + finalText);
+            }
+            else {
+                event.cancel();
+                Command.sendRawChatMessage(messageColourChoice() + text);
+            }
         }
 
     });
@@ -94,12 +105,39 @@ public class ChatMutator extends Module {
 
         }
 
+    private String pmColourChoice(){
+        switch (pmColourMode.getValue()){
+            case BLACK: return "&0";
+            case RED: return "&c";
+            case AQUA: return "&b";
+            case BLUE: return "&9";
+            case GOLD: return "&6";
+            case GRAY: return "&7";
+            case WHITE: return "&f";
+            case GREEN: return "&a";
+            case YELLOW: return "&e";
+            case DARK_RED: return "&4";
+            case DARK_AQUA: return "&3";
+            case DARK_BLUE: return "&1";
+            case DARK_GRAY: return "&8";
+            case DARK_GREEN: return "&2";
+            case DARK_PURPLE: return "&5";
+            case LIGHT_PURPLE: return "&d";
+            default: return "";
+        }
+
+    }
+
 
         private enum nameColour {
             BLACK,RED,AQUA,BLUE,GOLD,GRAY,WHITE,GREEN,YELLOW,DARK_RED,DARK_AQUA,DARK_BLUE,DARK_GRAY,DARK_GREEN,DARK_PURPLE,LIGHT_PURPLE
         }
 
         private enum messageColour {
+            BLACK,RED,AQUA,BLUE,GOLD,GRAY,WHITE,GREEN,YELLOW,DARK_RED,DARK_AQUA,DARK_BLUE,DARK_GRAY,DARK_GREEN,DARK_PURPLE,LIGHT_PURPLE
+        }
+
+        private enum pmColour {
             BLACK,RED,AQUA,BLUE,GOLD,GRAY,WHITE,GREEN,YELLOW,DARK_RED,DARK_AQUA,DARK_BLUE,DARK_GRAY,DARK_GREEN,DARK_PURPLE,LIGHT_PURPLE
         }
 
