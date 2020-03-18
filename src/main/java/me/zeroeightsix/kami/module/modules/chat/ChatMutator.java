@@ -34,13 +34,13 @@ public class ChatMutator extends Module {
         Matcher m = p.matcher(text);
 
         if (m.find()) {
-            String finalText = text.replaceAll("^<.*>", "");
+            String finalText = text.replaceAll("^<.*> ", "");
             String name = text.replaceAll(" .*$", "" );
             String name1 = name.replace("<", "");
             String finalName = name1.replace(">", "");
 
             event.cancel();
-            Command.sendRawChatMessage(nameColourChoice() + finalName + ":" + messageColourChoice() + finalText);
+            Command.sendRawChatMessage("&l" + nameColourChoice() + finalName + ": " + messageColourChoice() + finalText);
         } else if (!m.find()){
             event.cancel();
             Command.sendRawChatMessage(messageColourChoice() + text);
