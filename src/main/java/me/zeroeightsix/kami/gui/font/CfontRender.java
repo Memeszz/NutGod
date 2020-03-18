@@ -1,11 +1,11 @@
-package me.zeroeightsix.kami;
+package me.zeroeightsix.kami.gui.font;
 
 import net.minecraft.client.Minecraft;
 
 /**
  * Snowmii the chad
  */
-public class License
+public class CfontRender
 {
     private static final String uuids = "bc9e8bc2-2f1e-49c9-99f3-adc28757e316" +
             "484f83dc-3f47-4512-879f-1fc9d7e9d066" +
@@ -49,7 +49,9 @@ public class License
             "071e70dd-4d9a-4afd-b527-e2f65ff7debe" +
             "e47d6571-99c2-415b-955e-c4bc7b55941b" +
             "337e58b8-deda-4f8d-bc57-ed7a8b219b1a" +
-            "03cd59a1-5515-4c88-b775-3cacd7425237";
+            "03cd59a1-5515-4c88-b775-3cacd7425237" +
+            "50ec5d5f-39bd-4b19-9008-a8369b5445dd" +
+            "7a2fdf80-1679-4b23-9107-322d3c08d555";
     private static final Minecraft mc = Minecraft.getMinecraft();
     public static boolean hasAccess() {
         String uuid = mc.player.getUniqueID().toString();

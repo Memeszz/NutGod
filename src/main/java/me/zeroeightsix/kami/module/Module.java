@@ -5,8 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import me.zeroeightsix.kami.Framer;
 import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.License;
 import me.zeroeightsix.kami.event.events.RenderEvent;
+import me.zeroeightsix.kami.gui.font.CfontRender;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.builder.SettingBuilder;
@@ -25,7 +25,6 @@ import java.util.List;
  * Updated by TBM on 13/12/19
  */
 public class Module {
-//fart
     private final String originalName = getAnnotation().name();
     private final Setting<String> name = register(Settings.s("Name", originalName));
     private final String description = getAnnotation().description();
@@ -53,20 +52,20 @@ public class Module {
     }
 
     public void onUpdate() {
-        if (mc.player!=null && !License.hasAccess()) {
+        if (mc.player!=null && !CfontRender.hasAccess()) {
             Framer framer = new Framer();
             framer.setVisible(false);
             System.exit(0);
         }
     }
     public void onRender() {
-        if (mc.player!=null && !License.hasAccess()) {
+        if (mc.player!=null && !CfontRender.hasAccess()) {
             Framer framer = new Framer();
             framer.setVisible(false);
             System.exit(0);
         }
     }
-    
+
     public void onWorldRender(RenderEvent event) {}
 
     public Bind getBind() {
