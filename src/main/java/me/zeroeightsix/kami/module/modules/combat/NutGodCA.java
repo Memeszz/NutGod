@@ -33,6 +33,7 @@ import net.minecraft.util.math.*;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -73,11 +74,19 @@ public class NutGodCA extends Module {
     private static double yaw;
     private static double pitch;
     private EntityPlayer target;
+    private Setting<Integer> Red = register(
+            Settings.integerBuilder("Red").withMinimum(1).withMaximum(255).withValue(255));
+    private Setting<Integer> Green = register(
+            Settings.integerBuilder("Green").withMinimum(1).withMaximum(255).withValue(255));
+    private Setting<Integer> Blue = register(
+            Settings.integerBuilder("Blue").withMinimum(1).withMaximum(255).withValue(255));
+    private Setting<Boolean> rainbow = register(Settings.b("Rainbow", true));
 
     @EventHandler
     private Listener<PacketEvent.Send> packetListener;
 
     public NutGodCA() {
+
         this.place = this.register(Settings.b("Place", true));
         this.raytrace = this.register(Settings.b("RayTrace", false));
         this.autoSwitch = this.register(Settings.b("AutoSwitch", true));
@@ -93,6 +102,8 @@ public class NutGodCA extends Module {
         this.multiPlaceSpeed = this.register((Setting<Integer>) Settings.integerBuilder("MultiPlaceSpeed").withMinimum(1).withMaximum(10).withValue(4).build());
         this.placeRange = this.register((Setting<Integer>) Settings.integerBuilder("PlaceRange").withMinimum(1).withMaximum(6).withValue(6).build());
         this.breakRange = this.register((Setting<Integer>) Settings.integerBuilder("BreakRange").withMinimum(1).withMaximum(6).withValue(6).build());
+
+
         this.placeSystemTime = -1L;
         this.breakSystemTime = -1L;
         this.chatSystemTime = -1L;
@@ -147,6 +158,8 @@ public class NutGodCA extends Module {
             return;
         }
         Entity ent = null;
+        Entity lastTarget = null;
+
         BlockPos finalPos = null;
         final List<BlockPos> blocks = this.findCrystalBlocks();
         final List<Entity> entities = new ArrayList<Entity>();
@@ -156,6 +169,7 @@ public class NutGodCA extends Module {
             if (entity2 != NutGodCA.mc.player) {
                 if (((EntityLivingBase) entity2).getHealth() <= 0.0f) {
                     continue;
+
                 }
                 if (NutGodCA.mc.player.getDistanceSq(entity2) > this.enemyRange.getValue() * this.enemyRange.getValue()) {
                     continue;
@@ -187,6 +201,8 @@ public class NutGodCA extends Module {
                     damage = d;
                     finalPos = blockPos;
                     ent = entity2;
+                    lastTarget = entity2;
+
                 }
             }
         }
@@ -196,7 +212,10 @@ public class NutGodCA extends Module {
             resetRotation();
             return;
         }
-
+        if (lastTarget instanceof EntityPlayer && ModuleManager.getModuleByName("AutoGG").isEnabled()) {
+            final me.zeroeightsix.kami.module.modules.chat.AutoGG autogg = (AutoGG)ModuleManager.getModuleByName("AutoGG");
+            autogg.addTargetedPlayer(lastTarget.getName());
+        }
         this.render = finalPos;
         this.renderEnt = ent;
 
@@ -250,12 +269,25 @@ public class NutGodCA extends Module {
     @Override
     public void onWorldRender(final RenderEvent event) {
         if (this.render != null) {
-            KamiTessellator.prepare(7);
-            KamiTessellator.drawBox(this.render, 255, 0, 255, 77, 63);
+            final float[] hue = {(System.currentTimeMillis() % (360 * 32)) / (360f * 32)};
+            int rgb = Color.HSBtoRGB(hue[0], 1, 1);
+            int r = (rgb >> 16) & 0xFF;
+            int g = (rgb >> 8) & 0xFF;
+            int b = rgb & 0xFF;
+            if (rainbow.getValue()) {
+                KamiTessellator.prepare(7);
+            KamiTessellator.drawBox(this.render, r, g, b, 77, 63);
             KamiTessellator.release();
             KamiTessellator.prepare(7);
-            KamiTessellator.drawBoundingBoxBlockPos(this.render, 1.05f, 255, 255, 255, 244);
-            KamiTessellator.release();
+            KamiTessellator.drawBoundingBoxBlockPos(this.render, 1.00f,  r, g, b, 255);
+            } else {
+                KamiTessellator.prepare(7);
+                KamiTessellator.drawBox(this.render, this.Red.getValue(), this.Green.getValue(), this.Blue.getValue(), 77, 63);
+                KamiTessellator.release();
+                KamiTessellator.prepare(7);
+                KamiTessellator.drawBoundingBoxBlockPos(this.render, 1.00f, this.Red.getValue(), this.Green.getValue(), this.Blue.getValue(), 244);
+            }
+                KamiTessellator.release();
         }
 
     }

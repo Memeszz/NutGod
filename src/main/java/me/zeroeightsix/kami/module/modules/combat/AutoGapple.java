@@ -10,7 +10,7 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.ItemStack;
 
-@Module.Info(name = "AutoGapple", category = Module.Category.COMBAT)
+@Module.Info(name = "OffHandGap", category = Module.Category.COMBAT)
 public class AutoGapple extends Module {
     private int gapples;
     private boolean moving = false;

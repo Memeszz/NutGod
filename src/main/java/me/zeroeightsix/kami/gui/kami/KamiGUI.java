@@ -236,7 +236,7 @@ public class KamiGUI
         frame.setPinneable(true);
         frame.setMinimumWidth(75);
 
-        Label watermark = new Label((ChatFormatting.LIGHT_PURPLE)+("NutGod 4.8"));
+        Label watermark = new Label((ChatFormatting.LIGHT_PURPLE)+("NutGod 5.1"));
         watermark.setX((frame.getWidth() / 2));
         watermark.setShadow(true);
         frame.addChild(watermark);

@@ -1,156 +1,202 @@
 package me.zeroeightsix.kami.module.modules.chat;
 
-import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderItem;
+import me.zeroeightsix.kami.util.ChatTextUtils;
+import me.zeroeightsix.kami.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
-import java.util.*;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Module.Info(name = "AutoGG", description = "Says gg after a nigga dies", category = Module.Category.CHAT)
+
+@Module.Info(name = "AutoGG", category = Module.Category.CHAT, description = "Announce killed Players")
 public class AutoGG extends Module {
 
-    public static AutoGG INSTANCE;
-    static List<String> AutoGgMessages = new ArrayList<>();
-    private ConcurrentHashMap targetedPlayers = null;
-    int index = -1;
+    private ConcurrentHashMap<String, Integer> targetedPlayers = null;
 
+    private Setting<Boolean> toxicMode = register(Settings.b("ToxicMode", false));
+    private Setting<Boolean> clientName = register(Settings.b("ClientName", true));
+    private Setting<Integer> timeoutTicks = register(Settings.i("TimeoutTicks", 20));
 
-    RenderItem itemRenderer = mc.getRenderItem();
-
-    @EventHandler
-    private Listener<PacketEvent.Send> sendListener = new Listener<>(event -> {
-        if (mc.player != null) {
-            if (this.targetedPlayers == null) {
-                this.targetedPlayers = new ConcurrentHashMap();
-            }
-
-            if (event.getPacket() instanceof CPacketUseEntity) {
-                CPacketUseEntity cPacketUseEntity = (CPacketUseEntity)event.getPacket();
-                if (cPacketUseEntity.getAction().equals(CPacketUseEntity.Action.ATTACK)) {
-                    Entity targetEntity = cPacketUseEntity.getEntityFromWorld(mc.world);
-                    if (targetEntity instanceof EntityPlayer) {
-                        this.addTargetedPlayer(targetEntity.getName());
-                    }
-                }
-            }
-        }
-    });
-    @EventHandler
-    private Listener<LivingDeathEvent> livingDeathEventListener = new Listener<>(event -> {
-        if (mc.player != null) {
-            if (this.targetedPlayers == null) {
-                this.targetedPlayers = new ConcurrentHashMap();
-            }
-
-            EntityLivingBase entity = event.getEntityLiving();
-            if (entity != null) {
-                if (entity instanceof EntityPlayer) {
-                    EntityPlayer player = (EntityPlayer)entity;
-                    if (player.getHealth() <= 0.0F) {
-                        String name = player.getName();
-                        if (this.shouldAnnounce(name)) {
-                            this.doAnnounce(name);
-                        }
-
-                    }
-                }
-            }
-        }
-    });
-
+    @Override
     public void onEnable() {
-        this.targetedPlayers = new ConcurrentHashMap();
-        KamiMod.EVENT_BUS.subscribe(this);
+        targetedPlayers = new ConcurrentHashMap<>();
     }
 
+    @Override
     public void onDisable() {
-        this.targetedPlayers = null;
-        KamiMod.EVENT_BUS.unsubscribe(this);
+        targetedPlayers = null;
     }
 
+    @Override
     public void onUpdate() {
-        if (this.targetedPlayers == null) {
-            this.targetedPlayers = new ConcurrentHashMap();
+
+        if (isDisabled() || mc.player == null) {
+            return;
         }
 
-        Iterator var1 = mc.world.getLoadedEntityList().iterator();
+        if (targetedPlayers == null) {
+            targetedPlayers = new ConcurrentHashMap<>();
+        }
 
-        while(var1.hasNext()) {
-            Entity entity = (Entity)var1.next();
-            if (entity instanceof EntityPlayer) {
-                EntityPlayer player = (EntityPlayer)entity;
-                if (player.getHealth() <= 0.0F) {
-                    String name = player.getName();
-                    if (this.shouldAnnounce(name)) {
-                        this.doAnnounce(name);
-                        break;
-                    }
-                }
+        for (Entity entity : mc.world.getLoadedEntityList()) {
+
+            // skip non player entities
+            if (!EntityUtil.isPlayer(entity)) {
+                continue;
             }
+            EntityPlayer player = (EntityPlayer) entity;
+
+            // skip if player is alive
+            if (player.getHealth() > 0) {
+                continue;
+            }
+
+            String name = player.getName();
+            if (shouldAnnounce(name)) {
+                doAnnounce(name);
+                break;
+            }
+
         }
 
-        targetedPlayers.forEach((namex, timeout) -> {
-            if ((int)timeout <= 0) {
-                this.targetedPlayers.remove(namex);
+        targetedPlayers.forEach((name, timeout) -> {
+            if (timeout <= 0) {
+                targetedPlayers.remove(name);
             } else {
-                this.targetedPlayers.put(namex, (int)timeout - 1);
+                targetedPlayers.put(name, timeout - 1);
             }
-
         });
+
     }
+
+    @EventHandler
+    public Listener<PacketEvent.Send> sendListener = new Listener<>(event -> {
+
+        if (mc.player == null) {
+            return;
+        }
+
+        if (targetedPlayers == null) {
+            targetedPlayers = new ConcurrentHashMap<>();
+        }
+
+        // return if packet is not of type CPacketUseEntity
+        if (!(event.getPacket() instanceof CPacketUseEntity)) {
+            return;
+        }
+        CPacketUseEntity cPacketUseEntity = ((CPacketUseEntity) event.getPacket());
+
+        // return if action is not of type CPacketUseEntity.Action.ATTACK
+        if (!(cPacketUseEntity.getAction().equals(CPacketUseEntity.Action.ATTACK))) {
+            return;
+        }
+
+        // return if targeted Entity is not a player
+        Entity targetEntity = cPacketUseEntity.getEntityFromWorld(mc.world);
+        if (!EntityUtil.isPlayer(targetEntity)) {
+            return;
+        }
+
+        addTargetedPlayer(targetEntity.getName());
+
+    });
+
+    @EventHandler
+    public Listener<LivingDeathEvent> livingDeathEventListener = new Listener<>(event -> {
+
+        if (mc.player == null) {
+            return;
+        }
+
+        if (targetedPlayers == null) {
+            targetedPlayers = new ConcurrentHashMap<>();
+        }
+
+        EntityLivingBase entity = event.getEntityLiving();
+
+        if (entity == null) {
+            return;
+        }
+
+        // skip non player entities
+        if (!EntityUtil.isPlayer(entity)) {
+            return;
+        }
+
+        EntityPlayer player = (EntityPlayer) entity;
+
+        // skip if player is alive
+        if (player.getHealth() > 0) {
+            return;
+        }
+
+        String name = player.getName();
+        if (shouldAnnounce(name)) {
+            doAnnounce(name);
+        }
+
+    });
 
     private boolean shouldAnnounce(String name) {
-        return this.targetedPlayers.containsKey(name);
+        return targetedPlayers.containsKey(name);
     }
 
     private void doAnnounce(String name) {
-        targetedPlayers.remove(name);
-        if(index >= (AutoGgMessages.size() - 1)) index = -1;
-        index++;
-        String message;
-        if(AutoGgMessages.size() > 0)
-            message = AutoGgMessages.get(index);
-        else
-            message = "GET NUTTED ON PUSSY";
 
-        String messageSanitized = message.replaceAll("ยง", "").replace("{name}", name);
+        targetedPlayers.remove(name);
+
+        StringBuilder message = new StringBuilder();
+
+        if (toxicMode.getValue()) {
+            message.append("YOU JUST GOT NUTTED ON PUSSY ");
+        } else {
+            message.append("good fight ig my ca was to fast ");
+        }
+
+        message.append(name);
+        message.append("!");
+
+        if (clientName.getValue()) {
+            message.append(" ");
+            message.append(KamiMod.NAME_UNICODE);
+            message.append(" owns me and you and your family");
+        }
+
+        String messageSanitized = message.toString().replaceAll(ChatTextUtils.SECTIONSIGN, "");
+
         if (messageSanitized.length() > 255) {
             messageSanitized = messageSanitized.substring(0, 255);
         }
 
         mc.player.connection.sendPacket(new CPacketChatMessage(messageSanitized));
+
     }
 
     public void addTargetedPlayer(String name) {
-        if (!Objects.equals(name, mc.player.getName())) {
-            if (this.targetedPlayers == null) {
-                this.targetedPlayers = new ConcurrentHashMap();
-            }
 
-            targetedPlayers.put(name, 20);
+        // skip if self is the target
+        if (Objects.equals(name, mc.player.getName())) {
+            return;
         }
+
+        if (targetedPlayers == null) {
+            targetedPlayers = new ConcurrentHashMap<>();
+        }
+
+        targetedPlayers.put(name, timeoutTicks.getValue());
+
     }
 
-
-    public static void addAutoGgMessage(String s){
-        AutoGgMessages.add(s);
-    }
-
-    public static List<String> getAutoGgMessages(){
-        return AutoGgMessages;
-    }
 }

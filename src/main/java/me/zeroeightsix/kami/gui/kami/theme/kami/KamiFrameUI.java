@@ -38,6 +38,7 @@ public class KamiFrameUI<T extends Frame>
     public float redForBG;
     public float greenForBG;
     public float blueForBG;
+    CFontRenderer cFontRenderer = new CFontRenderer(new Font("Arial", 0, 18), true, false);
 
     @Override
     public void renderComponent(Frame component, FontRenderer fontRenderer) {

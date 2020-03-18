@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.combat;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.BlockInteractionHelper;
@@ -44,16 +45,23 @@ public class SelfTrap extends Module {
     private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
     private Setting<Boolean> announceUsage = register(Settings.b("AnnounceUsage", true));
     private Setting<Boolean> smart = register(Settings.b("Smart", false));
+    private Setting<Boolean> disableOnPlace = register(Settings.b("Disable On Place", false));
+    private Setting<Boolean> disableCAOnPlace = register(Settings.b("Disable CA On Place", false));
     private int playerHotbarSlot = -1;
     private int lastHotbarSlot = -1;
     private int delayStep = 0;
     private boolean isSneaking = false;
     private int offsetStep = 0;
     private boolean firstRun;
+    private boolean caOn;
     private EntityPlayer closestTarget;
 
     @Override
     protected void onEnable() {
+
+        if (ModuleManager.getModuleByName("NutgodCA").isEnabled()) {
+            caOn = true;
+        }
 
         if (mc.player == null) {
             this.disable();
@@ -74,6 +82,8 @@ public class SelfTrap extends Module {
 
     @Override
     protected void onDisable() {
+
+        caOn = false;
 
         closestTarget = null;
 
@@ -181,9 +191,26 @@ public class SelfTrap extends Module {
 
         }
 
+        Vec3d overHead = new Vec3d(0, 3, 0);
+        BlockPos blockOverHead = new BlockPos(mc.player.getPositionVector()).down().add(overHead.x, overHead.y, overHead.z);
+        Block block2 = mc.world.getBlockState(blockOverHead).getBlock();
+
+        if (!(block2 instanceof BlockAir) && !(block2 instanceof BlockLiquid) && disableCAOnPlace.getValue() && caOn) {
+            ModuleManager.getModuleByName("NutgodCA").enable();
+        }
+
+        if (!(block2 instanceof BlockAir) && !(block2 instanceof BlockLiquid) && disableOnPlace.getValue()) {
+            this.disable();
+        }
+
     }
 
     private boolean placeBlockInRange(BlockPos pos) {
+
+        // check if crystalaura is on, if so disable it
+        if (caOn && disableCAOnPlace.getValue()) {
+            ModuleManager.getModuleByName("NutgodCA").disable();
+        }
 
         // check if block is already placed
         Block block = mc.world.getBlockState(pos).getBlock();
@@ -238,10 +265,7 @@ public class SelfTrap extends Module {
 
         mc.playerController.processRightClickBlock(mc.player, mc.world, neighbour, opposite, hitVec, EnumHand.MAIN_HAND);
         mc.player.swingArm(EnumHand.MAIN_HAND);
-        mc.rightClickDelayTimer = 4;
-
-
-
+        mc.rightClickDelayTimer = 0;
 
         return true;
 
