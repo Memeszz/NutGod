@@ -26,7 +26,7 @@ import java.util.Iterator;
 /**
  * Created by 086 on 12/12/2017.
  * Updated by hub on 31 October 2019
- * Updated by Memeszz 6/3/2020
+ * Updated by Memeszz 3/18/2020
  */
 @Module.Info(name = "Aura", category = Module.Category.COMBAT, description = "Hits entities around you")
 public class Aura extends Module {
@@ -37,7 +37,8 @@ public class Aura extends Module {
     private Setting<Boolean> swordOnly = register(Settings.b("SwordOnly", false));
     private Setting<Boolean> cacheck = register(Settings.b("CADisable", true));
     private Setting<Boolean> alert = register(Settings.b("ChatAlert", true));
-
+    private Setting<Boolean> TpsSync = register(Settings.b("TpsSync", true));
+    private Setting<Boolean> gap = register(Settings.b("OffHandGap", false));
     private Setting<Boolean> Criticals = register(Settings.b("Criticals", true));
     private Setting<Double> hitRange = register(Settings.d("Hit Range", 4.5d));
     private Setting<Boolean> ignoreWalls = register(Settings.b("Ignore Walls", true));
@@ -52,8 +53,16 @@ public class Aura extends Module {
         } else {
             return;
         }
-        if (this.alert.getValue() && NutGodCA.mc.world != null) {
+        if (TpsSync.getValue()) {
+            ModuleManager.getModuleByName("TpsSync").enable();
+        } else {
+            return;
+        }
+        if (this.alert.getValue() && Aura.mc.world != null) {
             Command.sendRawChatMessage("\u00A7aKillAura ON");
+        }
+        if(this.gap.getValue()) {
+            ModuleManager.getModuleByName("OffHandGap").enable();
         }
     }
     @Override
@@ -63,10 +72,20 @@ public class Aura extends Module {
         } else {
             return;
         }
-        if (this.alert.getValue() && NutGodCA.mc.world != null) {
-            Command.sendRawChatMessage("\u00A7aKillAura Off");
+        if (TpsSync.getValue()) {
+            ModuleManager.getModuleByName("TpsSync").disable();
+        } else {
+            return;
+        }
+        if (this.alert.getValue() && Aura.mc.world != null) {
+            Command.sendRawChatMessage("\u00A7cKillAura Off");
+        }
+        if(this.gap.getValue()) {
+            ModuleManager.getModuleByName("OffHandGap").disable();
         }
     }
+
+
     @Override
     public void onUpdate() {
 
