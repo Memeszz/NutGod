@@ -60,7 +60,7 @@ public class KamiMod {
     public static final String KAMI_KANJI = "NutGod";
 
     private static final String KAMI_CONFIG_NAME_DEFAULT = "NutGodConfig.json";
-
+    public static final char colour = '\u00A7';
     public static final Logger log = LogManager.getLogger("KAMI");
 
     public static final EventBus EVENT_BUS = new EventManager();
