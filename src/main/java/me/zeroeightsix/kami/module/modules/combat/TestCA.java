@@ -39,7 +39,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
-@Module.Info(name = "TestCA", description = "leaked penis hack crystalaura 2", category = Module.Category.COMBAT)
+@Module.Info(name = "penis aura", description = "leaked penis hack crystalaura 2", category = Module.Category.COMBAT)
 public class TestCA extends Module {
 
     private Setting<Integer> tickPlaceDelay;
