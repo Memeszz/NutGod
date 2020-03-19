@@ -7,9 +7,7 @@ import me.zeroeightsix.kami.setting.Settings;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 
-/**
- * Updated By memeszz
- */
+
 @Module.Info(name = "Strafe", description = "Strafe", category = Module.Category.MOVEMENT)
 
 
@@ -58,8 +56,8 @@ public class Speed extends Module {
                 } else {
                     if(mc.gameSettings.keyBindJump.isPressed()){
                         mc.player.motionY = 0.405;
-                        mc.player.motionX -= (double) (MathHelper.sin(f) * 0.2f) * forward;
-                        mc.player.motionZ += (double) (MathHelper.cos(f) * 0.2f) * forward;
+                        mc.player.motionX -= (double) (MathHelper.sin(f) * 0.1f) * forward;
+                        mc.player.motionZ += (double) (MathHelper.cos(f) * 0.1f) * forward;
                     }
                 }
             } else {

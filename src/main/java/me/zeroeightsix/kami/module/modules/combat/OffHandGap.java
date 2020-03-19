@@ -18,7 +18,7 @@ public class OffHandGap extends Module {
 
     private Setting<Boolean> soft = register(Settings.b("Soft", false));
     private Setting<Boolean> totemdisable = register(Settings.b("TotemOnDisable", true));
-    private Setting<Boolean> offhandcaDisable = register(Settings.b("OffhandCADisable", true));
+    private Setting<Boolean> offhandcaDisable = register(Settings.b("OffhandCADisable", false));
 
 
     @Override

@@ -169,7 +169,7 @@ public class TestCA extends Module {
         final EntityEnderCrystal crystal = (EntityEnderCrystal) mc.world.loadedEntityList.stream().filter(entity -> entity instanceof EntityEnderCrystal).map(entity -> entity).min(Comparator.comparing(c -> mc.player.getDistance(c))).orElse(null);
         breakCrystal(crystal);
         BlockPos target = getPlaceTarget();
-        placeCrystal(target);
+        if (target != null) placeCrystal(target);
     }
 
     @Override
