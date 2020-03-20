@@ -16,7 +16,7 @@ public class MixinRenderPlayer {
 
     @Inject(method = "renderEntityName", at = @At("HEAD"), cancellable = true)
     public void renderLivingLabel(AbstractClientPlayer entityIn, double x, double y, double z, String name, double distanceSq, CallbackInfo info) {
-        if (ModuleManager.isModuleEnabled("Nametags")) info.cancel();
+        if (ModuleManager.isModuleEnabled("RusherHackNameTags")) info.cancel();
     }
 
 }
