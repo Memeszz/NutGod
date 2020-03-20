@@ -2,6 +2,7 @@
 
 package me.zeroeightsix.kami.module.modules.combat;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.command.Command;
@@ -400,7 +401,7 @@ public class NutGodCA extends Module {
 
     public void onDisable() {
         if (this.alert.getValue() && NutGodCA.mc.world != null) {
-            Command.sendRawChatMessage("\u00A7cAutoCrystal OFF");
+            Command.sendRawChatMessage("\u00A7cAutoCrystal" + ChatFormatting.RED.toString() + "OFF");
         }
         this.render = null;
         resetRotation();

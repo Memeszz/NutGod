@@ -171,7 +171,7 @@ public class AutoGG extends Module {
         if (clientName.getValue()) {
             message.append(" ");
             message.append(KamiMod.NAME_UNICODE);
-            message.append(" owns me and you and your family");
+            message.append(" ");
         }
 
         String messageSanitized = message.toString().replaceAll(ChatTextUtils.SECTIONSIGN, "");

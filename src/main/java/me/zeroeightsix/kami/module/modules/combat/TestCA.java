@@ -39,7 +39,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
-@Module.Info(name = "MegynCA", description = "leaked penis hack crystalaura 2", category = Module.Category.COMBAT)
+@Module.Info(name = "penis aura", description = "leaked penis hack crystalaura 2", category = Module.Category.COMBAT)
 public class TestCA extends Module {
 
     private Setting<Integer> tickPlaceDelay;
@@ -50,7 +50,7 @@ public class TestCA extends Module {
     private Setting<Double> breakRange;
     private Setting<Integer> enemyRange;
     private Setting<Integer> minDamage;
-    private Setting<Integer> throughWallsRange;
+    private Setting<Double> placeThroughWallsRange;
     private Setting<Integer> ignoreMinDamageThreshold;
     private Setting<Integer> friendProtectThreshold;
     private Setting<Integer> selfProtectThreshold;
@@ -79,6 +79,7 @@ public class TestCA extends Module {
     private Setting<Boolean> rainbow;
     private Setting<Boolean> antiWeaknessOffhand;
     private Setting<Double> breakYOffset;
+    private Setting<Boolean> renderBreakTarget;
 
     private long breakSystemTime;
     private long placeSystemTime;
@@ -109,6 +110,7 @@ public class TestCA extends Module {
         this.selfProtect = this.register(Settings.b("Self Protect", false));
         this.rainbow = this.register(Settings.b("Rainbow", false));
         this.antiWeaknessOffhand = this.register(Settings.b("Anti Weakness Offhand", false));
+        this.renderBreakTarget = this.register(Settings.b("Render Break Target", true));
         this.red = this.register((Setting<Integer>) Settings.integerBuilder("Red").withMinimum(0).withMaximum(255).withValue(256).build());
         this.green = this.register((Setting<Integer>) Settings.integerBuilder("Green").withMinimum(0).withMaximum(255).withValue(0).build());
         this.blue = this.register((Setting<Integer>) Settings.integerBuilder("Blue").withMinimum(0).withMaximum(255).withValue(0).build());
@@ -157,7 +159,7 @@ public class TestCA extends Module {
         }
 
         if (chatAlert.getValue()) {
-            Command.sendChatMessage("\u00A7aMegyn AutoCrystal OFF");
+            Command.sendChatMessage("\u00A7aMegyn AutoCrystal" + ChatFormatting.RED.toString() + " OFF");
         }
 
         resetRotation();
@@ -167,8 +169,16 @@ public class TestCA extends Module {
     @Override
     public void onUpdate() {
         final EntityEnderCrystal crystal = (EntityEnderCrystal) mc.world.loadedEntityList.stream().filter(entity -> entity instanceof EntityEnderCrystal).map(entity -> entity).min(Comparator.comparing(c -> mc.player.getDistance(c))).orElse(null);
+        final List<Entity> entities = new ArrayList<Entity>();
+        entities.addAll(mc.world.playerEntities.stream().filter(entityPlayer -> !Friends.isFriend(entityPlayer.getName())).collect(Collectors.toList()));
+        if (crystal == null)
+            return;
+        BlockPos breakTarget = new BlockPos(Math.floor(crystal.posX), Math.floor(crystal.posY), Math.floor(crystal.posZ));
+        if (renderBreakTarget.getValue())
+            render = breakTarget;
         breakCrystal(crystal);
-        BlockPos target = getPlaceTarget();
+        BlockPos target = getPlaceTarget(entities);
+        render = target;
         if (target != null) placeCrystal(target);
     }
 
@@ -306,7 +316,7 @@ public class TestCA extends Module {
 
     public void breakCrystal(EntityEnderCrystal crystal) {
         if (crystal != null && this.explode.getValue()) {
-            BlockPos breakTarget = new BlockPos(crystal.posX, crystal.posY, crystal.posZ);
+            BlockPos breakTarget = new BlockPos(crystal.posX, crystal.posY + 1, crystal.posZ);
             if (!canBlockBeSeen(breakTarget)) {
                 if (mc.player.getDistance((Entity) crystal) <= this.breakThroughWallsRange.getValue()) {
                     if (this.selfProtect.getValue() && calculateDamage(crystal, mc.player) <= selfProtectThreshold.getValue()) {
@@ -407,12 +417,10 @@ public class TestCA extends Module {
         }
     }
 
-    public BlockPos getPlaceTarget() {
+    public BlockPos getPlaceTarget(List<Entity> entities) {
         Entity ent = null;
         BlockPos finalPos = null;
         final List<BlockPos> blocks = this.findCrystalBlocks();
-        final List<Entity> entities = new ArrayList<Entity>();
-        entities.addAll(mc.world.playerEntities.stream().filter(entityPlayer -> !Friends.isFriend(entityPlayer.getName())).collect(Collectors.toList()));
         double damage = 0.5;
         for (final Entity entity2 : entities) {
             if (entity2 != mc.player) {
