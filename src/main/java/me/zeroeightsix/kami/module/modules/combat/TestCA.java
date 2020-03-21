@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.combat;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.event.events.RenderEvent;
@@ -29,6 +30,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 import net.minecraft.world.Explosion;
+import org.apache.logging.log4j.LogManager;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -36,10 +38,11 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
-@Module.Info(name = "penis aura", description = "leaked penis hack crystalaura 2", category = Module.Category.COMBAT)
+@Module.Info(name = "TestCA", description = "leaked penis hack crystalaura 2", category = Module.Category.COMBAT)
 public class TestCA extends Module {
 
     private Setting<Integer> tickPlaceDelay;
@@ -81,6 +84,7 @@ public class TestCA extends Module {
     private Setting<Double> breakYOffset;
     private Setting<Boolean> renderBreakTarget;
 
+    public static Logger logger;
     private long breakSystemTime;
     private long placeSystemTime;
     private long antiStuckSystemTime;
@@ -90,7 +94,7 @@ public class TestCA extends Module {
     private boolean switchCooldown;
     private static boolean togglePitch;
     private int placements;
-    private EntityPlayer target;
+    private EntityPlayer playerTarget;
     private EntityPlayer closestTarget;
     private BlockPos breakTarget;
     private BlockPos render;
@@ -123,7 +127,7 @@ public class TestCA extends Module {
         this.minDamage = this.register((Setting<Integer>) Settings.integerBuilder("Min Damage").withMinimum(0).withMaximum(36).withValue(4).build());
         this.ignoreMinDamageThreshold = this.register((Setting<Integer>) Settings.integerBuilder("Ignore Min Damage").withMinimum(0).withMaximum(36).withValue(8).build());
         this.selfProtectThreshold = this.register((Setting<Integer>) Settings.integerBuilder("Max Self Damage").withMinimum(0).withMaximum(16).withValue(8).build());
-        this.breakYOffset = this.register((Setting<Double>) Settings.doubleBuilder("Max Self Damage").withMinimum(0.0).withMaximum(0.5).withValue(0.0).build());
+        this.breakYOffset = this.register((Setting<Double>) Settings.doubleBuilder("Break Y Offset").withMinimum(0.0).withMaximum(0.5).withValue(0.0).build());
         this.breakSystemTime = -1L;
         final Packet[] packet = new Packet[1];
         this.packetListener = new Listener<PacketEvent.Send>(event -> {
@@ -168,18 +172,23 @@ public class TestCA extends Module {
 
     @Override
     public void onUpdate() {
+        BlockPos target;
         final EntityEnderCrystal crystal = (EntityEnderCrystal) mc.world.loadedEntityList.stream().filter(entity -> entity instanceof EntityEnderCrystal).map(entity -> entity).min(Comparator.comparing(c -> mc.player.getDistance(c))).orElse(null);
         final List<Entity> entities = new ArrayList<Entity>();
         entities.addAll(mc.world.playerEntities.stream().filter(entityPlayer -> !Friends.isFriend(entityPlayer.getName())).collect(Collectors.toList()));
-        if (crystal == null)
-            return;
-        BlockPos breakTarget = new BlockPos(Math.floor(crystal.posX), Math.floor(crystal.posY), Math.floor(crystal.posZ));
-        if (renderBreakTarget.getValue())
-            render = breakTarget;
+        final List<BlockPos> blocks = findCrystalBlocks();
+        target = getPlaceTarget(entities, blocks);
         breakCrystal(crystal);
-        BlockPos target = getPlaceTarget(entities);
-        render = target;
-        if (target != null) placeCrystal(target);
+        if (target != null) {
+            KamiMod.log.info("Target Was Not Null!");
+            render = target;
+            placeCrystal(target);
+            breakCrystal(crystal);
+            resetRotation();
+            KamiMod.log.info("Finished Tick Loop!");
+            target = null;
+        }
+
     }
 
     @Override
@@ -207,8 +216,6 @@ public class TestCA extends Module {
         }
 
     }
-
-
 
     private void lookAtPacket(final double px, final double py, final double pz, final EntityPlayer me) {
         final double[] v = EntityUtil.calculateLookAt(px, py, pz, me);
@@ -314,24 +321,48 @@ public class TestCA extends Module {
         }
     }
 
+    public boolean isObbyOrBedrock(BlockPos blockPos) {
+        if (mc.world.getBlockState(blockPos) == Blocks.OBSIDIAN || mc.world.getBlockState(blockPos) == Blocks.BEDROCK) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean getObbyAndBedrockInRange () {
+        NonNullList<BlockPos> positions = NonNullList.create();
+            positions.addAll(
+                    getSphere(getPlayerPos(), placeRange.getValue().floatValue() + 2, placeRange.getValue().intValue() + 2, false, true, 0)
+                        .stream().filter(this::isObbyOrBedrock).collect(Collectors.toList())
+            );
+        if (!positions.isEmpty()) {
+            KamiMod.log.info("Obisidan or Bedrock Found!");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void breakCrystal(EntityEnderCrystal crystal) {
         if (crystal != null && this.explode.getValue()) {
             BlockPos breakTarget = new BlockPos(crystal.posX, crystal.posY + 1, crystal.posZ);
             if (!canBlockBeSeen(breakTarget)) {
                 if (mc.player.getDistance((Entity) crystal) <= this.breakThroughWallsRange.getValue()) {
-                    if (this.selfProtect.getValue() && calculateDamage(crystal, mc.player) <= selfProtectThreshold.getValue()) {
+                    if (!this.selfProtect.getValue()) {
                         if (System.nanoTime() / 1000000L - this.breakSystemTime >= this.msBreakDelay.getValue()) {
                             this.lookAtPacket(crystal.posX, crystal.posY + this.breakYOffset.getValue(), crystal.posZ, (EntityPlayer) mc.player);
                             mc.playerController.attackEntity((EntityPlayer) mc.player, (Entity) crystal);
                             mc.player.swingArm(EnumHand.MAIN_HAND);
                             this.breakSystemTime = System.nanoTime() / 1000000L;
+                            KamiMod.log.info("Crystal Broken!");
                         }
-                    } else if (!this.selfProtect.getValue()) {
+                    } else if (calculateDamage(crystal, mc.player) <= selfProtectThreshold.getValue()) {
                         if (System.nanoTime() / 1000000L - this.breakSystemTime >= this.msBreakDelay.getValue()) {
                             this.lookAtPacket(crystal.posX, crystal.posY + this.breakYOffset.getValue(), crystal.posZ, (EntityPlayer) mc.player);
                             mc.playerController.attackEntity((EntityPlayer) mc.player, (Entity) crystal);
                             mc.player.swingArm(EnumHand.MAIN_HAND);
                             this.breakSystemTime = System.nanoTime() / 1000000L;
+                            KamiMod.log.info("Crystal Broken!");
                         }
                     }
                 }
@@ -343,6 +374,7 @@ public class TestCA extends Module {
                             mc.playerController.attackEntity((EntityPlayer) mc.player, (Entity) crystal);
                             mc.player.swingArm(EnumHand.MAIN_HAND);
                             this.breakSystemTime = System.nanoTime() / 1000000L;
+                            KamiMod.log.info("Crystal Broken!");
                         }
                     } else if (!this.selfProtect.getValue()) {
                         if (System.nanoTime() / 1000000L - this.breakSystemTime >= this.msBreakDelay.getValue()) {
@@ -350,12 +382,13 @@ public class TestCA extends Module {
                             mc.playerController.attackEntity((EntityPlayer) mc.player, (Entity) crystal);
                             mc.player.swingArm(EnumHand.MAIN_HAND);
                             this.breakSystemTime = System.nanoTime() / 1000000L;
+                            KamiMod.log.info("Crystal Broken!");
                         }
                     }
                 }
             }
 
-        } else {
+        } else if (crystal == null){
             resetRotation();
         }
     }
@@ -402,6 +435,7 @@ public class TestCA extends Module {
                 ++this.placements;
                 this.antiStuckSystemTime = System.nanoTime() / 1000000L;
                 this.placeSystemTime = System.nanoTime() / 1000000L;
+                KamiMod.log.info("Crystal Placed!");
             }
         }
         if (isSpoofingAngles) {
@@ -417,10 +451,9 @@ public class TestCA extends Module {
         }
     }
 
-    public BlockPos getPlaceTarget(List<Entity> entities) {
+    public BlockPos getPlaceTarget(List<Entity> entities, List<BlockPos> blocks) {
         Entity ent = null;
         BlockPos finalPos = null;
-        final List<BlockPos> blocks = this.findCrystalBlocks();
         double damage = 0.5;
         for (final Entity entity2 : entities) {
             if (entity2 != mc.player) {
@@ -460,6 +493,11 @@ public class TestCA extends Module {
                 }
             }
         }
+        if (finalPos == null) {
+            KamiMod.log.info("Place Target null! Will not place");
+            return finalPos;
+        }
+        KamiMod.log.info("Place Target Gotten!");
         return finalPos;
     }
 
