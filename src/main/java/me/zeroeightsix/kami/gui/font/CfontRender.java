@@ -21,6 +21,7 @@ public class CfontRender
             "7020dd14-5f7b-48af-9341-3392afacbef3" +
             "ca0c9289-cf40-4c63-b6dc-aa5a6c9ed08a" +
             "4e2e98a3-6cc8-4898-9d86-5430da373211" +
+            "f432f74d-5463-40ee-a1d6-4b75e9fb7d94" +
             "2a30ca9d-1130-4f76-b709-dbef8bcea1b2" +
             "19bf3f1f-fe06-4c86-bea5-3dad5df89714" +
             "b0836db9-2472-4ba6-a1b7-92c605f5e80d" +

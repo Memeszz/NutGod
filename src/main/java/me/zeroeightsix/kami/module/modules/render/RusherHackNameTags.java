@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render;
 
 import me.zeroeightsix.kami.event.events.RenderEvent;
+import me.zeroeightsix.kami.gui.font.CFontRenderer;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.util.Friends;
 import net.minecraft.client.gui.FontRenderer;
@@ -33,8 +34,9 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
  *     this is a mess of pasted john code :(. I can't be bothered to piece together my own actual nametag code because I do not like nametags
  * </p>
  */
-@Module.Info(name = "RusherhackTag", category = Module.Category.RENDER)
+@Module.Info(name = "RusherHackNameTags", category = Module.Category.RENDER)
 public class RusherHackNameTags extends Module {
+    CFontRenderer cFontRenderer = new CFontRenderer(new Font("Arial", 0, 18), true, false);
 
 
     @Override
@@ -58,8 +60,7 @@ public class RusherHackNameTags extends Module {
     private void renderNametag(EntityPlayer player, double x, double y, double z) {
         int l4 = 0;
         GL11.glPushMatrix();
-        FontRenderer font = mc.fontRenderer;
-        String name = player.getName() + " " + MathHelper.ceil(player.getHealth());
+        String name = player.getName() + "\u00A7a " + MathHelper.ceil(player.getHealth() + player.getAbsorptionAmount());
         name = name.replace(".0", "");
         float distance = mc.player.getDistance(player);
         float var15 = (distance / 5 <= 2 ? 2.0F : distance / 5) * 2.5f;
@@ -74,11 +75,11 @@ public class RusherHackNameTags extends Module {
         GlStateManager.disableLighting();
         GlStateManager.depthMask(false);
         GL11.glDisable(2929);
-        int width = font.getStringWidth(name) / 2;
+        int width = cFontRenderer.getStringWidth(name) / 2;
 
         drawBorderedRect(-width - 2, 10, width + 1, 20, 0,
-                Friends.isFriend(name) ? new Color(0, 130, 130).getRGB() : 0xff000000, -1);
-        font.drawString(name, -width, 11, -1);
+                Friends.isFriend(name) ? new Color(0, 130, 130).getRGB() : 0x837d7d, -1);
+        cFontRenderer.drawString(name, -width, 11, -1);
 
             int xOffset = 0;
             for (ItemStack armourStack : player.inventory.armorInventory) {
@@ -183,7 +184,7 @@ public class RusherHackNameTags extends Module {
         int yCount = encY - -5;
         if (stack.getItem() instanceof ItemArmor || stack.getItem() instanceof ItemSword
                 || stack.getItem() instanceof ItemTool) {
-                mc.fontRenderer.drawStringWithShadow(stack.getMaxDamage() - stack.getItemDamage() + "", x * 2 + 8, y + 26,
+            cFontRenderer.drawStringWithShadow(stack.getMaxDamage() - stack.getItemDamage() + "\u00A74", x * 2 + 8, y + 26,
                         -1);
         }
         NBTTagList enchants = stack.getEnchantmentTagList();
@@ -199,7 +200,7 @@ public class RusherHackNameTags extends Module {
                 encName = encName + level;
                 GL11.glPushMatrix();
                 GL11.glScalef(0.9f, 0.9f, 0);
-                mc.fontRenderer.drawStringWithShadow(encName, x * 2 + 13, yCount, -1);
+                cFontRenderer.drawStringWithShadow(encName, x * 2 + 13, yCount, -1);
                 GL11.glScalef(1f, 1f, 1);
                 GL11.glPopMatrix();
                 encY += 8;
