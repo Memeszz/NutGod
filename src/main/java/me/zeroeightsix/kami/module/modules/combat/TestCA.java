@@ -243,19 +243,19 @@ public class TestCA extends Module {
         BlockPos finalPos = null;
         final List<BlockPos> blocks = this.findCrystalBlocks();
         final List<Entity> entities = new ArrayList<Entity>();
-        entities.addAll((Collection<? extends Entity>) NutGodCA.mc.world.playerEntities.stream().filter(entityPlayer -> !Friends.isFriend(entityPlayer.getName())).collect(Collectors.toList()));
+        entities.addAll((Collection<? extends Entity>) mc.world.playerEntities.stream().filter(entityPlayer -> !Friends.isFriend(entityPlayer.getName())).collect(Collectors.toList()));
         double damage = 0.5;
         for (final Entity entity2 : entities) {
-            if (entity2 != NutGodCA.mc.player) {
+            if (entity2 != mc.player) {
                 if (((EntityLivingBase) entity2).getHealth() <= 0.0f) {
                     continue;
 
                 }
-                if (NutGodCA.mc.player.getDistanceSq(entity2) > this.enemyRange.getValue() * this.enemyRange.getValue()) {
+                if (mc.player.getDistanceSq(entity2) > this.enemyRange.getValue() * this.enemyRange.getValue()) {
                     continue;
                 }
                 for (final BlockPos blockPos : blocks) {
-                    if (!canBlockBeSeen(blockPos) && NutGodCA.mc.player.getDistanceSq(blockPos) > 25.0 && this.raytrace.getValue()) {
+                    if (!canBlockBeSeen(blockPos) && mc.player.getDistanceSq(blockPos) > 25.0 && this.raytrace.getValue()) {
                         continue;
                     }
                     final double b = entity2.getDistanceSq(blockPos);
@@ -269,9 +269,9 @@ public class TestCA extends Module {
                     if (d <= damage) {
                         continue;
                     }
-                    final double self = calculateDamage(blockPos.x + 0.5, blockPos.y + 1, blockPos.z + 0.5, (Entity) NutGodCA.mc.player);
+                    final double self = calculateDamage(blockPos.x + 0.5, blockPos.y + 1, blockPos.z + 0.5, (Entity) mc.player);
                     if (this.antiSuicide.getValue()) {
-                        if (NutGodCA.mc.player.getHealth() + NutGodCA.mc.player.getAbsorptionAmount() - self <= 7.0) {
+                        if (mc.player.getHealth() + mc.player.getAbsorptionAmount() - self <= 7.0) {
                             continue;
                         }
                         if (self > d) {
