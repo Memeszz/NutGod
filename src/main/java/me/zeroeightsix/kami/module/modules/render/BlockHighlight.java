@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render;
 
 import me.zeroeightsix.kami.module.*;
+import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.*;
 import net.minecraftforge.common.*;
 import me.zeroeightsix.kami.event.events.*;
