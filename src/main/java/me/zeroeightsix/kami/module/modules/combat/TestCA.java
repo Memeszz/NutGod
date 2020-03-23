@@ -176,7 +176,7 @@ public class TestCA extends Module {
     public void onUpdate() {
         final EntityEnderCrystal crystal = (EntityEnderCrystal) mc.world.loadedEntityList.stream().filter(entity -> entity instanceof EntityEnderCrystal).map(entity -> entity).min(Comparator.comparing(c -> mc.player.getDistance(c))).orElse(null);
         if (crystal != null && this.explode.getValue()) {
-            BlockPos breakTarget = new BlockPos(crystal.posX, crystal.posY + 1, crystal.posZ);
+            BlockPos breakTarget = new BlockPos(crystal.posX, crystal.posY, crystal.posZ);
             if (!canBlockBeSeen(breakTarget)) {
                 if (mc.player.getDistance((Entity) crystal) <= this.breakThroughWallsRange.getValue()) {
                     if (!this.selfProtect.getValue()) {
