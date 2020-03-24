@@ -117,7 +117,7 @@ public class TestCA extends Module {
         Setting<Boolean> rgb = register(Settings.b("RGB", true));
         this.red = this.register((Setting<Integer>) Settings.integerBuilder("Red").withValue(255).withMaximum(255).withVisibility(b -> rgb.getValue()).build());
         this.green = this.register((Setting<Integer>) Settings.integerBuilder("Green").withValue(255).withMaximum(255).withVisibility(b -> rgb.getValue()).build());
-        this.blue = this.register((Setting<Integer>) Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).withVisibility(b -> rgb.getValue()).build());
+        this.blue = this.register((Setting<Integer>) Settings.integerBuilder("Blue").withValue(255).withMaximum(255).withVisibility(b -> rgb.getValue()).build());
         this.antiWeaknessOffhand = this.register(Settings.b("Anti Weakness Offhand", false));
         this.renderBreakTarget = this.register(Settings.b("Render Break Target", true));
         this.onlyBreakOwnCrystals = this.register(Settings.b("Only Break Own Crystals", false));
