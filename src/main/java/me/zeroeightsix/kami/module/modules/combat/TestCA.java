@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
-@Module.Info(name = "TestCA", description = "leaked penis hack crystalaura 2", category = Module.Category.COMBAT)
+@Module.Info(name = "MegynCA", description = "leaked penis hack crystalaura 2", category = Module.Category.COMBAT)
 public class TestCA extends Module {
 
     private Setting<Integer> tickPlaceDelay;
@@ -114,12 +114,14 @@ public class TestCA extends Module {
         this.autoSwitch = this.register(Settings.b("Auto Switch", true));
         this.selfProtect = this.register(Settings.b("Self Protect", false));
         this.rainbow = this.register(Settings.b("Rainbow", false));
+        Setting<Boolean> rgb = register(Settings.b("RGB", true));
+        this.red = this.register((Setting<Integer>) Settings.integerBuilder("Red").withValue(255).withMaximum(255).withVisibility(b -> rgb.getValue()).build());
+        this.green = this.register((Setting<Integer>) Settings.integerBuilder("Green").withValue(255).withMaximum(255).withVisibility(b -> rgb.getValue()).build());
+        this.blue = this.register((Setting<Integer>) Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).withVisibility(b -> rgb.getValue()).build());
         this.antiWeaknessOffhand = this.register(Settings.b("Anti Weakness Offhand", false));
         this.renderBreakTarget = this.register(Settings.b("Render Break Target", true));
         this.onlyBreakOwnCrystals = this.register(Settings.b("Only Break Own Crystals", false));
-        this.red = this.register((Setting<Integer>) Settings.integerBuilder("Red").withMinimum(0).withMaximum(255).withValue(255).build());
-        this.green = this.register((Setting<Integer>) Settings.integerBuilder("Green").withMinimum(0).withMaximum(255).withValue(0).build());
-        this.blue = this.register((Setting<Integer>) Settings.integerBuilder("Blue").withMinimum(0).withMaximum(255).withValue(0).build());
+
         this.msBreakDelay = this.register((Setting<Integer>) Settings.integerBuilder("MS Break Delay").withMinimum(0).withMaximum(300).withValue(10).build());
         this.msPlaceDelay = this.register((Setting<Integer>) Settings.integerBuilder("MS Place Delay").withMinimum(0).withMaximum(300).withValue(10).build());
         this.placeRange = this.register((Setting<Double>) Settings.doubleBuilder("Place Range").withMinimum(0.0).withMaximum(8.0).withValue(4.5).build());

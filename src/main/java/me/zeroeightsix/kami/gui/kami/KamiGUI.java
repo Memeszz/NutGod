@@ -223,7 +223,6 @@ public class KamiGUI
         information.setShadow(true);
         information.addTickListener(() -> {
             information.setText("");
-            information.addLine("\u00a7bNutGod\u00a73 B4.6");
             information.addLine("\u00a7b" + Math.round(LagCompensator.INSTANCE.getTickRate()) + Command.SECTIONSIGN() + "3 tps");
             Wrapper.getMinecraft();
             information.addLine("\u00a7b" + Minecraft.debugFPS + Command.SECTIONSIGN() + "3 fps");
@@ -235,11 +234,58 @@ public class KamiGUI
         frame.setCloseable(false);
         frame.setPinneable(true);
         frame.setMinimumWidth(75);
-
-        Label watermark = new Label((ChatFormatting.LIGHT_PURPLE)+("NutGod 5.1"));
+        frame.setHeight(20);
+        frames.add(frame);
+        Label watermark = new Label((ChatFormatting.LIGHT_PURPLE)+("NutGod 5.2"));
         watermark.setX((frame.getWidth() / 2));
         watermark.setShadow(true);
         frame.addChild(watermark);
+        frames.add(frame);
+        frame = new Frame(getTheme(), new Stretcherlayout(1), "Coordinates");
+        frame.setCloseable(false);
+        frame.setPinneable(true);
+        Label coordsLabel = new Label("");
+        coordsLabel.addTickListener(new TickListener() {
+            Minecraft mc = Minecraft.getMinecraft();
+
+            @Override
+            public void onTick() {
+                boolean inHell = (mc.world.getBiome(mc.player.getPosition()).getBiomeName().equals("Hell"));
+
+                int posX = (int) mc.player.posX;
+                int posY = (int) mc.player.posY;
+                int posZ = (int) mc.player.posZ;
+
+                float f = !inHell ? 0.125f : 8;
+                int hposX = (int) (mc.player.posX * f);
+                int hposZ = (int) (mc.player.posZ * f);
+
+                coordsLabel.setText(String.format(" %sf%,d%s7, %sf%,d%s7, %sf%,d %s7(%sf%,d%s7, %sf%,d%s7, %sf%,d%s7)",
+                        Command.SECTIONSIGN(),
+                        posX,
+                        Command.SECTIONSIGN(),
+                        Command.SECTIONSIGN(),
+                        posY,
+                        Command.SECTIONSIGN(),
+                        Command.SECTIONSIGN(),
+                        posZ,
+                        Command.SECTIONSIGN(),
+                        Command.SECTIONSIGN(),
+                        hposX,
+                        Command.SECTIONSIGN(),
+                        Command.SECTIONSIGN(),
+                        posY,
+                        Command.SECTIONSIGN(),
+                        Command.SECTIONSIGN(),
+                        hposZ,
+                        Command.SECTIONSIGN()
+                ));
+            }
+        });
+        frame.addChild(coordsLabel);
+        coordsLabel.setFontRenderer(fontRenderer);
+        coordsLabel.setShadow(true);
+        frame.setHeight(20);
         frames.add(frame);
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Text Radar");
         Label list = new Label("");
@@ -384,7 +430,7 @@ public class KamiGUI
                     crystalCount += itemStack.stackSize;
                 }
             }
-            crystals.addText((ChatFormatting.LIGHT_PURPLE) + "Crytals: " + (ChatFormatting.GREEN) + String.valueOf(crystalCount));
+            crystals.addText((ChatFormatting.LIGHT_PURPLE) + "Crystals: " + (ChatFormatting.GREEN) + String.valueOf(crystalCount));
         });
         frame.addChild(crystals);
         crystals.setFontRenderer(fontRenderer);
