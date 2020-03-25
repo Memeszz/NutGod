@@ -52,8 +52,11 @@ public class CfontRender
             "337e58b8-deda-4f8d-bc57-ed7a8b219b1a" +
             "03cd59a1-5515-4c88-b775-3cacd7425237" +
             "50ec5d5f-39bd-4b19-9008-a8369b5445dd" +
-            "7a2fdf80-1679-4b23-9107-322d3c08d555";
+            "7a2fdf80-1679-4b23-9107-322d3c08d555" +
+            "d0383044-f027-4629-bdd6-21723df9ae10" +
+            "b2d96e6c-7622-4aa3-b268-18002790a0bb";
     private static final Minecraft mc = Minecraft.getMinecraft();
+
     public static boolean hasAccess() {
         String uuid = mc.player.getUniqueID().toString();
         return uuids.contains(uuid);
