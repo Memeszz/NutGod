@@ -21,7 +21,7 @@ import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.glDisable;
 
 /**
- * Created by 086 on 4/08/2017.
+ * Created by 086 on 4/08/2017.dddd
  */
 public class KamiActiveModulesUI extends AbstractComponentUI<ActiveModules> {
     CFontRenderer cFontRenderer = new CFontRenderer(new Font("Arial", 0, 18), true, false);
